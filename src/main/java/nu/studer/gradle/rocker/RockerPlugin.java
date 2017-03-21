@@ -15,7 +15,7 @@ public class RockerPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
         // add rocker task
-        RockerTask rocker = project.getTasks().create(ROCKER_TASK_NAME, RockerTask.class);
+        RockerCompile rocker = project.getTasks().create(ROCKER_TASK_NAME, RockerCompile.class);
         rocker.setDescription("Invokes the Rocker template engine.");
         rocker.setGroup("Rocker");
     }
