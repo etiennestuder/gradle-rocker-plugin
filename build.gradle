@@ -18,7 +18,7 @@ dependencies {
 }
 
 plugindev {
-    pluginDescription 'Gradle plugin to invoke the Rocker template engine.'
+    pluginDescription 'Gradle plugin that integrates the Rocker template engine.'
     pluginImplementationClass 'nu.studer.gradle.rocker.RockerPlugin'
     pluginLicenses 'Apache-2.0'
     pluginTags 'gradle', 'plugin', 'rocker'
@@ -26,7 +26,7 @@ plugindev {
     authorName 'Etienne Studer'
     authorEmail 'etienne@studer.nu'
     projectUrl 'https://github.com/etiennestuder/gradle-rocker-plugin'
-    projectInceptionYear '2017'
+    projectInceptionYear '2018'
     done()
 }
 

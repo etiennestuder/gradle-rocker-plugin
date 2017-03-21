@@ -3,7 +3,7 @@ gradle-rocker-plugin
 
 # Overview
 
-[Gradle](http://www.gradle.org) plugin that allows to invoke the Rocker template engine.
+[Gradle](http://www.gradle.org) plugin that integrates the Rocker template engine.
 
 The rocker plugin is hosted at [Bintray's JCenter](https://bintray.com/etienne/gradle-plugins/gradle-rocker-plugin).
 
