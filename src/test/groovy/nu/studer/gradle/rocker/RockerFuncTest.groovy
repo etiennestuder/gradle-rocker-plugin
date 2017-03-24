@@ -6,7 +6,7 @@ import spock.lang.Unroll
 @Unroll
 class RockerFuncTest extends BaseFuncTest {
 
-    void "runs task"() {
+    void "understands DSL"() {
         given:
         file('src/rocker/Example.rocker.html') << """
 @args (String message)
@@ -35,21 +35,24 @@ dependencies {
 }
 
 rocker {
+  main {
     rockerCompiler = project.configurations.rockerCompiler
+    optimize = true
     templateDir = file('src/rocker')
     outputDir = file('src/generated/rocker')
+  }
 }
 """
 
         when:
-        def result = runWithArguments('rocker')
+        def result = runWithArguments('rockerMain')
 
         then:
         file('src/generated/rocker/Example.java').exists()
         result.output.contains("Parsing 1 rocker template files")
         result.output.contains("Generated 1 rocker java source files")
-        result.output.contains("Generated rocker configuration ")
-        result.task(':rocker').outcome == TaskOutcome.SUCCESS
+        result.output.contains("Generated rocker configuration")
+        result.task(':rockerMain').outcome == TaskOutcome.SUCCESS
     }
 
 }
