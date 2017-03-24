@@ -2,6 +2,9 @@ package nu.studer.gradle.rocker;
 
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.file.FileCollection;
+import org.gradle.api.tasks.Classpath;
+import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.ParallelizableTask;
 import org.gradle.api.tasks.TaskAction;
@@ -13,6 +16,10 @@ public class RockerCompile extends DefaultTask {
 
     @Nested
     public RockerConfig config;
+
+    @InputFiles
+    @Classpath
+    public FileCollection rockerCompilerRuntime;
 
     @TaskAction
     void doCompile() {
@@ -29,7 +36,7 @@ public class RockerCompile extends DefaultTask {
             @Override
             public void execute(JavaExecSpec spec) {
                 spec.setMain("com.fizzed.rocker.compiler.JavaGeneratorMain");
-                spec.setClasspath(config.rockerCompiler);
+                spec.setClasspath(rockerCompilerRuntime);
                 spec.systemProperty("rocker.optimize", Boolean.toString(config.optimize));
                 spec.systemProperty("rocker.template.dir", config.templateDir.getAbsolutePath());
                 spec.systemProperty("rocker.output.dir", config.outputDir.getAbsolutePath());
