@@ -6,7 +6,7 @@ import spock.lang.Unroll
 @Unroll
 class RockerFuncTest extends BaseFuncTest {
 
-    void "derives rocker tasks from configuration DSL"() {
+    void "can invoke rocker task from minimum configuration DSL"() {
         given:
         file('src/rocker/Example.rocker.html') << """
 @args (String message)
@@ -60,37 +60,27 @@ repositories {
     jcenter()
 }
 
-configurations {
-    rockerCompiler
-}
-
 dependencies {
     compile 'com.fizzed:rocker-runtime:0.16.0'
-    rockerCompiler 'com.fizzed:rocker-compiler:0.16.0'
-    rockerCompiler 'org.slf4j:slf4j-simple:1.7.23'
 }
 
 rocker {
   main {
-    rockerCompiler = project.configurations.rockerCompiler
     optimize = true
     templateDir = file('src/rocker')
     outputDir = file('src/generated/rocker')
   }
 }
-
-//sourceSets.main.java.srcDir rocker.main.outputDir
-//tasks.compileJava.dependsOn rockerMain
 """
 
         when:
-        def result = runWithArguments('rockerMain', 'classes', '--offline')
+        def result = runWithArguments('classes')
 
         then:
         file('src/generated/rocker/Example.java').exists()
-//        result.output.contains("Parsing 1 rocker template files")
-        result.task(':classes').outcome == TaskOutcome.UP_TO_DATE
-//        result.task(':classes').outcome == TaskOutcome.SUCCESS
+        result.output.contains("Generated 1 rocker java source files")
+        result.task(':rockerMain').outcome == TaskOutcome.SUCCESS
+        result.task(':classes').outcome == TaskOutcome.SUCCESS
     }
 
 }

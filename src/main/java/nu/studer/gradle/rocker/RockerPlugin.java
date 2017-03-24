@@ -2,10 +2,14 @@ package nu.studer.gradle.rocker;
 
 import org.gradle.api.Action;
 import org.gradle.api.NamedDomainObjectContainer;
+import org.gradle.api.NamedDomainObjectFactory;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.plugins.JavaBasePlugin;
+import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.SourceSetContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +24,12 @@ public class RockerPlugin implements Plugin<Project> {
         project.getPlugins().apply(JavaBasePlugin.class);
 
         // add rocker DSL extension
-        NamedDomainObjectContainer<RockerConfig> container = project.container(RockerConfig.class);
+        NamedDomainObjectContainer<RockerConfig> container = project.container(RockerConfig.class, new NamedDomainObjectFactory<RockerConfig>() {
+            @Override
+            public RockerConfig create(String name) {
+                return new RockerConfig(name, project);
+            }
+        });
         project.getExtensions().add("rocker", container);
 
         // create configuration for the runtime classpath of the rocker compiler (shared by all rocker configuration domain objects)
@@ -36,6 +45,13 @@ public class RockerPlugin implements Plugin<Project> {
                 rocker.setDescription("Invokes the Rocker template engine.");
                 rocker.config = config;
                 rocker.rockerCompilerRuntime = configuration;
+
+                // wire task dependencies such that rocker creates the sources before the corresponding compile task compiles them
+                SourceSetContainer sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets();
+                SourceSet sourceSet = sourceSets.findByName(config.name);
+                if (sourceSet != null) {
+                    project.getTasks().getByName(sourceSet.getCompileJavaTaskName()).dependsOn(rocker);
+                }
             }
         });
     }

@@ -23,7 +23,7 @@ public class RockerCompile extends DefaultTask {
 
     @TaskAction
     void doCompile() {
-        getProject().delete(config.outputDir);
+        getProject().delete(config.getOutputDir());
         ExecResult execResult = executeRocker();
         if (config.execResultHandler != null) {
             config.execResultHandler.execute(execResult);
@@ -39,8 +39,8 @@ public class RockerCompile extends DefaultTask {
                 spec.setClasspath(rockerCompilerRuntime);
                 spec.systemProperty("rocker.optimize", Boolean.toString(config.optimize));
                 spec.systemProperty("rocker.template.dir", config.templateDir.getAbsolutePath());
-                spec.systemProperty("rocker.output.dir", config.outputDir.getAbsolutePath());
-                spec.systemProperty("rocker.class.dir", config.outputDir.getAbsolutePath());
+                spec.systemProperty("rocker.output.dir", config.getOutputDir().getAbsolutePath());
+                spec.systemProperty("rocker.class.dir", config.getOutputDir().getAbsolutePath());
                 if (config.javaExecSpec != null) {
                     config.javaExecSpec.execute(spec);
                 }
