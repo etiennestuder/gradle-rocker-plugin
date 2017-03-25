@@ -51,6 +51,7 @@ public class RockerPlugin implements Plugin<Project> {
                 SourceSet sourceSet = sourceSets.findByName(config.name);
                 if (sourceSet != null) {
                     project.getTasks().getByName(sourceSet.getCompileJavaTaskName()).dependsOn(rocker);
+                    project.getDependencies().add(sourceSet.getCompileConfigurationName(), "com.fizzed:rocker-runtime:0.16.0");
                 }
             }
         });

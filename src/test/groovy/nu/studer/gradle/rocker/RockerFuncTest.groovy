@@ -95,10 +95,6 @@ repositories {
     jcenter()
 }
 
-dependencies {
-    compile 'com.fizzed:rocker-runtime:0.16.0'
-}
-
 rocker {
   main {
     optimize = true
@@ -117,7 +113,7 @@ rocker {
         result.task(':rockerMain').outcome == TaskOutcome.SUCCESS
         result.task(':classes').outcome == TaskOutcome.SUCCESS
     }
-
+    
     private File exampleTemplate() {
         template('src/rocker/Example.rocker.html')
     }
