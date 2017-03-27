@@ -15,7 +15,7 @@ import org.gradle.process.JavaExecSpec;
 public class RockerCompile extends DefaultTask {
 
     private RockerConfig config;
-    private FileCollection rockerCompilerRuntime;
+    private FileCollection runtimeClasspath;
 
     @SuppressWarnings("unused")
     @Nested
@@ -30,12 +30,12 @@ public class RockerCompile extends DefaultTask {
     @SuppressWarnings("unused")
     @InputFiles
     @Classpath
-    public FileCollection getRockerCompilerRuntime() {
-        return rockerCompilerRuntime;
+    public FileCollection getRuntimeClasspath() {
+        return runtimeClasspath;
     }
 
-    void setRockerCompilerRuntime(FileCollection rockerCompilerRuntime) {
-        this.rockerCompilerRuntime = rockerCompilerRuntime;
+    void setRuntimeClasspath(FileCollection runtimeClasspath) {
+        this.runtimeClasspath = runtimeClasspath;
     }
 
     @SuppressWarnings("unused")
@@ -56,7 +56,7 @@ public class RockerCompile extends DefaultTask {
             @Override
             public void execute(JavaExecSpec spec) {
                 spec.setMain("com.fizzed.rocker.compiler.JavaGeneratorMain");
-                spec.setClasspath(rockerCompilerRuntime);
+                spec.setClasspath(runtimeClasspath);
                 spec.systemProperty("rocker.optimize", Boolean.toString(config.isOptimize()));
                 spec.systemProperty("rocker.template.dir", config.getTemplateDir().getAbsolutePath());
                 spec.systemProperty("rocker.output.dir", config.getOutputDir().getAbsolutePath());
