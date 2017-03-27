@@ -60,7 +60,6 @@ public class RockerCompile extends DefaultTask {
                 spec.systemProperty("rocker.optimize", Boolean.toString(config.isOptimize()));
                 spec.systemProperty("rocker.template.dir", config.getTemplateDir().getAbsolutePath());
                 spec.systemProperty("rocker.output.dir", config.getOutputDir().getAbsolutePath());
-                spec.systemProperty("rocker.class.dir", config.getOutputDir().getAbsolutePath());
 
                 Action<? super JavaExecSpec> execSpec = config.getJavaExecSpec();
                 if (execSpec != null) {
