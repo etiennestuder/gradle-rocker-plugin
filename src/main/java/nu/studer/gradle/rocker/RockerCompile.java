@@ -14,19 +14,39 @@ import org.gradle.process.JavaExecSpec;
 @ParallelizableTask
 public class RockerCompile extends DefaultTask {
 
-    @Nested
-    public RockerConfig config;
+    private RockerConfig config;
+    private FileCollection rockerCompilerRuntime;
 
+    @SuppressWarnings("unused")
+    @Nested
+    public RockerConfig getConfig() {
+        return config;
+    }
+
+    void setConfig(RockerConfig config) {
+        this.config = config;
+    }
+
+    @SuppressWarnings("unused")
     @InputFiles
     @Classpath
-    public FileCollection rockerCompilerRuntime;
+    public FileCollection getRockerCompilerRuntime() {
+        return rockerCompilerRuntime;
+    }
 
+    void setRockerCompilerRuntime(FileCollection rockerCompilerRuntime) {
+        this.rockerCompilerRuntime = rockerCompilerRuntime;
+    }
+
+    @SuppressWarnings("unused")
     @TaskAction
     void doCompile() {
         getProject().delete(config.getOutputDir());
         ExecResult execResult = executeRocker();
-        if (config.execResultHandler != null) {
-            config.execResultHandler.execute(execResult);
+
+        Action<? super ExecResult> resultHandler = config.getExecResultHandler();
+        if (resultHandler != null) {
+            resultHandler.execute(execResult);
         }
     }
 
@@ -37,12 +57,14 @@ public class RockerCompile extends DefaultTask {
             public void execute(JavaExecSpec spec) {
                 spec.setMain("com.fizzed.rocker.compiler.JavaGeneratorMain");
                 spec.setClasspath(rockerCompilerRuntime);
-                spec.systemProperty("rocker.optimize", Boolean.toString(config.optimize));
-                spec.systemProperty("rocker.template.dir", config.templateDir.getAbsolutePath());
+                spec.systemProperty("rocker.optimize", Boolean.toString(config.isOptimize()));
+                spec.systemProperty("rocker.template.dir", config.getTemplateDir().getAbsolutePath());
                 spec.systemProperty("rocker.output.dir", config.getOutputDir().getAbsolutePath());
                 spec.systemProperty("rocker.class.dir", config.getOutputDir().getAbsolutePath());
-                if (config.javaExecSpec != null) {
-                    config.javaExecSpec.execute(spec);
+
+                Action<? super JavaExecSpec> execSpec = config.getJavaExecSpec();
+                if (execSpec != null) {
+                    execSpec.execute(spec);
                 }
             }
 

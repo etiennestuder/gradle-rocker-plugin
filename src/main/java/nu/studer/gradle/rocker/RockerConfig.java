@@ -16,36 +16,67 @@ import java.io.File;
 
 public class RockerConfig {
 
-    @Internal
-    public final String name;
+    final String name;
+    private final Project project;
 
-    @Internal
-    public final Project project;
+    private Action<? super JavaExecSpec> javaExecSpec;
+    private Action<? super ExecResult> execResultHandler;
 
-    @Internal
-    public Action<? super JavaExecSpec> javaExecSpec;
+    private boolean optimize;
+    private File templateDir;
+    private File outputDir;
 
-    @Internal
-    public Action<? super ExecResult> execResultHandler;
-
-    @Input
-    public boolean optimize;
-
-    @InputDirectory
-    public File templateDir;
-
-    private  File outputDir;
-
-    public RockerConfig(String name, Project project) {
+    RockerConfig(String name, Project project) {
         this.name = name;
         this.project = project;
     }
 
+    @Internal
+    Action<? super JavaExecSpec> getJavaExecSpec() {
+        return javaExecSpec;
+    }
+
+    @SuppressWarnings("unused")
+    public void setJavaExecSpec(Action<? super JavaExecSpec> javaExecSpec) {
+        this.javaExecSpec = javaExecSpec;
+    }
+
+    @Internal
+    Action<? super ExecResult> getExecResultHandler() {
+        return execResultHandler;
+    }
+
+    @SuppressWarnings("unused")
+    public void setExecResultHandler(Action<? super ExecResult> execResultHandler) {
+        this.execResultHandler = execResultHandler;
+    }
+
+    @Input
+    boolean isOptimize() {
+        return optimize;
+    }
+
+    @SuppressWarnings("unused")
+    public void setOptimize(boolean optimize) {
+        this.optimize = optimize;
+    }
+
+    @InputDirectory
+    File getTemplateDir() {
+        return templateDir;
+    }
+
+    @SuppressWarnings("unused")
+    public void setTemplateDir(File templateDir) {
+        this.templateDir = templateDir;
+    }
+
     @OutputDirectory
-    public File getOutputDir() {
+    File getOutputDir() {
         return outputDir;
     }
 
+    @SuppressWarnings("unused")
     public void setOutputDir(File outputDir) {
         this.outputDir = outputDir;
 
