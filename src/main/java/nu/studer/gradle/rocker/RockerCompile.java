@@ -3,6 +3,7 @@ package nu.studer.gradle.rocker;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Nested;
@@ -12,6 +13,7 @@ import org.gradle.process.ExecResult;
 import org.gradle.process.JavaExecSpec;
 
 @ParallelizableTask
+@CacheableTask
 public class RockerCompile extends DefaultTask {
 
     private RockerConfig config;
@@ -28,8 +30,8 @@ public class RockerCompile extends DefaultTask {
     }
 
     @SuppressWarnings("unused")
-    @InputFiles
     @Classpath
+    @InputFiles
     public FileCollection getRuntimeClasspath() {
         return runtimeClasspath;
     }

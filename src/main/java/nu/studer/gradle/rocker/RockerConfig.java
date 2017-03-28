@@ -7,6 +7,8 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.process.ExecResult;
@@ -62,6 +64,7 @@ public class RockerConfig {
     }
 
     @InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
     File getTemplateDir() {
         return templateDir;
     }
@@ -83,6 +86,7 @@ public class RockerConfig {
         SourceSetContainer sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets();
         SourceSet sourceSet = sourceSets.findByName(name);
         if (sourceSet != null) {
+            // todo (etst)
             sourceSet.getJava().srcDir(outputDir);
         }
     }
