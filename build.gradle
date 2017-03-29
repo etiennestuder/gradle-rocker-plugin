@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'nu.studer'
-version = '0.1-DEV'
+version = '0.1'
 
 sourceCompatibility = '1.6'
 targetCompatibility = '1.6'
@@ -34,7 +34,7 @@ bintray {
     user = credentials.BINTRAY_USER
     key = credentials.BINTRAY_API_KEY
     pkg.repo = 'gradle-plugins'
-    dryRun = true
+    dryRun = false
 }
 
 def testAll = tasks.create('testAll') {
