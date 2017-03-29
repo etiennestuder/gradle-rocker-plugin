@@ -15,6 +15,7 @@ import org.gradle.process.ExecResult;
 import org.gradle.process.JavaExecSpec;
 
 import java.io.File;
+import java.util.Set;
 
 public class RockerConfig {
 
@@ -81,13 +82,16 @@ public class RockerConfig {
 
     @SuppressWarnings("unused")
     public void setOutputDir(File outputDir) {
+        File previousOutputDir = this.outputDir;
         this.outputDir = outputDir;
 
         SourceSetContainer sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets();
         SourceSet sourceSet = sourceSets.findByName(name);
         if (sourceSet != null) {
-            // todo (etst)
-            sourceSet.getJava().srcDir(outputDir);
+            Set<File> srcDirs = sourceSet.getJava().getSrcDirs();
+            srcDirs.remove(previousOutputDir);
+            srcDirs.add(outputDir);
+            sourceSet.getJava().setSrcDirs(srcDirs);
         }
     }
 

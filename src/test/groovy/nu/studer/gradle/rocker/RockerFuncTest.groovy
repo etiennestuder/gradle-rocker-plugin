@@ -114,6 +114,54 @@ rocker {
         result.task(':classes').outcome == TaskOutcome.SUCCESS
     }
 
+    void "can reconfigure the output dir"() {
+        given:
+        exampleTemplate()
+
+        and:
+        buildFile << """
+plugins {
+    id 'nu.studer.rocker'
+    id 'java'
+}
+
+repositories {
+    jcenter()
+}
+
+rocker {
+  main {
+    optimize = true
+    templateDir = file('src/rocker')
+    outputDir = file('src/generated/rocker')
+  }
+}
+
+rocker.main.outputDir = file('src/generated/rocker/other')
+
+afterEvaluate {
+  SourceSetContainer sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+  SourceSet sourceSet = sourceSets.findByName('main')
+  Set<File> dirs = sourceSet.getJava().getSrcDirs()
+  dirs.eachWithIndex { dir, index ->
+    println "\$dir---"
+  }
+}
+"""
+
+        when:
+        def result = runWithArguments('classes')
+
+        then:
+        fileExists('src/generated/rocker/other/Example.java')
+        fileExists('build/classes/main/Example.class')
+        result.output.contains('dir/src/main/java---')
+        result.output.contains('dir/src/generated/rocker/other---')
+        !result.output.contains('dir/src/generated/rocker---')
+        result.task(':rockerMain').outcome == TaskOutcome.SUCCESS
+        result.task(':classes').outcome == TaskOutcome.SUCCESS
+    }
+
     void "can set custom rocker version"() {
         given:
         exampleTemplate()
@@ -122,7 +170,7 @@ rocker {
         buildFile << """
 plugins {
     id 'nu.studer.rocker'
-    id 'java'  // provides 'main' sourceSet
+    id 'java'
 }
 
 repositories {
