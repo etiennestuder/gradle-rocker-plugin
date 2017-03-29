@@ -114,6 +114,40 @@ rocker {
         result.task(':classes').outcome == TaskOutcome.SUCCESS
     }
 
+    void "can set custom rocker version"() {
+        given:
+        exampleTemplate()
+
+        and:
+        buildFile << """
+plugins {
+    id 'nu.studer.rocker'
+    id 'java'  // provides 'main' sourceSet
+}
+
+repositories {
+    jcenter()
+}
+
+rockerVersion = '0.15.0'
+
+rocker {
+  main {
+    optimize = true
+    templateDir = file('src/rocker')
+    outputDir = file('src/generated/rocker')
+  }
+}
+"""
+
+        when:
+        def result = runWithArguments('dependencies')
+
+        then:
+        result.output.contains('com.fizzed:rocker-compiler: -> 0.15.0')
+        result.output.contains('com.fizzed:rocker-runtime: -> 0.15.0')
+    }
+
     void "participates in incremental build"() {
         given:
         exampleTemplate()
