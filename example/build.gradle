@@ -1,4 +1,21 @@
-apply plugin: 'nu.studer.rocker'
+plugins {
+    id 'nu.studer.rocker' version '0.1'
+    id 'java'
+}
 
 group = 'org.example'
 version = '0.0.1'
+
+repositories {
+    jcenter()
+}
+
+rockerVersion = '0.16.0'
+
+rocker {
+    main {
+        optimize = true
+        templateDir = file('src/rocker')
+        outputDir = file('src/generated/rocker')
+    }
+}
