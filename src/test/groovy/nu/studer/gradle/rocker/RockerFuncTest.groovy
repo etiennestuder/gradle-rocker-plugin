@@ -302,6 +302,52 @@ rocker {
         result.task(':cleanRockerMain').outcome == TaskOutcome.SUCCESS
     }
 
+    void "can customize java execution and handle execution result"() {
+        given:
+        exampleTemplate()
+
+        and:
+        buildFile << """
+plugins {
+    id 'nu.studer.rocker'
+}
+
+repositories {
+    jcenter()
+}
+
+rocker {
+  foo {
+    optimize = true
+    templateDir = file('src/rocker')
+    outputDir = file('src/generated/rocker')
+  }
+}
+
+def out = new ByteArrayOutputStream()
+rockerFoo {
+  javaExecSpec = { JavaExecSpec s ->
+    s.standardOutput = out
+    s.errorOutput = out
+    s.ignoreExitValue = true
+  }
+  execResultHandler = { ExecResult r ->
+    if (r.exitValue == 0) {
+      println('Rocker template compilation succeeded')
+    }
+  }
+}
+"""
+
+        when:
+        def result = runWithArguments('rockerFoo')
+
+        then:
+        fileExists('src/generated/rocker/Example.java')
+        result.output.contains("Rocker template compilation succeeded")
+        result.task(':rockerFoo').outcome == TaskOutcome.SUCCESS
+    }
+
     private Writer rockerMainBuildFile(boolean optimize, String templateDir, String outputDir) {
         buildFile.newWriter().withWriter { w ->
             w << """

@@ -6,6 +6,7 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.ParallelizableTask;
 import org.gradle.api.tasks.TaskAction;
@@ -18,6 +19,8 @@ public class RockerCompile extends DefaultTask {
 
     private RockerConfig config;
     private FileCollection runtimeClasspath;
+    private Action<? super JavaExecSpec> javaExecSpec;
+    private Action<? super ExecResult> execResultHandler;
 
     @SuppressWarnings("unused")
     @Nested
@@ -41,14 +44,35 @@ public class RockerCompile extends DefaultTask {
     }
 
     @SuppressWarnings("unused")
+    @Internal
+    Action<? super JavaExecSpec> getJavaExecSpec() {
+        return javaExecSpec;
+    }
+
+    @SuppressWarnings("unused")
+    public void setJavaExecSpec(Action<? super JavaExecSpec> javaExecSpec) {
+        this.javaExecSpec = javaExecSpec;
+    }
+
+    @SuppressWarnings("unused")
+    @Internal
+    Action<? super ExecResult> getExecResultHandler() {
+        return execResultHandler;
+    }
+
+    @SuppressWarnings("unused")
+    public void setExecResultHandler(Action<? super ExecResult> execResultHandler) {
+        this.execResultHandler = execResultHandler;
+    }
+
+    @SuppressWarnings("unused")
     @TaskAction
     void doCompile() {
         getProject().delete(config.getOutputDir());
         ExecResult execResult = executeRocker();
 
-        Action<? super ExecResult> resultHandler = config.getExecResultHandler();
-        if (resultHandler != null) {
-            resultHandler.execute(execResult);
+        if (execResultHandler != null) {
+            execResultHandler.execute(execResult);
         }
     }
 
@@ -63,9 +87,8 @@ public class RockerCompile extends DefaultTask {
                 spec.systemProperty("rocker.template.dir", config.getTemplateDir().getAbsolutePath());
                 spec.systemProperty("rocker.output.dir", config.getOutputDir().getAbsolutePath());
 
-                Action<? super JavaExecSpec> execSpec = config.getJavaExecSpec();
-                if (execSpec != null) {
-                    execSpec.execute(spec);
+                if (javaExecSpec != null) {
+                    javaExecSpec.execute(spec);
                 }
             }
 

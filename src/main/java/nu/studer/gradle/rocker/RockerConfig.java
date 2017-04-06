@@ -1,18 +1,14 @@
 package nu.studer.gradle.rocker;
 
-import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
-import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
-import org.gradle.process.ExecResult;
-import org.gradle.process.JavaExecSpec;
 
 import java.io.File;
 import java.util.Set;
@@ -22,9 +18,6 @@ public class RockerConfig {
     final String name;
     private final Project project;
 
-    private Action<? super JavaExecSpec> javaExecSpec;
-    private Action<? super ExecResult> execResultHandler;
-
     private boolean optimize;
     private File templateDir;
     private File outputDir;
@@ -32,26 +25,6 @@ public class RockerConfig {
     RockerConfig(String name, Project project) {
         this.name = name;
         this.project = project;
-    }
-
-    @Internal
-    Action<? super JavaExecSpec> getJavaExecSpec() {
-        return javaExecSpec;
-    }
-
-    @SuppressWarnings("unused")
-    public void setJavaExecSpec(Action<? super JavaExecSpec> javaExecSpec) {
-        this.javaExecSpec = javaExecSpec;
-    }
-
-    @Internal
-    Action<? super ExecResult> getExecResultHandler() {
-        return execResultHandler;
-    }
-
-    @SuppressWarnings("unused")
-    public void setExecResultHandler(Action<? super ExecResult> execResultHandler) {
-        this.execResultHandler = execResultHandler;
     }
 
     @Input
@@ -99,8 +72,6 @@ public class RockerConfig {
     public String toString() {
         return "RockerConfig{" +
             "name='" + name + '\'' +
-            ", javaExecSpec=" + javaExecSpec +
-            ", execResultHandler=" + execResultHandler +
             ", optimize=" + optimize +
             ", templateDir=" + templateDir +
             ", outputDir=" + outputDir +
