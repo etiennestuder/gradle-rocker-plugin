@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'nu.studer'
-version = '0.1'
+version = '0.2-DEV'
 
 sourceCompatibility = '1.6'
 targetCompatibility = '1.6'
