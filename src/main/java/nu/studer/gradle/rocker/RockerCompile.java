@@ -83,7 +83,7 @@ public class RockerCompile extends DefaultTask {
             public void execute(JavaExecSpec spec) {
                 spec.setMain("com.fizzed.rocker.compiler.JavaGeneratorMain");
                 spec.setClasspath(runtimeClasspath);
-                spec.systemProperty("rocker.optimize", Boolean.toString(config.isOptimize()));
+                spec.systemProperty("rocker.option.optimize", Boolean.toString(config.isOptimize()));
                 spec.systemProperty("rocker.template.dir", config.getTemplateDir().getAbsolutePath());
                 spec.systemProperty("rocker.output.dir", config.getOutputDir().getAbsolutePath());
 
