@@ -25,6 +25,10 @@ public class RockerConfig {
     RockerConfig(String name, Project project) {
         this.name = name;
         this.project = project;
+
+        this.optimize = false;
+        this.templateDir = new File(project.getProjectDir(), "src/rocker/" + name);
+        this.outputDir = new File(project.getBuildDir(), "generated-src/rocker/" + name);
     }
 
     @Input

@@ -6,7 +6,41 @@ import spock.lang.Unroll
 @Unroll
 class RockerFuncTest extends BaseFuncTest {
 
-    void "can invoke rocker task derived from minimum configuration DSL"() {
+    void "can invoke rocker task derived from all-default configuration DSL"() {
+        given:
+        template('src/rocker/foo/Example.rocker.html')
+
+        and:
+        buildFile << """
+plugins {
+    id 'nu.studer.rocker'
+}
+
+repositories {
+    jcenter()
+}
+
+rocker {
+  foo {
+    // optimize defaults to false
+    // templateDir defaults to <projectDir>/src/rocker/configName
+    // outputDir defaults to <buildDir>/generated-src/rocker/configName
+  }
+}
+"""
+
+        when:
+        def result = runWithArguments('compileFooRocker')
+
+        then:
+        fileExists('build/generated-src/rocker/foo/Example.java')
+        result.output.contains("Parsing 1 rocker template files")
+        result.output.contains("Generated 1 rocker java source files")
+        result.output.contains("Generated rocker configuration target/classes/rocker-compiler.conf")
+        result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
+    }
+
+    void "can invoke rocker task derived from single-item configuration DSL"() {
         given:
         exampleTemplate()
 
