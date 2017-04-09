@@ -53,7 +53,8 @@ public class RockerPlugin implements Plugin<Project> {
             @Override
             public void execute(RockerConfig config) {
                 // create rocker task
-                RockerCompile rocker = project.getTasks().create("rocker" + capitalize(config.name), RockerCompile.class);
+                String taskName = taskName(config);
+                RockerCompile rocker = project.getTasks().create(taskName, RockerCompile.class);
                 rocker.setGroup("Rocker");
                 rocker.setDescription("Invokes the Rocker template engine.");
                 rocker.setConfig(config);
@@ -76,14 +77,6 @@ public class RockerPlugin implements Plugin<Project> {
         });
     }
 
-    private Configuration createRockerCompilerRuntimeConfiguration(Project project) {
-        Configuration rockerCompilerRuntime = project.getConfigurations().create("rockerCompiler");
-        rockerCompilerRuntime.setDescription("The classpath used to invoke the Rocker template engine. Add your additional dependencies here.");
-        project.getDependencies().add(rockerCompilerRuntime.getName(), "com.fizzed:rocker-compiler");
-        project.getDependencies().add(rockerCompilerRuntime.getName(), "org.slf4j:slf4j-simple:1.7.23");
-        return rockerCompilerRuntime;
-    }
-
     private void enforceRockerVersion(final Project project) {
         project.getConfigurations().all(new Action<Configuration>() {
             @Override
@@ -104,6 +97,18 @@ public class RockerPlugin implements Plugin<Project> {
                 });
             }
         });
+    }
+
+    private Configuration createRockerCompilerRuntimeConfiguration(Project project) {
+        Configuration rockerCompilerRuntime = project.getConfigurations().create("rockerCompiler");
+        rockerCompilerRuntime.setDescription("The classpath used to invoke the Rocker template engine. Add your additional dependencies here.");
+        project.getDependencies().add(rockerCompilerRuntime.getName(), "com.fizzed:rocker-compiler");
+        project.getDependencies().add(rockerCompilerRuntime.getName(), "org.slf4j:slf4j-simple:1.7.23");
+        return rockerCompilerRuntime;
+    }
+
+    private String taskName(RockerConfig config) {
+        return "compile" + capitalize(config.name) + "Rocker";
     }
 
     private static String capitalize(String s) {
