@@ -22,9 +22,9 @@ repositories {
 
 rocker {
   foo {
-    // optimize defaults to false
-    // templateDir defaults to <projectDir>/src/rocker/configName
-    // outputDir defaults to <buildDir>/generated-src/rocker/configName
+    // `optimize` defaults to false
+    // `templateDir` defaults to <projectDir>/src/rocker/<configName>
+    // `outputDir` defaults to <buildDir>/generated-src/rocker/<configName>
   }
 }
 """
