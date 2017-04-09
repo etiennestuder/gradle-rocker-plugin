@@ -108,7 +108,9 @@ public class RockerPlugin implements Plugin<Project> {
     }
 
     private String taskName(RockerConfig config) {
-        return "compile" + capitalize(config.name) + "Rocker";
+        String name = config.name;
+        String finalName = name.equals("main") ? "" : capitalize(name);
+        return "compile" + finalName + "Rocker";
     }
 
     private static String capitalize(String s) {
