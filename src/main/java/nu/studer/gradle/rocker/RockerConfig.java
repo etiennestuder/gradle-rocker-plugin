@@ -18,7 +18,6 @@ public class RockerConfig {
     final String name;
     private final Project project;
 
-    private boolean stripTimestamps;
     private boolean optimize;
     private File templateDir;
     private File outputDir;
@@ -27,20 +26,9 @@ public class RockerConfig {
         this.name = name;
         this.project = project;
 
-        this.stripTimestamps = false;
         this.optimize = false;
         this.templateDir = new File(project.getProjectDir(), "src/rocker/" + name);
         this.outputDir = new File(project.getBuildDir(), "generated-src/rocker/" + name);
-    }
-
-    @Input
-    boolean isStripTimestamps() {
-        return stripTimestamps;
-    }
-
-    @SuppressWarnings("unused")
-    public void setStripTimestamps(boolean stripTimestamps) {
-        this.stripTimestamps = stripTimestamps;
     }
 
     @Input
@@ -89,7 +77,6 @@ public class RockerConfig {
         return "RockerConfig{" +
             "name='" + name + '\'' +
             ", project=" + project +
-            ", stripTimestamps=" + stripTimestamps +
             ", optimize=" + optimize +
             ", templateDir=" + templateDir +
             ", outputDir=" + outputDir +

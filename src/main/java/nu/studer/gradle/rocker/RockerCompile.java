@@ -86,7 +86,7 @@ public class RockerCompile extends DefaultTask {
         // for the Gradle Build Cache to function properly, the same inputs must create exactly the same outputs
         // thus, we remove the MODIFIED_AT line from the generated files to make the rocker output reproducible and hence cacheable
         // ideally, rocker would not at the MODIFIED_AT line when the `optimize` flag is set to true
-        if (config.isStripTimestamps()) {
+        if (config.isOptimize()) {
             Set<File> generatedFiles = getProject().fileTree(config.getOutputDir(), new Action<ConfigurableFileTree>() {
                 @Override
                 public void execute(ConfigurableFileTree tree) {
