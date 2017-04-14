@@ -20,9 +20,6 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("unused")
 public class RockerPlugin implements Plugin<Project> {
 
-    private static final String ROCKER_VERSION_PROPERTY = "rockerVersion";
-    private static final String DEFAULT_ROCKER_VERSION = "0.16.0";
-
     private static final Logger LOGGER = LoggerFactory.getLogger(RockerPlugin.class);
 
     @Override
@@ -31,7 +28,7 @@ public class RockerPlugin implements Plugin<Project> {
         project.getPlugins().apply(JavaBasePlugin.class);
 
         // allow to configure the rocker version via extension property
-        project.getExtensions().getExtraProperties().set(ROCKER_VERSION_PROPERTY, DEFAULT_ROCKER_VERSION);
+        RockerVersion.applyDefaultVersion(project);
 
         // use the configured rocker version on all rocker dependencies
         enforceRockerVersion(project);
@@ -89,7 +86,7 @@ public class RockerPlugin implements Plugin<Project> {
                             public void execute(DependencyResolveDetails details) {
                                 ModuleVersionSelector requested = details.getRequested();
                                 if (requested.getGroup().equals("com.fizzed") && requested.getName().startsWith("rocker-")) {
-                                    details.useVersion(project.getExtensions().getExtraProperties().get(ROCKER_VERSION_PROPERTY).toString());
+                                    details.useVersion(RockerVersion.fromProject(project).asString());
                                 }
                             }
                         });
