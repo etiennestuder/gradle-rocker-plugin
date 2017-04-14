@@ -112,12 +112,21 @@ public class RockerCompile extends DefaultTask {
                 spec.setMain("com.fizzed.rocker.compiler.JavaGeneratorMain");
                 spec.setClasspath(runtimeClasspath);
                 spec.systemProperty("rocker.option.optimize", Boolean.toString(config.isOptimize()));
-                spec.systemProperty("rocker.option.targetCharset", config.getTargetCharset());
+                systemPropertyIfNotNull("rocker.option.extendsClass", config.getExtendsClass(), spec);
+                systemPropertyIfNotNull("rocker.option.extendsModelClass", config.getExtendsModelClass(), spec);
+                systemPropertyIfNotNull("rocker.option.javaVersion", config.getJavaVersion(), spec);
+                systemPropertyIfNotNull("rocker.option.targetCharset", config.getTargetCharset(), spec);
                 spec.systemProperty("rocker.template.dir", config.getTemplateDir().getAbsolutePath());
                 spec.systemProperty("rocker.output.dir", config.getOutputDir().getAbsolutePath());
 
                 if (javaExecSpec != null) {
                     javaExecSpec.execute(spec);
+                }
+            }
+
+            private void systemPropertyIfNotNull(String option, String value, JavaExecSpec spec) {
+                if (value != null) {
+                    spec.systemProperty(option, value);
                 }
             }
 
