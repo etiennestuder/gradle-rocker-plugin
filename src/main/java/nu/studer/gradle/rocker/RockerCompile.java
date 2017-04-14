@@ -83,23 +83,11 @@ public class RockerCompile extends DefaultTask {
         // generate the files from the templates
         ExecResult execResult = executeRocker();
 
-        // for the Gradle Build Cache to function properly, the same inputs must create exactly the same outputs
-        // thus, we remove the MODIFIED_AT line from the generated files to make the rocker output reproducible and hence cacheable
-        // ideally, rocker would not at the MODIFIED_AT line when the `optimize` flag is set to true
-        if (config.isOptimize()) {
-            Set<File> generatedFiles = getProject().fileTree(config.getOutputDir(), new Action<ConfigurableFileTree>() {
-                @Override
-                public void execute(ConfigurableFileTree tree) {
-                    tree.include("**/*.java");
-                }
-            }).getFiles();
-            for (File file : generatedFiles) {
-                Path path = file.toPath();
-                Charset charset = StandardCharsets.UTF_8;
-                String content = new String(Files.readAllBytes(path), charset);
-                content = content.replaceAll("static public final long MODIFIED_AT = \\d+L;", "");
-                Files.write(path, content.getBytes(charset));
-            }
+        // for the Gradle Build Cache to function properly, the same inputs must always create exactly the same output
+        // thus, if hot-reloading is disabled and the generated source code contains timestamps, we remove the MODIFIED_AT line
+        RockerVersion rockerVersion = RockerVersion.fromProject(getProject());
+        if (config.isOptimize() && rockerVersion.generatesRedundantCode_MODIFIED_AT()) {
+            trimLine_MODIFIED_AT();
         }
 
         // invoke custom result handler
@@ -125,6 +113,22 @@ public class RockerCompile extends DefaultTask {
             }
 
         });
+    }
+
+    private void trimLine_MODIFIED_AT() throws IOException {
+        Set<File> generatedFiles = getProject().fileTree(config.getOutputDir(), new Action<ConfigurableFileTree>() {
+            @Override
+            public void execute(ConfigurableFileTree tree) {
+                tree.include("**/*.java");
+            }
+        }).getFiles();
+        for (File file : generatedFiles) {
+            Path path = file.toPath();
+            Charset charset = StandardCharsets.UTF_8;
+            String content = new String(Files.readAllBytes(path), charset);
+            content = content.replaceAll("static public final long MODIFIED_AT = \\d+L;", "");
+            Files.write(path, content.getBytes(charset));
+        }
     }
 
 }
