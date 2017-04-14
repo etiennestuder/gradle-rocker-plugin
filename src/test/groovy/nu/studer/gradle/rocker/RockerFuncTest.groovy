@@ -29,6 +29,9 @@ repositories {
 rocker {
   foo {
     // `optimize` defaults to false
+    // `extendsClass` defaults to null, deferring to the Rocker default
+    // `extendsModelClass` defaults to null, deferring to the Rocker default
+    // `javaVersion` defaults to current JVM version
     // `targetCharset` defaults to UTF-8
     // `templateDir` defaults to <projectDir>/src/rocker/<configName>
     // `outputDir` defaults to <buildDir>/generated-src/rocker/<configName>
