@@ -23,6 +23,7 @@ repositories {
 rocker {
   foo {
     // `optimize` defaults to false
+    // `targetCharset` defaults to UTF-8
     // `templateDir` defaults to <projectDir>/src/rocker/<configName>
     // `outputDir` defaults to <buildDir>/generated-src/rocker/<configName>
   }
@@ -263,6 +264,37 @@ rocker {
         result.output.contains('com.fizzed:rocker-runtime: -> 0.15.0')
     }
 
+    void "can set custom target charset"() {
+        given:
+        template('src/rocker/Example.rocker.html', 'äÄüÜöÖ')
+
+        and:
+        buildFile << """
+plugins {
+    id 'nu.studer.rocker'
+}
+
+repositories {
+    jcenter()
+}
+
+rocker {
+  foo {
+    targetCharset= 'ISO-8859-1'
+    templateDir = file('src/rocker')
+    outputDir = file('src/generated/rocker')
+  }
+}
+"""
+
+        when:
+        def result = runWithArguments('compileFooRocker')
+
+        then:
+        fileContent('src/generated/rocker/Example.java').contains('äÄüÜöÖ')
+        result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
+    }
+
     void "participates in incremental build"() {
         given:
         exampleTemplate()
@@ -490,9 +522,13 @@ rocker {
     }
 
     private void template(String fileName) {
+        template(fileName, '')
+    }
+
+    private void template(String fileName, String customText) {
         file(fileName) << """
 @args (String message)
-Hello @message!
+Hello @message!$customText
 """
     }
 

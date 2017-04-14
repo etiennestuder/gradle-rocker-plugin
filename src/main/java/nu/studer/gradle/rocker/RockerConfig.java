@@ -19,6 +19,7 @@ public class RockerConfig {
     private final Project project;
 
     private boolean optimize;
+    private String targetCharset;
     private File templateDir;
     private File outputDir;
 
@@ -27,6 +28,7 @@ public class RockerConfig {
         this.project = project;
 
         this.optimize = false;
+        this.targetCharset = "UTF-8";
         this.templateDir = new File(project.getProjectDir(), "src/rocker/" + name);
         this.outputDir = new File(project.getBuildDir(), "generated-src/rocker/" + name);
     }
@@ -39,6 +41,16 @@ public class RockerConfig {
     @SuppressWarnings("unused")
     public void setOptimize(boolean optimize) {
         this.optimize = optimize;
+    }
+
+    @Input
+    public String getTargetCharset() {
+        return targetCharset;
+    }
+
+    @SuppressWarnings("unused")
+    public void setTargetCharset(String targetCharset) {
+        this.targetCharset = targetCharset;
     }
 
     @InputDirectory
@@ -78,6 +90,7 @@ public class RockerConfig {
             "name='" + name + '\'' +
             ", project=" + project +
             ", optimize=" + optimize +
+            ", targetCharset='" + targetCharset + '\'' +
             ", templateDir=" + templateDir +
             ", outputDir=" + outputDir +
             '}';
