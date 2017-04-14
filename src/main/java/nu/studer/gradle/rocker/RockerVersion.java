@@ -17,6 +17,11 @@ final class RockerVersion {
         this.patch = patch;
     }
 
+    boolean generatesRedundantCode_MODIFIED_AT() {
+        // see https://github.com/fizzed/rocker/issues/55#issuecomment-293670700
+        return Integer.parseInt(major) == 0 && Integer.parseInt(minor) < 18;
+    }
+
     String asString() {
         StringBuilder string = new StringBuilder(major);
         if (minor != null) {
@@ -26,6 +31,15 @@ final class RockerVersion {
             string.append(".").append(patch);
         }
         return string.toString();
+    }
+
+    @Override
+    public String toString() {
+        return "RockerVersion{" +
+            "major='" + major + '\'' +
+            ", minor='" + minor + '\'' +
+            ", patch='" + patch + '\'' +
+            '}';
     }
 
     static void applyDefaultVersion(Project project) {
