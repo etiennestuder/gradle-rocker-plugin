@@ -17,7 +17,6 @@ import org.gradle.process.JavaExecSpec;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
@@ -117,6 +116,7 @@ public class RockerCompile extends DefaultTask {
     }
 
     private void trimLine_MODIFIED_AT() throws IOException {
+        Charset charset = Charset.forName(config.getTargetCharset());
         Set<File> generatedFiles = getProject().fileTree(config.getOutputDir(), new Action<ConfigurableFileTree>() {
             @Override
             public void execute(ConfigurableFileTree tree) {
@@ -125,7 +125,6 @@ public class RockerCompile extends DefaultTask {
         }).getFiles();
         for (File file : generatedFiles) {
             Path path = file.toPath();
-            Charset charset = StandardCharsets.UTF_8;
             String content = new String(Files.readAllBytes(path), charset);
             content = content.replaceAll("static public final long MODIFIED_AT = \\d+L;", "");
             Files.write(path, content.getBytes(charset));
