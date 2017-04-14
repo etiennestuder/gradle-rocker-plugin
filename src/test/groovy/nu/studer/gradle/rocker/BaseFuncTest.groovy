@@ -54,6 +54,10 @@ abstract class BaseFuncTest extends Specification {
         file('build.gradle')
     }
 
+    protected File getSettingsFile() {
+        file('settings.gradle')
+    }
+
     protected File file(String path) {
         file(workspaceDir, path)
     }

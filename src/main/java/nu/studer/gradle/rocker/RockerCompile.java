@@ -2,9 +2,10 @@ package nu.studer.gradle.rocker;
 
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Task;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.tasks.CacheableTask;
+import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
@@ -22,13 +23,21 @@ import java.nio.file.Path;
 import java.util.Set;
 
 @ParallelizableTask
-@CacheableTask
 public class RockerCompile extends DefaultTask {
 
     private RockerConfig config;
     private FileCollection runtimeClasspath;
     private Action<? super JavaExecSpec> javaExecSpec;
     private Action<? super ExecResult> execResultHandler;
+
+    public RockerCompile() {
+        getOutputs().cacheIf(new Spec<Task>() {
+            @Override
+            public boolean isSatisfiedBy(Task task) {
+                return config.isOptimize();
+            }
+        });
+    }
 
     @SuppressWarnings("unused")
     @Nested
