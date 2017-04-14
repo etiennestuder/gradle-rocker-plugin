@@ -43,6 +43,10 @@ bintray {
     dryRun = false
 }
 
+test {
+    maxParallelForks = 2
+}
+
 def testAll = tasks.create('testAll') {
     group = 'Gradle cross-version test'
 }
