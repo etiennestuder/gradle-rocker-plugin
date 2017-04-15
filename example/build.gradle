@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'nu.studer:gradle-rocker-plugin:0.1'
+        classpath 'nu.studer:gradle-rocker-plugin:0.2'
     }
 }
 
@@ -14,7 +14,7 @@ repositories {
     jcenter()
 }
 
-rockerVersion = '0.16.0'
+rockerVersion = '0.18.0'
 
 rocker {
     main {
