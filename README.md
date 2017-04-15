@@ -131,7 +131,7 @@ You can find a self-contained example build script [here](example/build.gradle).
 
 # Changelog
 
-+ 0.2 - New DSL, more rocker configuration options, support for Gradle build cache
++ 0.2 - New DSL, more Rocker configuration options, support for Gradle build cache
 + 0.1 - Initial version
 
 # Feedback and Contributions
