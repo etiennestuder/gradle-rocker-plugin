@@ -35,6 +35,7 @@ rocker {
     // `targetCharset` defaults to UTF-8
     // `templateDir` defaults to <projectDir>/src/rocker/<configName>
     // `outputDir` defaults to <buildDir>/generated-src/rocker/<configName>
+    // `classDir` defaults to <buildDir>/rocker-hot-reload/<configName>
   }
 }
 """
@@ -47,7 +48,7 @@ rocker {
         fileContent('build/generated-src/rocker/foo/Example.java').contains('static public final long MODIFIED_AT =')
         result.output.contains("Parsing 1 rocker template files")
         result.output.contains("Generated 1 rocker java source files")
-        result.output.contains("Generated rocker configuration target/classes/rocker-compiler.conf")
+        result.output.contains("Generated rocker configuration ${workspaceDir.canonicalFile}/build/rocker-hot-reload/foo/rocker-compiler.conf")
         result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
     }
 

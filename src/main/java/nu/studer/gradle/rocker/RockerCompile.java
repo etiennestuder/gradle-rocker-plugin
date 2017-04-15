@@ -85,8 +85,9 @@ public class RockerCompile extends DefaultTask {
     @SuppressWarnings("unused")
     @TaskAction
     void doCompile() throws IOException {
-        // delete any generated files from previous runs
+        // delete any generated files from previous runs and any classes compiled by Rocker via hot-reloading
         getProject().delete(config.getOutputDir());
+        getProject().delete(config.getClassDir());
 
         // generate the files from the templates
         ExecResult execResult = executeRocker();
@@ -118,6 +119,7 @@ public class RockerCompile extends DefaultTask {
                 systemPropertyIfNotNull("rocker.option.targetCharset", config.getTargetCharset(), spec);
                 spec.systemProperty("rocker.template.dir", config.getTemplateDir().getAbsolutePath());
                 spec.systemProperty("rocker.output.dir", config.getOutputDir().getAbsolutePath());
+                spec.systemProperty("rocker.class.dir", config.getClassDir().getAbsolutePath());
 
                 if (javaExecSpec != null) {
                     javaExecSpec.execute(spec);

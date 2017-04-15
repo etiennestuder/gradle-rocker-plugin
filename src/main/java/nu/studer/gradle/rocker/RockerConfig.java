@@ -27,6 +27,7 @@ public class RockerConfig {
 
     private File templateDir;
     private File outputDir;
+    private File classDir;
 
     RockerConfig(String name, Project project) {
         this.name = name;
@@ -40,6 +41,7 @@ public class RockerConfig {
 
         this.templateDir = new File(project.getProjectDir(), "src/rocker/" + name);
         this.outputDir = new File(project.getBuildDir(), "generated-src/rocker/" + name);
+        this.classDir = new File(project.getBuildDir(), "rocker-hot-reload/" + name);
     }
 
     @Input
@@ -127,6 +129,17 @@ public class RockerConfig {
         }
     }
 
+    // do not annotate as @OutputDirectory!
+    @Input
+    File getClassDir() {
+        return classDir;
+    }
+
+    @SuppressWarnings("unused")
+    public void setClassDir(File classDir) {
+        this.classDir = classDir;
+    }
+
     @Override
     public String toString() {
         return "RockerConfig{" +
@@ -139,6 +152,7 @@ public class RockerConfig {
             ", targetCharset='" + targetCharset + '\'' +
             ", templateDir=" + templateDir +
             ", outputDir=" + outputDir +
+            ", classDir=" + classDir +
             '}';
     }
 
