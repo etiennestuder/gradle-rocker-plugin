@@ -22,7 +22,7 @@ The following functionality is provided by the rocker plugin:
  * Wire task dependencies such that the Java sources are generated before the Java compile task of the name-matching source set compiles them, if existing  
  * Add a task to clean the generated sources as part of the `clean` life-cycle task
 
-The following configuration changes are provided by the rocker plugin:
+The following Gradle configuration changes are contributed by the rocker plugin:
  
  * Add the `com.fizzed:rocker-compiler` dependency needed to execute the Rocker template engine to the new `rockerCompiler` configuration  
  * Add the `com.fizzed:rocker-runtime` dependency to the name-matching `compile` configuration to successfully compile the Java sources generated from the Rocker templates
@@ -140,7 +140,7 @@ Both feedback and contributions are very welcome.
 
 # Acknowledgements
 
-None, yet.
++ [mark-vieira](https://github.com/mark-vieira) (pr #55 to the fizzed/rocker project to fix the MODIFIED_AT issue)
 
 # License
 
