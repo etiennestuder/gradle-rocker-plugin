@@ -103,6 +103,8 @@ Since we declared to use version _0.18.0_ of the Rocker template engine, all Roc
 > Declare `optimize = true` in the rocker configuration of your Gradle build, and then run your build with the `-t` command line option. Deactivating the hot-reload feature 
 > of Rocker will also enable the rocker tasks for task output caching by the [Gradle build cache](https://docs.gradle.org/current/userguide/build_cache.html).
 
+> Warning: do not configure any of `templateDir`, `outputDir`, and `classDir` to point to the same directory or to a directory that also contains other content.  
+ 
 # Invocation
 
 ## Invoke rocker task
