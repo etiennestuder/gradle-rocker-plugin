@@ -31,7 +31,7 @@ The following configuration changes are provided by the rocker plugin:
 The following Gradle features are supported by the rocker plugin:
  
  * `RockerCompile` task instances participate in incremental builds  
- * `RockerCompile` task instances participate in task output caching (if the rocker hot-reloading feature is disabled) 
+ * `RockerCompile` task instances participate in task output caching (if the rocker hot reload feature is disabled) 
 
 # Configuration
 
@@ -91,7 +91,7 @@ rockerVersion = '0.18.0'  // optional
 ```
 
 The rocker _main_ configuration declares that the Rocker templates are in _src/rocker_ and the generated Java sources need to end up in _src/generated/rocker_. It further 
-declares via the _optimize_ property that the generated Java sources should be optimized to not contain any code that allows for hot-reloading via Rocker. Since the name 
+declares via the _optimize_ property that the generated Java sources should be optimized to not contain any code that allows for hot reload via Rocker. Since the name 
 of the configuration is `main`, the generated sources are added to the `main` source set contributed by the applied `java` plugin.
 
 Given the configuration above, you can invoke the Rocker template engine by issuing `./gradlew compileRocker`. You can also directly call `./gradlew compileJava` which first
@@ -99,9 +99,22 @@ generates the Java sources from the Rocker templates, and then compiles these Ja
 
 Since we declared to use version _0.18.0_ of the Rocker template engine, all Rocker dependencies of all Gradle configurations will be of that given version. 
 
-> I suggest you use the [Continuous build](https://docs.gradle.org/current/userguide/continuous_build.html) feature of Gradle instead of using the Rocker hot-reload feature.
-> Declare `optimize = true` in the rocker configuration of your Gradle build, and then run your build with the `-t` command line option. Deactivating the hot-reload feature 
+> I suggest you use the [Continuous build](https://docs.gradle.org/current/userguide/continuous_build.html) feature of Gradle instead of using the Rocker hot reload feature.
+> Declare `optimize = true` in the rocker configuration of your Gradle build, and then run your build with the `-t` command line option. Deactivating the hot reload feature 
 > of Rocker will also enable the rocker tasks for task output caching by the [Gradle build cache](https://docs.gradle.org/current/userguide/build_cache.html).
+
+## Complete rocker configuration options
+
+For each named configuration, the following options can be configured:
+ 
+  * `optimize` (boolean): if _true_, hot reload support is removed from the generated templates, task output becomes cacheable
+  * `extendsClass` (String): the class that all template implementations should extend
+  * `extendsModelClass` (String): the class that all template models should extend
+  * `javaVersion` (String): the Java version that the templates' compile & runtime must be compatible with
+  * `targetCharset` (String): the target charset of the generated Java sources
+  * `templateDir` (Path): the base directory where rocker recursively starts from when locating and parsing template files
+  * `outputDir` (Path): the directory where rocker will generate the Java sources into
+  * `classDir` (Path): the directory where the hot reload feature will compile classes to at runtime
 
 > Warning: do not configure any of `templateDir`, `outputDir`, and `classDir` to point to the same directory or to a directory that also contains other content.  
  
