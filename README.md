@@ -127,7 +127,7 @@ that is abbreviated to `compileRocker`, similarly to how it is done for the `Jav
 
 # Examples
 
-You can find a self-contained example build script [here](example/build.gradle).
+You can find a self-contained example build script [here](example).
 
 # Changelog
 
