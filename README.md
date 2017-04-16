@@ -100,8 +100,8 @@ generates the Java sources from the Rocker templates, and then compiles these Ja
 Since we declared to use version _0.18.0_ of the Rocker template engine, all Rocker dependencies of all Gradle configurations will be of that given version. 
 
 > I suggest you use the [Continuous build](https://docs.gradle.org/current/userguide/continuous_build.html) feature of Gradle instead of using the Rocker hot reload feature.
-> Declare `optimize = true` in the rocker configuration of your Gradle build, and then run your build with the `-t` command line option. Deactivating the hot reload feature 
-> of Rocker will also enable the rocker tasks for task output caching by the [Gradle build cache](https://docs.gradle.org/current/userguide/build_cache.html).
+> Declare `optimize = true` in the rocker configuration of your Gradle build, and then run your build with the `-t` command line option. In addition, deactivating the hot 
+> reload feature of Rocker will enable the rocker tasks for task output caching by the [Gradle build cache](https://docs.gradle.org/current/userguide/build_cache.html).
 
 ## Complete rocker configuration options
 
