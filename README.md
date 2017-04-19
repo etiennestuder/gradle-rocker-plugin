@@ -141,6 +141,7 @@ Both feedback and contributions are very welcome.
 # Acknowledgements
 
 + [mark-vieira](https://github.com/mark-vieira) (pr #55 to the fizzed/rocker project to fix the MODIFIED_AT issue)
++ [alkemist](https://github.com/alkemist) (design discussions)
 
 # License
 
