@@ -3,6 +3,9 @@ package nu.studer.gradle.rocker
 import org.gradle.testkit.runner.TaskOutcome
 import spock.lang.Unroll
 
+import java.nio.file.Files
+import java.nio.file.attribute.BasicFileAttributes
+
 @Unroll
 class RockerFuncTest extends BaseFuncTest {
 
@@ -578,7 +581,70 @@ compileFooRocker {
         result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
     }
 
-    private Writer rockerMainBuildFile(boolean optimize, String templateDir, String outputDir) {
+    def "only changed templates are regenerated when optimize=#optimize with rocker #rockerVersion"() {
+        given:
+        exampleTemplate()
+        def updatedTemplate = template('src/rocker/Updated.rocker.html')
+
+        and:
+        rockerMainBuildFile(optimize, 'src/rocker', 'src/generated/rocker', rockerVersion)
+
+        when:
+        def result = runWithArguments('compileRocker')
+
+        then:
+        def exampleLastModified = lastModified('src/generated/rocker/Example.java')
+        def updatedLastModified = lastModified('src/generated/rocker/Updated.java')
+        result.output.contains('Generated 2 rocker java source files')
+
+        when:
+        updatedTemplate << "Some more content"
+
+        and:
+        sleep(1000) // lazy workaround for the fact that Java's last modified time accuracy is pretty poor
+        result = runWithArguments('compileRocker')
+
+        then:
+        exampleLastModified == lastModified('src/generated/rocker/Example.java')
+        updatedLastModified < lastModified('src/generated/rocker/Updated.java')
+        result.output.contains('Generated 1 rocker java source files')
+
+        where:
+        [optimize, rockerVersion] << [[true, false], [RockerVersion.DEFAULT, '0.18.0']].combinations()
+    }
+
+    def "removed templates are cleaned up when optimize=#optimize with rocker #rockerVersion"() {
+        given:
+        exampleTemplate()
+        def deletedTemplate = template('src/rocker/Deleted.rocker.html')
+
+        and:
+        rockerMainBuildFile(optimize, 'src/rocker', 'src/generated/rocker', rockerVersion)
+
+        when:
+        def result = runWithArguments('compileRocker')
+
+        then:
+        fileExists('src/generated/rocker/Example.java')
+        fileExists('src/generated/rocker/Deleted.java')
+        result.output.contains('Generated 2 rocker java source files')
+
+        when:
+        deletedTemplate.delete()
+
+        and:
+        result = runWithArguments('compileRocker')
+
+        then:
+        fileExists('src/generated/rocker/Example.java')
+        !fileExists('src/generated/rocker/Deleted.java')
+        !(result.output =~ /Generated \d+ rocker java source files/)
+
+        where:
+        [optimize, rockerVersion] << [[true, false], [RockerVersion.DEFAULT, '0.18.0']].combinations()
+    }
+
+    private Writer rockerMainBuildFile(boolean optimize, String templateDir, String outputDir, String rockerVersion = RockerVersion.DEFAULT) {
         buildFile.newWriter().withWriter { w ->
             w << """
 plugins {
@@ -589,6 +655,8 @@ plugins {
 repositories {
     jcenter()
 }
+
+rockerVersion = '${rockerVersion}'
 
 rocker {
   main {
@@ -605,12 +673,12 @@ rocker {
         template('src/rocker/Example.rocker.html')
     }
 
-    private void template(String fileName) {
-        template(fileName, '')
+    private File template(String fileName) {
+        return template(fileName, '')
     }
 
-    private void template(String fileName, String customText) {
-        file(fileName) << """
+    private File template(String fileName, String customText) {
+        return file(fileName) << """
 @args (String message)
 Hello @message!$customText
 """
@@ -633,4 +701,8 @@ Hello @message!$customText
         file.setLastModified(System.currentTimeMillis() + 1000)
     }
 
+    private long lastModified(String filePath) {
+        def file = new File(workspaceDir, filePath)
+        return Files.readAttributes(file.toPath(), BasicFileAttributes).lastModifiedTime().toMillis()
+    }
 }
