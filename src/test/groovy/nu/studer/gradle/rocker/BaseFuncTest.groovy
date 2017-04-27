@@ -47,6 +47,7 @@ abstract class BaseFuncTest extends Specification {
             .withArguments(args)
             .withGradleVersion(gradleVersion.version)
             .withDebug(isDebuggerAttached())
+            .forwardOutput()
             .build()
     }
 
