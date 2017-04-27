@@ -79,18 +79,13 @@ public class RockerPlugin implements Plugin<Project> {
         project.getConfigurations().all(new Action<Configuration>() {
             @Override
             public void execute(Configuration configuration) {
-                configuration.resolutionStrategy(new Action<ResolutionStrategy>() {
+                configuration.getResolutionStrategy().eachDependency(new Action<DependencyResolveDetails>() {
                     @Override
-                    public void execute(ResolutionStrategy resolutionStrategy) {
-                        resolutionStrategy.eachDependency(new Action<DependencyResolveDetails>() {
-                            @Override
-                            public void execute(DependencyResolveDetails details) {
-                                ModuleVersionSelector requested = details.getRequested();
-                                if (requested.getGroup().equals("com.fizzed") && requested.getName().startsWith("rocker-")) {
-                                    details.useVersion(RockerVersion.fromProject(project).asString());
-                                }
-                            }
-                        });
+                    public void execute(DependencyResolveDetails details) {
+                        ModuleVersionSelector requested = details.getRequested();
+                        if (requested.getGroup().equals("com.fizzed") && requested.getName().startsWith("rocker-")) {
+                            details.useVersion(RockerVersion.fromProject(project).asString());
+                        }
                     }
                 });
             }
