@@ -141,6 +141,12 @@ public class RockerConfig {
         this.classDir = classDir;
     }
 
+    @Internal
+    String getCompileTaskName() {
+        String finalName = name.equals("main") ? "" : StringUtils.capitalize(name);
+        return "compile" + finalName + "Rocker";
+    }
+
     @Override
     public String toString() {
         return "RockerConfig{" +

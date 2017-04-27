@@ -17,6 +17,8 @@ import org.gradle.api.tasks.SourceSetContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static nu.studer.gradle.rocker.StringUtils.capitalize;
+
 @SuppressWarnings("unused")
 public class RockerPlugin implements Plugin<Project> {
 
@@ -50,8 +52,7 @@ public class RockerPlugin implements Plugin<Project> {
             @Override
             public void execute(RockerConfig config) {
                 // create rocker task
-                String taskName = taskName(config);
-                RockerCompile rocker = project.getTasks().create(taskName, RockerCompile.class);
+                RockerCompile rocker = project.getTasks().create(config.getCompileTaskName(), RockerCompile.class);
                 rocker.setGroup("Rocker");
                 rocker.setDescription("Invokes the Rocker template engine.");
                 rocker.setConfig(config);
@@ -102,16 +103,6 @@ public class RockerPlugin implements Plugin<Project> {
         project.getDependencies().add(rockerCompilerRuntime.getName(), "com.fizzed:rocker-compiler");
         project.getDependencies().add(rockerCompilerRuntime.getName(), "org.slf4j:slf4j-simple:1.7.23");
         return rockerCompilerRuntime;
-    }
-
-    private String taskName(RockerConfig config) {
-        String name = config.name;
-        String finalName = name.equals("main") ? "" : capitalize(name);
-        return "compile" + finalName + "Rocker";
-    }
-
-    private static String capitalize(String s) {
-        return s == null || s.isEmpty() ? s : Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
 
 }
