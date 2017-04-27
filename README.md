@@ -6,8 +6,9 @@ gradle-rocker-plugin
 [Gradle](http://www.gradle.org) plugin that integrates the Rocker template engine. For each named rocker configuration declared
 in the build, the plugin adds a task to generate the Java sources from the specified Rocker templates and includes the 
 generated Java sources in the matching source set, if existing. The code generation tasks participate in incremental builds and 
-in task output caching by the [Gradle build cache](https://docs.gradle.org/current/userguide/build_cache.html). The plugin can be 
-applied on both Java projects and Android projects.
+in task output caching by the [Gradle build cache](https://docs.gradle.org/current/userguide/build_cache.html). Additionally,
+the compile task itself is incremental, meaning it is optimized so that only templates which have changed are regenerated. 
+The plugin can be applied on both Java projects and Android projects.
 
 You can find out more details about the actual Rocker source code generation in the [Rocker documentation](https://github.com/fizzed).
 
