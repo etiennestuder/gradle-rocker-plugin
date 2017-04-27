@@ -12,6 +12,7 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.ParallelizableTask;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 import org.gradle.process.ExecResult;
 import org.gradle.process.JavaExecSpec;
 
@@ -84,10 +85,15 @@ public class RockerCompile extends DefaultTask {
 
     @SuppressWarnings("unused")
     @TaskAction
-    void doCompile() throws IOException {
-        // delete any generated files from previous runs and any classes compiled by Rocker via hot-reloading
-        getProject().delete(config.getOutputDir());
-        getProject().delete(config.getClassDir());
+    void doCompile(IncrementalTaskInputs incrementalTaskInputs) throws IOException {
+        if (incrementalTaskInputs.isIncremental()) {
+
+        } else {
+            // delete any generated files from previous runs and any classes compiled by Rocker via hot-reloading
+            getProject().delete(config.getOutputDir());
+            getProject().delete(config.getClassDir());
+        }
+
 
         // generate the files from the templates
         ExecResult execResult = executeRocker();
