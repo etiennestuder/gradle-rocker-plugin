@@ -640,7 +640,7 @@ compileFooRocker {
         then:
         fileExists('src/generated/rocker/Example.java')
         !fileExists('src/generated/rocker/Deleted.java')
-        result.output.contains('Generated 0 rocker java source files')
+        !(result.output =~ /Generated \d+ rocker java source files/)
 
         where:
         optimize << [true, false]
