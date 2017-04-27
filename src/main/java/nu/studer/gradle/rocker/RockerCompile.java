@@ -91,7 +91,7 @@ public class RockerCompile extends DefaultTask {
     @SuppressWarnings("unused")
     @TaskAction
     void doCompile(IncrementalTaskInputs incrementalTaskInputs) throws IOException {
-        ExecResult execResult;
+        ExecResult execResult = null;
         final Set<File> updatedTemplates = new HashSet<>();
 
         if (incrementalTaskInputs.isIncremental()) {
@@ -130,9 +130,9 @@ public class RockerCompile extends DefaultTask {
                         spec.into(tempDir);
                     }
                 });
-            }
 
-            execResult = executeRocker(tempDir);
+                execResult = executeRocker(tempDir);
+            }
         } else {
             // delete any generated files from previous runs and any classes compiled by Rocker via hot-reloading
             getProject().delete(config.getOutputDir());
@@ -150,7 +150,7 @@ public class RockerCompile extends DefaultTask {
         }
 
         // invoke custom result handler
-        if (execResultHandler != null) {
+        if (execResultHandler != null && execResult != null) {
             execResultHandler.execute(execResult);
         }
     }
