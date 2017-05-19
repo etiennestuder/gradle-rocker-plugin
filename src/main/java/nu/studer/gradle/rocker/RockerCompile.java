@@ -28,8 +28,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import static nu.studer.gradle.rocker.FileUtils.*;
+
 @ParallelizableTask
 public class RockerCompile extends DefaultTask {
+
+    private static final String ROCKER_FILE_EXTENSION_PREFIX = ".rocker";
 
     private RockerConfig config;
     private FileCollection runtimeClasspath;
@@ -45,16 +49,9 @@ public class RockerCompile extends DefaultTask {
         });
     }
 
-    private static String relativePath(File baseDir, File child) {
-        // todo (etst) return path?
-        return baseDir.toPath().relativize(child.toPath()).toString();
-    }
-
-    private static String getSourceFileName(String templateName) {
-        // todo (etst) handle extension == -1
-        int extension = templateName.indexOf(".rocker");
-        String baseName = templateName.substring(0, extension);
-        return baseName + ".java";
+    private static String toJavaSourceFileName(String templateName) {
+        int extension = templateName.indexOf(ROCKER_FILE_EXTENSION_PREFIX);
+        return extension > -1 ? templateName.substring(0, extension) + ".java" : null;
     }
 
     @SuppressWarnings("unused")
@@ -104,7 +101,7 @@ public class RockerCompile extends DefaultTask {
     @TaskAction
     void doCompile(IncrementalTaskInputs incrementalTaskInputs) throws IOException {
         ExecResult execResult = null;
-        final Set<File> updatedTemplates = new HashSet<>();
+        final Set<File> modifiedTemplates = new HashSet<>();
 
         if (!incrementalTaskInputs.isIncremental()) {
             // delete any generated files from previous runs and any classes compiled by Rocker via hot-reloading
@@ -118,7 +115,7 @@ public class RockerCompile extends DefaultTask {
             incrementalTaskInputs.outOfDate(new Action<InputFileDetails>() {
                 @Override
                 public void execute(InputFileDetails fileDetails) {
-                    updatedTemplates.add(fileDetails.getFile());
+                    modifiedTemplates.add(fileDetails.getFile());
                 }
             });
 
@@ -129,29 +126,35 @@ public class RockerCompile extends DefaultTask {
                     FileTree staleFiles = getProject().fileTree(config.getOutputDir(), new Action<ConfigurableFileTree>() {
                         @Override
                         public void execute(ConfigurableFileTree files) {
-                            files.include(getSourceFileName(relativePath(config.getTemplateDir(), fileDetails.getFile())));
+                            String javaSourceFileName = toJavaSourceFileName(relativePath(config.getTemplateDir(), fileDetails.getFile()));
+                            if (javaSourceFileName != null) {
+                                files.include(javaSourceFileName);
+                            }
                         }
                     });
                     getProject().delete(staleFiles);
+
                     // todo (etst) should we also remove them from the classDir ?
                 }
             });
 
             // copy new/modified templates to a temporary folder
-            if (!updatedTemplates.isEmpty()) {
+            if (!modifiedTemplates.isEmpty()) {
+                // copy modified files to a temp directory since we can only point Rocker to a directory
                 final File tempDir = getTemporaryDir();
 
                 getProject().copy(new Action<CopySpec>() {
                     @Override
                     public void execute(CopySpec spec) {
                         spec.from(config.getTemplateDir());
-                        for (File template : updatedTemplates) {
+                        for (File template : modifiedTemplates) {
                             spec.include(relativePath(config.getTemplateDir(), template));
                         }
                         spec.into(tempDir);
                     }
                 });
 
+                // generate the files from the modified templates
                 execResult = executeRocker(tempDir);
             }
         }
@@ -160,7 +163,7 @@ public class RockerCompile extends DefaultTask {
         // thus, if hot-reloading is disabled and the generated source code contains timestamps, we remove the MODIFIED_AT line
         RockerVersion rockerVersion = RockerVersion.fromProject(getProject());
         if (config.isOptimize() && rockerVersion.generatesRedundantCode_MODIFIED_AT()) {
-            trimLine_MODIFIED_AT(updatedTemplates);
+            trimLine_MODIFIED_AT(modifiedTemplates);
         }
 
         // invoke custom result handler
