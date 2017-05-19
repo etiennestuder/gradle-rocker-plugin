@@ -49,11 +49,6 @@ public class RockerCompile extends DefaultTask {
         });
     }
 
-    private static String toJavaSourceFileName(String templateName) {
-        int extension = templateName.indexOf(ROCKER_FILE_EXTENSION_PREFIX);
-        return extension > -1 ? templateName.substring(0, extension) + ".java" : null;
-    }
-
     @SuppressWarnings("unused")
     @Nested
     public RockerConfig getConfig() {
@@ -222,6 +217,11 @@ public class RockerCompile extends DefaultTask {
             content = content.replaceAll("static public final long MODIFIED_AT = \\d+L;", "");
             Files.write(path, content.getBytes(charset));
         }
+    }
+
+    private static String toJavaSourceFileName(String templateName) {
+        int extension = templateName.indexOf(ROCKER_FILE_EXTENSION_PREFIX);
+        return extension > -1 ? templateName.substring(0, extension) + ".java" : null;
     }
 
 }
