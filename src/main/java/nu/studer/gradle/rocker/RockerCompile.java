@@ -45,6 +45,18 @@ public class RockerCompile extends DefaultTask {
         });
     }
 
+    private static String relativePath(File baseDir, File child) {
+        // todo (etst) return path?
+        return baseDir.toPath().relativize(child.toPath()).toString();
+    }
+
+    private static String getSourceFileName(String templateName) {
+        // todo (etst) handle extension == -1
+        int extension = templateName.indexOf(".rocker");
+        String baseName = templateName.substring(0, extension);
+        return baseName + ".java";
+    }
+
     @SuppressWarnings("unused")
     @Nested
     public RockerConfig getConfig() {
@@ -102,37 +114,39 @@ public class RockerCompile extends DefaultTask {
             // generate the files from the templates
             execResult = executeRocker(config.getTemplateDir());
         } else {
-            final File tempDir = getTemporaryDir();
-
+            // collect modified files
             incrementalTaskInputs.outOfDate(new Action<InputFileDetails>() {
                 @Override
-                public void execute(final InputFileDetails inputFileDetails) {
-                    updatedTemplates.add(inputFileDetails.getFile());
+                public void execute(InputFileDetails fileDetails) {
+                    updatedTemplates.add(fileDetails.getFile());
                 }
             });
 
             // clean any stale files
             incrementalTaskInputs.removed(new Action<InputFileDetails>() {
                 @Override
-                public void execute(final InputFileDetails inputFileDetails) {
+                public void execute(final InputFileDetails fileDetails) {
                     FileTree staleFiles = getProject().fileTree(config.getOutputDir(), new Action<ConfigurableFileTree>() {
                         @Override
                         public void execute(ConfigurableFileTree files) {
-                            files.include(getSourceFileName(relativePath(config.getTemplateDir(), inputFileDetails.getFile())));
+                            files.include(getSourceFileName(relativePath(config.getTemplateDir(), fileDetails.getFile())));
                         }
                     });
                     getProject().delete(staleFiles);
+                    // todo (etst) should we also remove them from the classDir ?
                 }
             });
 
             // copy new/modified templates to a temporary folder
             if (!updatedTemplates.isEmpty()) {
+                final File tempDir = getTemporaryDir();
+
                 getProject().copy(new Action<CopySpec>() {
                     @Override
                     public void execute(CopySpec spec) {
                         spec.from(config.getTemplateDir());
-                        for (File file : updatedTemplates) {
-                            spec.include(relativePath(config.getTemplateDir(), file));
+                        for (File template : updatedTemplates) {
+                            spec.include(relativePath(config.getTemplateDir(), template));
                         }
                         spec.into(tempDir);
                     }
@@ -207,13 +221,4 @@ public class RockerCompile extends DefaultTask {
         }
     }
 
-    private String relativePath(File baseDir, File child) {
-        return baseDir.toPath().relativize(child.toPath()).toString();
-    }
-
-    private String getSourceFileName(String templateName) {
-        int extension = templateName.indexOf(".rocker");
-        String baseName = templateName.substring(0, extension);
-        return baseName + ".java";
-    }
 }
