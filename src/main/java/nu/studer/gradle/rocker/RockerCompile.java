@@ -94,7 +94,14 @@ public class RockerCompile extends DefaultTask {
         ExecResult execResult = null;
         final Set<File> updatedTemplates = new HashSet<>();
 
-        if (incrementalTaskInputs.isIncremental()) {
+        if (!incrementalTaskInputs.isIncremental()) {
+            // delete any generated files from previous runs and any classes compiled by Rocker via hot-reloading
+            getProject().delete(config.getOutputDir());
+            getProject().delete(config.getClassDir());
+
+            // generate the files from the templates
+            execResult = executeRocker(config.getTemplateDir());
+        } else {
             final File tempDir = getTemporaryDir();
 
             incrementalTaskInputs.outOfDate(new Action<InputFileDetails>() {
@@ -133,13 +140,6 @@ public class RockerCompile extends DefaultTask {
 
                 execResult = executeRocker(tempDir);
             }
-        } else {
-            // delete any generated files from previous runs and any classes compiled by Rocker via hot-reloading
-            getProject().delete(config.getOutputDir());
-            getProject().delete(config.getClassDir());
-
-            // generate the files from the templates
-            execResult = executeRocker();
         }
 
         // for the Gradle Build Cache to function properly, the same inputs must always create exactly the same output
@@ -153,10 +153,6 @@ public class RockerCompile extends DefaultTask {
         if (execResultHandler != null && execResult != null) {
             execResultHandler.execute(execResult);
         }
-    }
-
-    private ExecResult executeRocker() {
-        return executeRocker(config.getTemplateDir());
     }
 
     private ExecResult executeRocker(final File templateDir) {

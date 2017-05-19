@@ -588,7 +588,7 @@ compileFooRocker {
         def updatedTemplate = template('src/rocker/Updated.rocker.html')
 
         and:
-        rockerMainBuildFile(optimize, 'src/rocker', 'src/generated/rocker', RockerVersion.DEFAULT)
+        rockerMainBuildFile(optimize, 'src/rocker', 'src/generated/rocker')
 
         when:
         def result = runWithArguments('compileRocker')
@@ -621,7 +621,7 @@ compileFooRocker {
         def deletedTemplate = template('src/rocker/Deleted.rocker.html')
 
         and:
-        rockerMainBuildFile(optimize, 'src/rocker', 'src/generated/rocker', RockerVersion.DEFAULT)
+        rockerMainBuildFile(optimize, 'src/rocker', 'src/generated/rocker')
 
         when:
         def result = runWithArguments('compileRocker')
@@ -698,14 +698,16 @@ Hello @message!$customText
         file.text
     }
 
+    private long lastModified(String filePath) {
+        assert fileExists(filePath)
+        def file = new File(workspaceDir, filePath)
+        return Files.readAttributes(file.toPath(), BasicFileAttributes).lastModifiedTime().toMillis()
+    }
+
     private String updateLastModified(String filePath) {
         assert fileExists(filePath)
         def file = new File(workspaceDir, filePath)
         file.setLastModified(System.currentTimeMillis() + 1000)
     }
 
-    private long lastModified(String filePath) {
-        def file = new File(workspaceDir, filePath)
-        return Files.readAttributes(file.toPath(), BasicFileAttributes).lastModifiedTime().toMillis()
-    }
 }
