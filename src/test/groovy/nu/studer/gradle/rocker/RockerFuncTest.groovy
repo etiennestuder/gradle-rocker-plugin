@@ -581,7 +581,6 @@ compileFooRocker {
         result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
     }
 
-    @SuppressWarnings("GroovyAccessibility")
     def "only changed templates are regenerated when optimize=#optimize"() {
         given:
         exampleTemplate()
@@ -614,7 +613,6 @@ compileFooRocker {
         optimize << [true, false]
     }
 
-    @SuppressWarnings("GroovyAccessibility")
     def "removed templates are cleaned up when optimize=#optimize"() {
         given:
         exampleTemplate()
@@ -641,6 +639,38 @@ compileFooRocker {
         fileExists('src/generated/rocker/Example.java')
         !fileExists('src/generated/rocker/Deleted.java')
         !(result.output =~ /Generated \d+ rocker java source files/)
+
+        where:
+        optimize << [true, false]
+    }
+
+    def "changed templates are regenerated and removed templates are cleaned up when optimize=#optimize"() {
+        given:
+        def updatedTemplate = template('src/rocker/Updated.rocker.html')
+        def deletedTemplate = template('src/rocker/Deleted.rocker.html')
+
+        and:
+        rockerMainBuildFile(optimize, 'src/rocker', 'src/generated/rocker')
+
+        when:
+        def result = runWithArguments('compileRocker')
+
+        then:
+        fileExists('src/generated/rocker/Updated.java')
+        fileExists('src/generated/rocker/Deleted.java')
+        result.output.contains('Generated 2 rocker java source files')
+
+        when:
+        updatedTemplate << "Some more content"
+        deletedTemplate.delete()
+
+        and:
+        result = runWithArguments('compileRocker')
+
+        then:
+        fileExists('src/generated/rocker/Updated.java')
+        !fileExists('src/generated/rocker/Deleted.java')
+        result.output =~ /Generated 1 rocker java source files/
 
         where:
         optimize << [true, false]
