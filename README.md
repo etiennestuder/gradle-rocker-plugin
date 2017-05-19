@@ -31,6 +31,7 @@ The following Gradle configuration changes are contributed by the rocker plugin:
 
 The following Gradle features are supported by the rocker plugin:
  
+ * `RockerCompile` task instances are themselves incremental  
  * `RockerCompile` task instances participate in incremental builds  
  * `RockerCompile` task instances participate in task output caching (if the rocker hot reload feature is disabled) 
 
