@@ -7,7 +7,7 @@ repositories {
     jcenter()
 }
 
-rockerVersion = '0.18.0'
+rockerVersion = '0.20.0'
 
 rocker {
     main {

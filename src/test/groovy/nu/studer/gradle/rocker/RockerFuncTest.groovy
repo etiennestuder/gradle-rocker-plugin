@@ -85,7 +85,7 @@ rocker {
         fileExists('src/generated/rocker/Example.java')
         result.output.contains("Parsing 1 rocker template files")
         result.output.contains("Generated 1 rocker java source files")
-        result.output.contains("Optimize flag off. Did not generate rocker configuration file")
+        result.output.contains("Optimize flag on. Did not generate rocker configuration file")
         result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
     }
 
@@ -581,13 +581,14 @@ compileFooRocker {
         result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
     }
 
-    def "only changed templates are regenerated when optimize=#optimize with rocker #rockerVersion"() {
+    @SuppressWarnings("GroovyAccessibility")
+    def "only changed templates are regenerated when optimize=#optimize"() {
         given:
         exampleTemplate()
         def updatedTemplate = template('src/rocker/Updated.rocker.html')
 
         and:
-        rockerMainBuildFile(optimize, 'src/rocker', 'src/generated/rocker', rockerVersion)
+        rockerMainBuildFile(optimize, 'src/rocker', 'src/generated/rocker', RockerVersion.DEFAULT)
 
         when:
         def result = runWithArguments('compileRocker')
@@ -610,16 +611,17 @@ compileFooRocker {
         result.output.contains('Generated 1 rocker java source files')
 
         where:
-        [optimize, rockerVersion] << [[true, false], [RockerVersion.DEFAULT, '0.18.0']].combinations()
+        optimize << [true, false]
     }
 
-    def "removed templates are cleaned up when optimize=#optimize with rocker #rockerVersion"() {
+    @SuppressWarnings("GroovyAccessibility")
+    def "removed templates are cleaned up when optimize=#optimize"() {
         given:
         exampleTemplate()
         def deletedTemplate = template('src/rocker/Deleted.rocker.html')
 
         and:
-        rockerMainBuildFile(optimize, 'src/rocker', 'src/generated/rocker', rockerVersion)
+        rockerMainBuildFile(optimize, 'src/rocker', 'src/generated/rocker', RockerVersion.DEFAULT)
 
         when:
         def result = runWithArguments('compileRocker')
@@ -641,9 +643,10 @@ compileFooRocker {
         result.output.contains('Generated 0 rocker java source files')
 
         where:
-        [optimize, rockerVersion] << [[true, false], [RockerVersion.DEFAULT, '0.18.0']].combinations()
+        optimize << [true, false]
     }
 
+    @SuppressWarnings("GroovyAccessibility")
     private Writer rockerMainBuildFile(boolean optimize, String templateDir, String outputDir, String rockerVersion = RockerVersion.DEFAULT) {
         buildFile.newWriter().withWriter { w ->
             w << """

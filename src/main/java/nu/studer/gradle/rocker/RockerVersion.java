@@ -5,7 +5,7 @@ import org.gradle.api.Project;
 final class RockerVersion {
 
     private static final String PROJECT_PROPERTY = "rockerVersion";
-    static final String DEFAULT = "0.16.0";
+    private static final String DEFAULT = "0.20.0";
 
     private final String major;
     private final String minor;
@@ -15,6 +15,19 @@ final class RockerVersion {
         this.major = major;
         this.minor = minor;
         this.patch = patch;
+    }
+
+    static void applyDefaultVersion(Project project) {
+        project.getExtensions().getExtraProperties().set(PROJECT_PROPERTY, DEFAULT);
+    }
+
+    static RockerVersion fromProject(Project project) {
+        return from(project.getExtensions().getExtraProperties().get(PROJECT_PROPERTY).toString());
+    }
+
+    static RockerVersion from(String versionString) {
+        String[] majorMinorPatch = versionString.split("\\.", 3);
+        return new RockerVersion(majorMinorPatch[0], majorMinorPatch.length > 1 ? majorMinorPatch[1] : null, majorMinorPatch.length > 2 ? majorMinorPatch[2] : null);
     }
 
     boolean generatesRedundantCode_MODIFIED_AT() {
@@ -40,19 +53,6 @@ final class RockerVersion {
             ", minor='" + minor + '\'' +
             ", patch='" + patch + '\'' +
             '}';
-    }
-
-    static void applyDefaultVersion(Project project) {
-        project.getExtensions().getExtraProperties().set(PROJECT_PROPERTY, DEFAULT);
-    }
-
-    static RockerVersion fromProject(Project project) {
-        return from(project.getExtensions().getExtraProperties().get(PROJECT_PROPERTY).toString());
-    }
-
-    static RockerVersion from(String versionString) {
-        String[] majorMinorPatch = versionString.split("\\.", 3);
-        return new RockerVersion(majorMinorPatch[0], majorMinorPatch.length > 1 ? majorMinorPatch[1] : null, majorMinorPatch.length > 2 ? majorMinorPatch[2] : null);
     }
 
 }
