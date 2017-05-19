@@ -28,7 +28,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static nu.studer.gradle.rocker.FileUtils.*;
+import static nu.studer.gradle.rocker.FileUtils.relativePath;
 
 @ParallelizableTask
 public class RockerCompile extends DefaultTask {
@@ -118,7 +118,7 @@ public class RockerCompile extends DefaultTask {
             incrementalTaskInputs.removed(new Action<InputFileDetails>() {
                 @Override
                 public void execute(final InputFileDetails fileDetails) {
-                    FileTree staleFiles = getProject().fileTree(config.getOutputDir(), new Action<ConfigurableFileTree>() {
+                    FileTree staleSourceFiles = getProject().fileTree(config.getOutputDir(), new Action<ConfigurableFileTree>() {
                         @Override
                         public void execute(ConfigurableFileTree files) {
                             String javaSourceFileName = toJavaSourceFileName(relativePath(config.getTemplateDir(), fileDetails.getFile()));
@@ -127,9 +127,18 @@ public class RockerCompile extends DefaultTask {
                             }
                         }
                     });
-                    getProject().delete(staleFiles);
+                    getProject().delete(staleSourceFiles);
 
-                    // todo (etst) should we also remove them from the classDir ?
+                    FileTree staleClassFiles = getProject().fileTree(config.getClassDir(), new Action<ConfigurableFileTree>() {
+                        @Override
+                        public void execute(ConfigurableFileTree files) {
+                            String javaClassFileName = toJavaClassFileName(relativePath(config.getTemplateDir(), fileDetails.getFile()));
+                            if (javaClassFileName != null) {
+                                files.include(javaClassFileName);
+                            }
+                        }
+                    });
+                    getProject().delete(staleClassFiles);
                 }
             });
 
@@ -222,6 +231,11 @@ public class RockerCompile extends DefaultTask {
     private static String toJavaSourceFileName(String templateName) {
         int extension = templateName.indexOf(ROCKER_FILE_EXTENSION_PREFIX);
         return extension > -1 ? templateName.substring(0, extension) + ".java" : null;
+    }
+
+    private static String toJavaClassFileName(String templateName) {
+        int extension = templateName.indexOf(ROCKER_FILE_EXTENSION_PREFIX);
+        return extension > -1 ? templateName.substring(0, extension) + ".class" : null;
     }
 
 }
