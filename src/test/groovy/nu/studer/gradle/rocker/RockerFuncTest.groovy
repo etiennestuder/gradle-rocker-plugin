@@ -676,6 +676,47 @@ compileFooRocker {
         optimize << [true, false]
     }
 
+    def "subsequent incremental builds produce correct output when optimize=#optimize"() {
+        given:
+        def updatedTemplate = template('src/rocker/Initial.rocker.html')
+
+        and:
+        rockerMainBuildFile(optimize, 'src/rocker', 'src/generated/rocker')
+
+        when:
+        def result = runWithArguments('compileRocker')
+
+        then:
+        fileExists('src/generated/rocker/Initial.java')
+        result.output.contains('Generated 1 rocker java source files')
+
+        when:
+        def newTemplate = template('src/rocker/New.rocker.html')
+
+        and:
+        result = runWithArguments('compileRocker')
+
+        then:
+        fileExists('src/generated/rocker/Initial.java')
+        fileExists('src/generated/rocker/New.java')
+        result.output =~ /Generated 1 rocker java source files/
+
+        when:
+        newTemplate.delete()
+        template('src/rocker/Renamed.rocker.html')
+
+        and:
+        result = runWithArguments('compileRocker')
+
+        then:
+        fileExists('src/generated/rocker/Initial.java')
+        fileExists('src/generated/rocker/Renamed.java')
+        result.output =~ /Generated 1 rocker java source files/
+
+        where:
+        optimize << [true, false]
+    }
+
     @SuppressWarnings("GroovyAccessibility")
     private Writer rockerMainBuildFile(boolean optimize, String templateDir, String outputDir, String rockerVersion = RockerVersion.DEFAULT) {
         buildFile.newWriter().withWriter { w ->
