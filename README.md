@@ -49,7 +49,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'nu.studer:gradle-rocker-plugin:0.2'
+        classpath 'nu.studer:gradle-rocker-plugin:0.3.1'
     }
 }
 
@@ -60,7 +60,7 @@ apply plugin: 'nu.studer.rocker'
 
 ```groovy
 plugins {
-  id 'nu.studer.rocker' version '0.2'
+  id 'nu.studer.rocker' version '0.3.1'
 }
 ```
 
@@ -73,7 +73,7 @@ This is a sample configuration:
  
 ```groovy
 plugins {
-    id 'nu.studer.rocker' version '0.2'
+    id 'nu.studer.rocker' version '0.3.1'
     id 'java'
 }
 
