@@ -711,6 +711,7 @@ compileFooRocker {
         then:
         fileExists('src/generated/rocker/Initial.java')
         fileExists('src/generated/rocker/Renamed.java')
+        !fileExists('src/generated/rocker/New.java')
         result.output =~ /Generated 1 rocker java source files/
 
         where:
