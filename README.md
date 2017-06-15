@@ -144,7 +144,7 @@ Both feedback and contributions are very welcome.
 
 # Acknowledgements
 
-+ [mark-vieira](https://github.com/mark-vieira) (pr #2 to make RockerCompile task itself incremental)
++ [mark-vieira](https://github.com/mark-vieira) (pr #2 and pr #3 to make RockerCompile task itself incremental)
 + [mark-vieira](https://github.com/mark-vieira) (pr #55 to the fizzed/rocker project to fix the MODIFIED_AT issue)
 + [alkemist](https://github.com/alkemist) (design discussions)
 
