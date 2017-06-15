@@ -146,6 +146,7 @@ public class RockerCompile extends DefaultTask {
             if (!modifiedTemplates.isEmpty()) {
                 // copy modified files to a temp directory since we can only point Rocker to a directory
                 final File tempDir = getTemporaryDir();
+                getProject().delete(tempDir);
 
                 getProject().copy(new Action<CopySpec>() {
                     @Override
