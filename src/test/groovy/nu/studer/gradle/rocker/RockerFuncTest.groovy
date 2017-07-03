@@ -190,7 +190,7 @@ rocker {
 
         then:
         fileExists('src/generated/rocker/Example.java')
-        fileExists('build/classes/main/Example.class')
+        fileExists('build/classes/java/main/Example.class')
         result.task(':compileRocker').outcome == TaskOutcome.SUCCESS
         result.task(':classes').outcome == TaskOutcome.SUCCESS
     }
@@ -235,7 +235,7 @@ afterEvaluate {
 
         then:
         fileExists('src/generated/rocker/other/Example.java')
-        fileExists('build/classes/main/Example.class')
+        fileExists('build/classes/java/main/Example.class')
         result.output.contains('dir/src/main/java---')
         result.output.contains('dir/src/generated/rocker/other---')
         !result.output.contains('dir/src/generated/rocker---')
@@ -407,7 +407,6 @@ rocker {
 
         then:
         resultFirstRun.task(':compileRocker').outcome == TaskOutcome.SUCCESS
-        contentFirstRun
 
         when:
         updateLastModified('src/rocker/main/Example.rocker.html')
