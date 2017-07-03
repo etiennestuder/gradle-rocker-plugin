@@ -17,7 +17,12 @@ import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 import org.gradle.api.tasks.incremental.InputFileDetails;
 import org.gradle.process.ExecResult;
 import org.gradle.process.JavaExecSpec;
+import org.gradle.process.JavaForkOptions;
+import org.gradle.workers.IsolationMode;
+import org.gradle.workers.WorkerConfiguration;
+import org.gradle.workers.WorkerExecutor;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -45,6 +50,11 @@ public class RockerCompile extends DefaultTask {
                 return config.isOptimize();
             }
         });
+    }
+
+    @Inject
+    public WorkerExecutor getWorkerExecutor(){
+        throw new UnsupportedOperationException();
     }
 
     @SuppressWarnings("unused")
@@ -80,20 +90,8 @@ public class RockerCompile extends DefaultTask {
     }
 
     @SuppressWarnings("unused")
-    @Internal
-    Action<? super ExecResult> getExecResultHandler() {
-        return execResultHandler;
-    }
-
-    @SuppressWarnings("unused")
-    public void setExecResultHandler(Action<? super ExecResult> execResultHandler) {
-        this.execResultHandler = execResultHandler;
-    }
-
-    @SuppressWarnings("unused")
     @TaskAction
     void doCompile(IncrementalTaskInputs incrementalTaskInputs) throws IOException {
-        ExecResult execResult = null;
         final Set<File> modifiedTemplates = new HashSet<>();
 
         if (!incrementalTaskInputs.isIncremental()) {
@@ -102,7 +100,7 @@ public class RockerCompile extends DefaultTask {
             getProject().delete(config.getClassDir());
 
             // generate the files from the templates
-            execResult = executeRocker(config.getTemplateDir());
+            executeRocker(config.getTemplateDir());
         } else {
             // collect modified files
             incrementalTaskInputs.outOfDate(new Action<InputFileDetails>() {
@@ -158,7 +156,7 @@ public class RockerCompile extends DefaultTask {
                 });
 
                 // generate the files from the modified templates
-                execResult = executeRocker(tempDir);
+                executeRocker(tempDir);
             }
         }
 
@@ -166,42 +164,37 @@ public class RockerCompile extends DefaultTask {
         // thus, if hot-reloading is disabled and the generated source code contains timestamps, we remove the MODIFIED_AT line
         RockerVersion rockerVersion = RockerVersion.fromProject(getProject());
         if (config.isOptimize() && rockerVersion.generatesRedundantCode_MODIFIED_AT()) {
+            getWorkerExecutor().await();
             trimLine_MODIFIED_AT(modifiedTemplates);
-        }
-
-        // invoke custom result handler
-        if (execResultHandler != null && execResult != null) {
-            execResultHandler.execute(execResult);
         }
     }
 
-    private ExecResult executeRocker(final File templateDir) {
-        return getProject().javaexec(new Action<JavaExecSpec>() {
-
+    private void executeRocker(final File templateDir) {
+        getWorkerExecutor().submit(JavaGeneratorMainRunnable.class, new Action<WorkerConfiguration>() {
             @Override
-            public void execute(JavaExecSpec spec) {
-                spec.setMain("com.fizzed.rocker.compiler.JavaGeneratorMain");
-                spec.setClasspath(runtimeClasspath);
-                spec.systemProperty("rocker.option.optimize", Boolean.toString(config.isOptimize()));
-                systemPropertyIfNotNull("rocker.option.extendsClass", config.getExtendsClass(), spec);
-                systemPropertyIfNotNull("rocker.option.extendsModelClass", config.getExtendsModelClass(), spec);
-                systemPropertyIfNotNull("rocker.option.javaVersion", config.getJavaVersion(), spec);
-                systemPropertyIfNotNull("rocker.option.targetCharset", config.getTargetCharset(), spec);
-                spec.systemProperty("rocker.template.dir", templateDir.getAbsolutePath());
-                spec.systemProperty("rocker.output.dir", config.getOutputDir().getAbsolutePath());
-                spec.systemProperty("rocker.class.dir", config.getClassDir().getAbsolutePath());
+            public void execute(WorkerConfiguration workerConfiguration) {
+                workerConfiguration.setClasspath(runtimeClasspath);
+                workerConfiguration.setIsolationMode(IsolationMode.PROCESS);
+                workerConfiguration.forkOptions(new Action<JavaForkOptions>() {
+                    @Override
+                    public void execute(JavaForkOptions forkOptions) {
+                        forkOptions.systemProperty("rocker.option.optimize", Boolean.toString(config.isOptimize()));
+                        forkOptions.systemProperty("rocker.template.dir", templateDir.getAbsolutePath());
+                        forkOptions.systemProperty("rocker.output.dir", config.getOutputDir().getAbsolutePath());
+                        forkOptions.systemProperty("rocker.class.dir", config.getClassDir().getAbsolutePath());
+                        systemPropertyIfNotNull("rocker.option.extendsClass", config.getExtendsClass(), forkOptions);
+                        systemPropertyIfNotNull("rocker.option.extendsModelClass", config.getExtendsModelClass(), forkOptions);
+                        systemPropertyIfNotNull("rocker.option.javaVersion", config.getJavaVersion(), forkOptions);
+                        systemPropertyIfNotNull("rocker.option.targetCharset", config.getTargetCharset(), forkOptions);
+                    }
 
-                if (javaExecSpec != null) {
-                    javaExecSpec.execute(spec);
-                }
+                    private void systemPropertyIfNotNull(String option, String value, JavaForkOptions forkOptions) {
+                        if (value != null) {
+                            forkOptions.systemProperty(option, value);
+                        }
+                    }
+                });
             }
-
-            private void systemPropertyIfNotNull(String option, String value, JavaExecSpec spec) {
-                if (value != null) {
-                    spec.systemProperty(option, value);
-                }
-            }
-
         });
     }
 

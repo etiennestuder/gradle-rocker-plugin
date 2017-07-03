@@ -534,52 +534,6 @@ rocker {
         result.task(':cleanCompileRocker').outcome == TaskOutcome.SUCCESS
     }
 
-    void "can customize java execution and handle execution result"() {
-        given:
-        exampleTemplate()
-
-        and:
-        buildFile << """
-plugins {
-    id 'nu.studer.rocker'
-}
-
-repositories {
-    jcenter()
-}
-
-rocker {
-  foo {
-    optimize = true
-    templateDir = file('src/rocker')
-    outputDir = file('src/generated/rocker')
-  }
-}
-
-compileFooRocker {
-  def out = new ByteArrayOutputStream()
-  javaExecSpec = { JavaExecSpec s ->
-    s.standardOutput = out
-    s.errorOutput = out
-    s.ignoreExitValue = true
-  }
-  execResultHandler = { ExecResult r ->
-    if (r.exitValue == 0) {
-      println('Rocker template compilation succeeded')
-    }
-  }
-}
-"""
-
-        when:
-        def result = runWithArguments('compileFooRocker')
-
-        then:
-        fileExists('src/generated/rocker/Example.java')
-        result.output.contains("Rocker template compilation succeeded")
-        result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
-    }
-
     def "only changed templates are regenerated when optimize=#optimize"() {
         given:
         exampleTemplate()
