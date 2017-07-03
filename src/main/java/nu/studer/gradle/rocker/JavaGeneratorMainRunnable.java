@@ -16,7 +16,7 @@ public class JavaGeneratorMainRunnable implements Runnable {
             Method main = javaGeneratorClass.getMethod("main", String[].class);
             main.invoke(null, new Object[] {new String[0]});
         } catch (Exception e) {
-            throw new GradleException("Error while compiling rocker templates", e);
+            throw new GradleException("Rocker template compilation failed: " + e.getMessage(), e);
         }
     }
 }

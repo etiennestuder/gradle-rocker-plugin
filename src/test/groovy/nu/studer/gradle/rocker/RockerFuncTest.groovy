@@ -631,7 +631,7 @@ rocker {
 
     def "subsequent incremental builds produce correct output when optimize=#optimize"() {
         given:
-        def updatedTemplate = template('src/rocker/Initial.rocker.html')
+        template('src/rocker/Initial.rocker.html')
 
         and:
         rockerMainBuildFile(optimize, 'src/rocker', 'src/generated/rocker')
@@ -695,6 +695,43 @@ rocker {
 }
 """
         }
+    }
+
+    void "can customize java fork options"() {
+        given:
+        exampleTemplate()
+
+        and:
+        buildFile << """
+plugins {
+    id 'nu.studer.rocker'
+}
+
+repositories {
+    jcenter()
+}
+
+rocker {
+  foo {
+    optimize = true
+    templateDir = file('src/rocker')
+    outputDir = file('src/generated/rocker')
+  }
+}
+
+compileFooRocker {
+  javaForkOptions = { JavaForkOptions forkOptions ->
+        forkOptions.jvmArgs "-Xloggc:${file('gc.log').absolutePath}"
+  }
+}
+"""
+        when:
+        def result = runWithArguments('compileFooRocker')
+
+        then:
+        fileExists('src/generated/rocker/Example.java')
+        fileExists('gc.log')
+        result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
     }
 
     private File exampleTemplate() {

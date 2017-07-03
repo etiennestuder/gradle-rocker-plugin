@@ -15,7 +15,6 @@ import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 import org.gradle.api.tasks.incremental.InputFileDetails;
-import org.gradle.process.ExecResult;
 import org.gradle.process.JavaExecSpec;
 import org.gradle.process.JavaForkOptions;
 import org.gradle.workers.IsolationMode;
@@ -40,8 +39,7 @@ public class RockerCompile extends DefaultTask {
 
     private RockerConfig config;
     private FileCollection runtimeClasspath;
-    private Action<? super JavaExecSpec> javaExecSpec;
-    private Action<? super ExecResult> execResultHandler;
+    private Action<? super JavaForkOptions> javaForkOptions;
 
     public RockerCompile() {
         getOutputs().cacheIf(new Spec<Task>() {
@@ -80,13 +78,13 @@ public class RockerCompile extends DefaultTask {
 
     @SuppressWarnings("unused")
     @Internal
-    Action<? super JavaExecSpec> getJavaExecSpec() {
-        return javaExecSpec;
+    Action<? super JavaExecSpec> getJavaForkOptions() {
+        return javaForkOptions;
     }
 
     @SuppressWarnings("unused")
-    public void setJavaExecSpec(Action<? super JavaExecSpec> javaExecSpec) {
-        this.javaExecSpec = javaExecSpec;
+    public void setJavaForkOptions(Action<? super JavaForkOptions> javaForkOptions) {
+        this.javaForkOptions = javaForkOptions;
     }
 
     @SuppressWarnings("unused")
@@ -178,6 +176,9 @@ public class RockerCompile extends DefaultTask {
                 workerConfiguration.forkOptions(new Action<JavaForkOptions>() {
                     @Override
                     public void execute(JavaForkOptions forkOptions) {
+                        if(RockerCompile.this.javaForkOptions != null ){
+                            javaForkOptions.execute(forkOptions);
+                        }
                         forkOptions.systemProperty("rocker.option.optimize", Boolean.toString(config.isOptimize()));
                         forkOptions.systemProperty("rocker.template.dir", templateDir.getAbsolutePath());
                         forkOptions.systemProperty("rocker.output.dir", config.getOutputDir().getAbsolutePath());
