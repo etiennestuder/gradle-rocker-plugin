@@ -7,12 +7,9 @@ import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileTree;
+import org.gradle.api.logging.LogLevel;
 import org.gradle.api.specs.Spec;
-import org.gradle.api.tasks.Classpath;
-import org.gradle.api.tasks.InputFiles;
-import org.gradle.api.tasks.Internal;
-import org.gradle.api.tasks.Nested;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 import org.gradle.api.tasks.incremental.InputFileDetails;
 import org.gradle.process.JavaExecSpec;
@@ -40,6 +37,7 @@ public class RockerCompile extends DefaultTask {
     private RockerConfig config;
     private FileCollection runtimeClasspath;
     private Action<? super JavaForkOptions> javaForkOptions;
+    private LogLevel logLevel = LogLevel.INFO;
 
     public RockerCompile() {
         getOutputs().cacheIf(new Spec<Task>() {
@@ -85,6 +83,15 @@ public class RockerCompile extends DefaultTask {
     @SuppressWarnings("unused")
     public void setJavaForkOptions(Action<? super JavaForkOptions> javaForkOptions) {
         this.javaForkOptions = javaForkOptions;
+    }
+
+    @Console
+    public LogLevel getLogLevel() {
+        return logLevel;
+    }
+
+    public void setLogLevel(LogLevel logLevel) {
+        this.logLevel = logLevel;
     }
 
     @SuppressWarnings("unused")
@@ -187,6 +194,7 @@ public class RockerCompile extends DefaultTask {
                         systemPropertyIfNotNull("rocker.option.extendsModelClass", config.getExtendsModelClass(), forkOptions);
                         systemPropertyIfNotNull("rocker.option.javaVersion", config.getJavaVersion(), forkOptions);
                         systemPropertyIfNotNull("rocker.option.targetCharset", config.getTargetCharset(), forkOptions);
+                        systemPropertyIfNotNull("org.slf4j.simpleLogger.defaultLogLevel", logLevel == LogLevel.LIFECYCLE ? LogLevel.INFO.toString() : logLevel.toString(), forkOptions);
                     }
 
                     private void systemPropertyIfNotNull(String option, String value, JavaForkOptions forkOptions) {

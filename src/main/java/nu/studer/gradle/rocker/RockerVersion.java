@@ -5,7 +5,7 @@ import org.gradle.api.Project;
 final class RockerVersion {
 
     private static final String PROJECT_PROPERTY = "rockerVersion";
-    private static final String DEFAULT = "0.20.0";
+    private static final String DEFAULT = "0.21.0";
 
     private final String major;
     private final String minor;
@@ -49,10 +49,10 @@ final class RockerVersion {
     @Override
     public String toString() {
         return "RockerVersion{" +
-            "major='" + major + '\'' +
-            ", minor='" + minor + '\'' +
-            ", patch='" + patch + '\'' +
-            '}';
+                "major='" + major + '\'' +
+                ", minor='" + minor + '\'' +
+                ", patch='" + patch + '\'' +
+                '}';
     }
 
 }
