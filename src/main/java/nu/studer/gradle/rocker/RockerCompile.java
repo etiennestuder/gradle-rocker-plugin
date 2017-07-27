@@ -51,7 +51,7 @@ public class RockerCompile extends DefaultTask {
     }
 
     @Inject
-    public WorkerExecutor getWorkerExecutor(){
+    public WorkerExecutor getWorkerExecutor() {
         throw new UnsupportedOperationException();
     }
 
@@ -176,7 +176,7 @@ public class RockerCompile extends DefaultTask {
                 workerConfiguration.forkOptions(new Action<JavaForkOptions>() {
                     @Override
                     public void execute(JavaForkOptions forkOptions) {
-                        if(RockerCompile.this.javaForkOptions != null ){
+                        if (RockerCompile.this.javaForkOptions != null) {
                             javaForkOptions.execute(forkOptions);
                         }
                         forkOptions.systemProperty("rocker.option.optimize", Boolean.toString(config.isOptimize()));

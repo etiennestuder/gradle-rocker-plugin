@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 /**
  * This class is necessary as JavaGeneratorMain doesn't implement Runnable which is required by
  * Gradle Worker API.
+ *
  * */
 public class JavaGeneratorMainRunnable implements Runnable {
     @Override
