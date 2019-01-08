@@ -3,7 +3,7 @@ plugins {
     id 'groovy'
     id 'java-gradle-plugin'
     id 'nu.studer.plugindev' version '1.0.6'
-    id 'nu.studer.credentials' version '1.0.3'
+    id 'nu.studer.credentials' version '1.0.4'
 }
 
 group = 'nu.studer'
