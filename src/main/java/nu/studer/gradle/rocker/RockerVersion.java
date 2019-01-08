@@ -5,7 +5,7 @@ import org.gradle.api.Project;
 final class RockerVersion {
 
     private static final String PROJECT_PROPERTY = "rockerVersion";
-    private static final String DEFAULT = "0.20.0";
+    private static final String DEFAULT = "1.2.0";
 
     private final String major;
     private final String minor;
