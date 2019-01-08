@@ -12,7 +12,6 @@ import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
-import org.gradle.api.tasks.ParallelizableTask;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 import org.gradle.api.tasks.incremental.InputFileDetails;
@@ -21,16 +20,11 @@ import org.gradle.process.JavaExecSpec;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 import static nu.studer.gradle.rocker.FileUtils.relativePath;
 
-@ParallelizableTask
 public class RockerCompile extends DefaultTask {
 
     private static final String ROCKER_FILE_EXTENSION_PREFIX = ".rocker";

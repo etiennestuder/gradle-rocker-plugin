@@ -190,7 +190,7 @@ rocker {
 
         then:
         fileExists('src/generated/rocker/Example.java')
-        fileExists('build/classes/main/Example.class')
+        fileExists('build/classes/java/main/Example.class')
         result.task(':compileRocker').outcome == TaskOutcome.SUCCESS
         result.task(':classes').outcome == TaskOutcome.SUCCESS
     }
@@ -235,7 +235,7 @@ afterEvaluate {
 
         then:
         fileExists('src/generated/rocker/other/Example.java')
-        fileExists('build/classes/main/Example.class')
+        fileExists('build/classes/java/main/Example.class')
         result.output.contains('dir/src/main/java---')
         result.output.contains('dir/src/generated/rocker/other---')
         !result.output.contains('dir/src/generated/rocker---')
@@ -273,8 +273,8 @@ rocker {
         def result = runWithArguments('dependencies')
 
         then:
-        result.output.contains('com.fizzed:rocker-compiler: -> 0.15.0')
-        result.output.contains('com.fizzed:rocker-runtime: -> 0.15.0')
+        result.output.contains('com.fizzed:rocker-compiler -> 0.15.0')
+        result.output.contains('com.fizzed:rocker-runtime -> 0.15.0')
     }
 
     void "can set custom target charset"() {
