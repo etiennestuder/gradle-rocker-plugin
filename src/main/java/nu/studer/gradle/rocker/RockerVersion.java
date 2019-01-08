@@ -30,11 +30,6 @@ final class RockerVersion {
         return new RockerVersion(majorMinorPatch[0], majorMinorPatch.length > 1 ? majorMinorPatch[1] : null, majorMinorPatch.length > 2 ? majorMinorPatch[2] : null);
     }
 
-    boolean generatesRedundantCode_MODIFIED_AT() {
-        // see https://github.com/fizzed/rocker/issues/55#issuecomment-293670700
-        return Integer.parseInt(major) == 0 && Integer.parseInt(minor) < 18;
-    }
-
     String asString() {
         StringBuilder string = new StringBuilder(major);
         if (minor != null) {

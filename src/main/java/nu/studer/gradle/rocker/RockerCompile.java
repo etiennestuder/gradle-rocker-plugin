@@ -164,13 +164,6 @@ public class RockerCompile extends DefaultTask {
             }
         }
 
-        // for the Gradle Build Cache to function properly, the same inputs must always create exactly the same output
-        // thus, if hot-reloading is disabled and the generated source code contains timestamps, we remove the MODIFIED_AT line
-        RockerVersion rockerVersion = RockerVersion.fromProject(getProject());
-        if (config.isOptimize() && rockerVersion.generatesRedundantCode_MODIFIED_AT()) {
-            trimLine_MODIFIED_AT(modifiedTemplates);
-        }
-
         // invoke custom result handler
         if (execResultHandler != null && execResult != null) {
             execResultHandler.execute(execResult);
@@ -205,28 +198,6 @@ public class RockerCompile extends DefaultTask {
             }
 
         });
-    }
-
-    private void trimLine_MODIFIED_AT(final Collection<File> updated) throws IOException {
-        Charset charset = Charset.forName(config.getTargetCharset());
-        Set<File> generatedFiles = getProject().fileTree(config.getOutputDir(), new Action<ConfigurableFileTree>() {
-            @Override
-            public void execute(ConfigurableFileTree tree) {
-                if (updated.isEmpty()) {
-                    tree.include("**/*.java");
-                } else {
-                    for (File file : updated) {
-                        tree.include(relativePath(config.getOutputDir(), file));
-                    }
-                }
-            }
-        }).getFiles();
-        for (File file : generatedFiles) {
-            Path path = file.toPath();
-            String content = new String(Files.readAllBytes(path), charset);
-            content = content.replaceAll("static public final long MODIFIED_AT = \\d+L;", "");
-            Files.write(path, content.getBytes(charset));
-        }
     }
 
     private static String toJavaSourceFileName(String templateName) {

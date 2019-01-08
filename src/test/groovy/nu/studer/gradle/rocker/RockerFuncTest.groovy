@@ -48,7 +48,7 @@ rocker {
 
         then:
         fileExists('build/generated-src/rocker/foo/Example.java')
-        fileContent('build/generated-src/rocker/foo/Example.java').contains('static public final long MODIFIED_AT =')
+        fileContent('build/generated-src/rocker/foo/Example.java').contains('getModifiedAt')
         result.output.contains("Parsing 1 rocker template files")
         result.output.contains("Generated 1 rocker java source files")
         result.output.contains("Generated rocker configuration ${workspaceDir.canonicalFile}/build/rocker-hot-reload/foo/rocker-compiler.conf")
@@ -376,7 +376,7 @@ rocker {
         true          | true           | 'src/rocker'     | 'src/rocker'      | 'src/generated/rocker1' | 'src/generated/rocker2'
     }
 
-    void "only generates exactly the same output for the same input when optimize=true (was #optimize), regardless of the last-modified time of the template"() {
+    void "generates exactly the same output for the same input iff optimize=true (was #optimize)"() {
         given:
         template('src/rocker/main/Example.rocker.html')
 
@@ -389,8 +389,6 @@ plugins {
 repositories {
     jcenter()
 }
-
-rockerVersion = '$rockerVersion'
 
 rocker {
   main {
@@ -417,10 +415,10 @@ rocker {
         then:
         resultSecondRun.task(':compileRocker').outcome == TaskOutcome.SUCCESS
         (contentSecondRun == contentFirstRun) == optimize
-        contentSecondRun.contains('static public final long MODIFIED_AT =') == !optimize
+        contentSecondRun.contains('getModifiedAt') == !optimize
 
         where:
-        [optimize, rockerVersion] << [[true, false], ['0.17.0', '0.18.0']].combinations()
+        optimize << [true, false]
     }
 
     void "task output is cacheable if optimize flag is on"() {
