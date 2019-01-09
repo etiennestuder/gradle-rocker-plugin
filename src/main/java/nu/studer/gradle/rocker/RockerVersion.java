@@ -2,19 +2,17 @@ package nu.studer.gradle.rocker;
 
 import org.gradle.api.Project;
 
+import java.util.Objects;
+
 final class RockerVersion {
 
     private static final String PROJECT_PROPERTY = "rockerVersion";
     private static final String DEFAULT = "1.2.0";
 
-    private final String major;
-    private final String minor;
-    private final String patch;
+    private final String versionString;
 
-    private RockerVersion(String major, String minor, String patch) {
-        this.major = major;
-        this.minor = minor;
-        this.patch = patch;
+    private RockerVersion(String versionString) {
+        this.versionString = versionString;
     }
 
     static void applyDefaultVersion(Project project) {
@@ -22,32 +20,15 @@ final class RockerVersion {
     }
 
     static RockerVersion fromProject(Project project) {
-        return from(project.getExtensions().getExtraProperties().get(PROJECT_PROPERTY).toString());
+        return from(Objects.requireNonNull(project.getExtensions().getExtraProperties().get(PROJECT_PROPERTY)).toString());
     }
 
     static RockerVersion from(String versionString) {
-        String[] majorMinorPatch = versionString.split("\\.", 3);
-        return new RockerVersion(majorMinorPatch[0], majorMinorPatch.length > 1 ? majorMinorPatch[1] : null, majorMinorPatch.length > 2 ? majorMinorPatch[2] : null);
+        return new RockerVersion(versionString);
     }
 
     String asString() {
-        StringBuilder string = new StringBuilder(major);
-        if (minor != null) {
-            string.append(".").append(minor);
-        }
-        if (patch != null) {
-            string.append(".").append(patch);
-        }
-        return string.toString();
-    }
-
-    @Override
-    public String toString() {
-        return "RockerVersion{" +
-            "major='" + major + '\'' +
-            ", minor='" + minor + '\'' +
-            ", patch='" + patch + '\'' +
-            '}';
+        return versionString;
     }
 
 }
