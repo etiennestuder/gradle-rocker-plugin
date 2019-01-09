@@ -6,9 +6,7 @@ import org.gradle.api.NamedDomainObjectFactory;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.DependencyResolveDetails;
 import org.gradle.api.artifacts.ModuleVersionSelector;
-import org.gradle.api.artifacts.ResolutionStrategy;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
@@ -76,20 +74,14 @@ public class RockerPlugin implements Plugin<Project> {
     }
 
     private void enforceRockerVersion(final Project project) {
-        project.getConfigurations().all(new Action<Configuration>() {
-            @Override
-            public void execute(Configuration configuration) {
-                configuration.getResolutionStrategy().eachDependency(new Action<DependencyResolveDetails>() {
-                    @Override
-                    public void execute(DependencyResolveDetails details) {
-                        ModuleVersionSelector requested = details.getRequested();
-                        if (requested.getGroup().equals("com.fizzed") && requested.getName().startsWith("rocker-")) {
-                            details.useVersion(RockerVersion.fromProject(project).asString());
-                        }
-                    }
-                });
-            }
-        });
+        project.getConfigurations().all(configuration ->
+            configuration.getResolutionStrategy().eachDependency(details -> {
+                ModuleVersionSelector requested = details.getRequested();
+                if (requested.getGroup().equals("com.fizzed") && requested.getName().startsWith("rocker-")) {
+                    details.useVersion(RockerVersion.fromProject(project).asString());
+                }
+            })
+        );
     }
 
     private Configuration createRockerCompilerRuntimeConfiguration(Project project) {
