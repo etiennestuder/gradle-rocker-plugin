@@ -1,11 +1,21 @@
-import java.util.concurrent.Callable
+// todo clean up once available in plugin portal
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'nu.studer:gradle-plugindev-plugin:1.0.10'
+    }
+}
 
 plugins {
     id 'com.gradle.build-scan' version '1.16'
     id 'groovy'
-    id 'nu.studer.plugindev' version '1.0.9'
+//    id 'nu.studer.plugindev' version '1.0.10'
     id 'nu.studer.credentials' version '1.0.4'
 }
+
+apply plugin: 'nu.studer.plugindev'
 
 group = 'nu.studer'
 version = '0.4-DEV'
@@ -16,7 +26,6 @@ buildScan {
 }
 
 dependencies {
-    testCompile gradleTestKit()
     testCompile('org.spockframework:spock-core:1.0-groovy-2.4') {
         exclude module: 'groovy-all'
     }
@@ -51,79 +60,15 @@ def testAll = tasks.create('testAll') {
 }
 
 List<String> testedGradleVersions = []
-(3..4).each { testedGradleVersions << "3.$it" }
-//testedGradleVersions << "3.2.1"
-testedGradleVersions << "3.4.1"
-testedGradleVersions << "3.5-rc-2"
+testedGradleVersions << "5.1"
+testedGradleVersions << "5.0"
+testedGradleVersions << "4.10.3"
+testedGradleVersions << "4.0.2"
+testedGradleVersions << "3.5.1"
 
 testedGradleVersions.each { version ->
     project.tasks.create("test_" + version.replaceAll("[^a-zA-Z0-9]", "_"), Test).with {
         systemProperty 'testContext.gradleVersion', version
         testAll.dependsOn(it)
-    }
-}
-
-TaskProvider<PluginUnderTestMetadata> pluginUnderTestMetadataTask = createAndConfigurePluginUnderTestMetadataTask(project);
-establishTestKitAndPluginClasspathDependencies(project, pluginUnderTestMetadataTask);
-
-private TaskProvider<PluginUnderTestMetadata> createAndConfigurePluginUnderTestMetadataTask(final Project project) {
-    return project.getTasks().register('pluginUnderTestMetadata', PluginUnderTestMetadata.class, new Action<PluginUnderTestMetadata>() {
-
-        @Override
-        public void execute(final PluginUnderTestMetadata pluginUnderTestMetadataTask) {
-            pluginUnderTestMetadataTask.setGroup('development');
-            pluginUnderTestMetadataTask.setDescription('description');
-
-            pluginUnderTestMetadataTask.getOutputDirectory().set(project.getLayout().getBuildDirectory().dir(pluginUnderTestMetadataTask.getName()));
-            pluginUnderTestMetadataTask.getPluginClasspath().from(new Callable<Object>() {
-
-                public Object call() {
-                    final Configuration gradlePluginConfiguration = project.getConfigurations().detachedConfiguration(project.getDependencies().gradleApi());
-                    FileCollection gradleApi = gradlePluginConfiguration.getIncoming().getFiles();
-
-                    JavaPluginConvention javaPluginConvention = project.convention.findPlugin(JavaPluginConvention)
-                    def mainSourceSet = javaPluginConvention.sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
-                    return mainSourceSet.getRuntimeClasspath().minus(gradleApi);
-                }
-            });
-        }
-    });
-}
-
-private void establishTestKitAndPluginClasspathDependencies(Project project, TaskProvider<PluginUnderTestMetadata> pluginClasspathTask) {
-    project.afterEvaluate(new TestKitAndPluginClasspathDependenciesAction(pluginClasspathTask));
-}
-
-class TestKitAndPluginClasspathDependenciesAction implements Action<Project> {
-
-    private final TaskProvider<PluginUnderTestMetadata> pluginClasspathTask;
-
-    private TestKitAndPluginClasspathDependenciesAction(TaskProvider<PluginUnderTestMetadata> pluginClasspathTask) {
-        this.pluginClasspathTask = pluginClasspathTask;
-    }
-
-    @Override
-    public void execute(Project project) {
-        DependencyHandler dependencies = project.getDependencies();
-
-        JavaPluginConvention javaPluginConvention = project.convention.findPlugin(JavaPluginConvention)
-        def testSourceSet = javaPluginConvention.sourceSets.getByName(SourceSet.TEST_SOURCE_SET_NAME)
-
-        project.getNormalization().getRuntimeClasspath().ignore(PluginUnderTestMetadata.METADATA_FILE_NAME);
-
-        project.getTasks().withType(Test.class).configureEach(new Action<Test>() {
-
-            @Override
-            public void execute(Test test) {
-                test.getInputs().files(pluginClasspathTask.get().getPluginClasspath())
-                        .withPropertyName("pluginClasspath")
-                        .withNormalizer(ClasspathNormalizer.class);
-            }
-        });
-
-        String compileConfigurationName = testSourceSet.getCompileConfigurationName();
-        dependencies.add(compileConfigurationName, dependencies.gradleTestKit());
-        String runtimeConfigurationName = testSourceSet.getRuntimeConfigurationName();
-        dependencies.add(runtimeConfigurationName, project.getLayout().files(pluginClasspathTask));
     }
 }
