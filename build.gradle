@@ -43,7 +43,8 @@ test {
 }
 
 def testAll = tasks.create('testAll') {
-    group = 'Gradle cross-version test'
+    description = 'Runs the Gradle cross-version tests.'
+    group = 'Verification'
 }
 
 List<String> testedGradleVersions = []
