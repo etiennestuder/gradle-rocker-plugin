@@ -133,10 +133,10 @@ You can find a self-contained example build script [here](example).
 
 # Changelog
 
-+ 0.4 - Removed wiring between `clean` task and deleting generated Rocker sources, uses Rocker 1.2.0 as the default version applied.
-+ 0.3.1 - Fixed incremental template compilation
-+ 0.3 - Incremental template compilation, i.e. only the modified templates are compiled
-+ 0.2 - New DSL, more Rocker configuration options, support for Gradle build cache
++ 0.4 - Removed wiring between `clean` task and deleting generated Rocker sources, uses Rocker 1.2.0 by default.
++ 0.3.1 - Fixed incremental template compilation.
++ 0.3 - Incremental template compilation, i.e. only the modified templates are compiled.
++ 0.2 - New DSL, more Rocker configuration options, support for Gradle build cache.
 + 0.1 - Initial version
 
 # Feedback and Contributions
