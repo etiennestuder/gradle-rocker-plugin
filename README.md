@@ -49,7 +49,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'nu.studer:gradle-rocker-plugin:0.3.1'
+        classpath 'nu.studer:gradle-rocker-plugin:0.4'
     }
 }
 
@@ -60,7 +60,7 @@ apply plugin: 'nu.studer.rocker'
 
 ```groovy
 plugins {
-  id 'nu.studer.rocker' version '0.3.1'
+  id 'nu.studer.rocker' version '0.4'
 }
 ```
 
@@ -73,7 +73,7 @@ This is a sample configuration:
  
 ```groovy
 plugins {
-    id 'nu.studer.rocker' version '0.3.1'
+    id 'nu.studer.rocker' version '0.4'
     id 'java'
 }
 
@@ -133,6 +133,7 @@ You can find a self-contained example build script [here](example).
 
 # Changelog
 
++ 0.4 - Removed wiring between `clean` task and deleting generated Rocker sources, uses Rocker 1.2.0 as the default version applied.
 + 0.3.1 - Fixed incremental template compilation
 + 0.3 - Incremental template compilation, i.e. only the modified templates are compiled
 + 0.2 - New DSL, more Rocker configuration options, support for Gradle build cache
