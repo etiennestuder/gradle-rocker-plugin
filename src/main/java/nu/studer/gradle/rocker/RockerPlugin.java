@@ -5,7 +5,6 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ModuleVersionSelector;
-import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
@@ -13,15 +12,13 @@ import org.gradle.api.tasks.SourceSetContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static nu.studer.gradle.rocker.StringUtils.capitalize;
-
 @SuppressWarnings("unused")
 public class RockerPlugin implements Plugin<Project> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RockerPlugin.class);
 
     @Override
-    public void apply(final Project project) {
+    public void apply(Project project) {
         // apply Java base plugin, making it possible to also use the rocker plugin for Android builds
         project.getPlugins().apply(JavaBasePlugin.class);
 

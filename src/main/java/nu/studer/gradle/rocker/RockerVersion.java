@@ -23,7 +23,7 @@ final class RockerVersion {
         return from(Objects.requireNonNull(project.getExtensions().getExtraProperties().get(PROJECT_PROPERTY)).toString());
     }
 
-    static RockerVersion from(String versionString) {
+    private static RockerVersion from(String versionString) {
         return new RockerVersion(versionString);
     }
 

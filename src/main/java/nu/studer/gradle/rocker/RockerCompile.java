@@ -2,24 +2,18 @@ package nu.studer.gradle.rocker;
 
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.Task;
-import org.gradle.api.file.ConfigurableFileTree;
-import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileTree;
-import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
-import org.gradle.api.tasks.incremental.InputFileDetails;
 import org.gradle.process.ExecResult;
 import org.gradle.process.JavaExecSpec;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,12 +29,7 @@ public class RockerCompile extends DefaultTask {
     private Action<? super ExecResult> execResultHandler;
 
     public RockerCompile() {
-        getOutputs().cacheIf(new Spec<Task>() {
-            @Override
-            public boolean isSatisfiedBy(Task task) {
-                return config.isOptimize();
-            }
-        });
+        getOutputs().cacheIf(task -> config.isOptimize());
     }
 
     @SuppressWarnings("unused")
@@ -88,7 +77,7 @@ public class RockerCompile extends DefaultTask {
 
     @SuppressWarnings("unused")
     @TaskAction
-    void doCompile(IncrementalTaskInputs incrementalTaskInputs) throws IOException {
+    void doCompile(IncrementalTaskInputs incrementalTaskInputs) {
         ExecResult execResult = null;
         final Set<File> modifiedTemplates = new HashSet<>();
 
@@ -101,39 +90,25 @@ public class RockerCompile extends DefaultTask {
             execResult = executeRocker(config.getTemplateDir());
         } else {
             // collect modified files
-            incrementalTaskInputs.outOfDate(new Action<InputFileDetails>() {
-                @Override
-                public void execute(InputFileDetails fileDetails) {
-                    modifiedTemplates.add(fileDetails.getFile());
-                }
-            });
+            incrementalTaskInputs.outOfDate(fileDetails -> modifiedTemplates.add(fileDetails.getFile()));
 
             // clean any stale files
-            incrementalTaskInputs.removed(new Action<InputFileDetails>() {
-                @Override
-                public void execute(final InputFileDetails fileDetails) {
-                    FileTree staleSourceFiles = getProject().fileTree(config.getOutputDir(), new Action<ConfigurableFileTree>() {
-                        @Override
-                        public void execute(ConfigurableFileTree files) {
-                            String javaSourceFileName = toJavaSourceFileName(relativePath(config.getTemplateDir(), fileDetails.getFile()));
-                            if (javaSourceFileName != null) {
-                                files.include(javaSourceFileName);
-                            }
-                        }
-                    });
-                    getProject().delete(staleSourceFiles);
+             incrementalTaskInputs.removed(fileDetails -> {
+                FileTree staleSourceFiles = getProject().fileTree(config.getOutputDir(), files -> {
+                    String javaSourceFileName = toJavaSourceFileName(relativePath(config.getTemplateDir(), fileDetails.getFile()));
+                    if (javaSourceFileName != null) {
+                        files.include(javaSourceFileName);
+                    }
+                });
+                getProject().delete(staleSourceFiles);
 
-                    FileTree staleClassFiles = getProject().fileTree(config.getClassDir(), new Action<ConfigurableFileTree>() {
-                        @Override
-                        public void execute(ConfigurableFileTree files) {
-                            String javaClassFileName = toJavaClassFileName(relativePath(config.getTemplateDir(), fileDetails.getFile()));
-                            if (javaClassFileName != null) {
-                                files.include(javaClassFileName);
-                            }
-                        }
-                    });
-                    getProject().delete(staleClassFiles);
-                }
+                FileTree staleClassFiles = getProject().fileTree(config.getClassDir(), files -> {
+                    String javaClassFileName = toJavaClassFileName(relativePath(config.getTemplateDir(), fileDetails.getFile()));
+                    if (javaClassFileName != null) {
+                        files.include(javaClassFileName);
+                    }
+                });
+                getProject().delete(staleClassFiles);
             });
 
             // copy new/modified templates to a temporary folder
@@ -142,15 +117,12 @@ public class RockerCompile extends DefaultTask {
                 final File tempDir = getTemporaryDir();
                 getProject().delete(tempDir);
 
-                getProject().copy(new Action<CopySpec>() {
-                    @Override
-                    public void execute(CopySpec spec) {
-                        spec.from(config.getTemplateDir());
-                        for (File template : modifiedTemplates) {
-                            spec.include(relativePath(config.getTemplateDir(), template));
-                        }
-                        spec.into(tempDir);
+                getProject().copy(spec -> {
+                    spec.from(config.getTemplateDir());
+                    for (File template : modifiedTemplates) {
+                        spec.include(relativePath(config.getTemplateDir(), template));
                     }
+                    spec.into(tempDir);
                 });
 
                 // generate the files from the modified templates
