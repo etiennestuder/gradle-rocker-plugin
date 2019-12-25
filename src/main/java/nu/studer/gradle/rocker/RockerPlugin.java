@@ -9,6 +9,7 @@ import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
+import org.gradle.util.GradleVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,9 +51,21 @@ public class RockerPlugin implements Plugin<Project> {
             SourceSet sourceSet = sourceSets.findByName(config.name);
             if (sourceSet != null) {
                 project.getTasks().getByName(sourceSet.getCompileJavaTaskName()).dependsOn(rocker);
-                project.getDependencies().add(sourceSet.getCompileConfigurationName(), "com.fizzed:rocker-runtime");
+                project.getDependencies().add(getCompileConfigurationName(sourceSet), "com.fizzed:rocker-runtime");
             }
         });
+    }
+
+    /**
+     * For older gradle versions we fall back to `compile`.
+     * Newer gradle versions will use `implementation` instead of the deprecated `compile` configuration.
+     * */
+    private String getCompileConfigurationName(SourceSet sourceSet) {
+        return isAtLeastGradle5() ? sourceSet.getImplementationConfigurationName() : sourceSet.getCompileConfigurationName();
+    }
+
+    private boolean isAtLeastGradle5() {
+        return GradleVersion.current().compareTo(GradleVersion.version("5.0")) >= 0;
     }
 
     private void enforceRockerVersion(final Project project) {
