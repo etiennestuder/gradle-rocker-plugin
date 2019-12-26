@@ -29,7 +29,6 @@ The following functionality is provided by the rocker plugin:
  * Generate Java sources from a given set of Rocker templates
  * Add the generated Java sources to the name-matching source set, if existing
  * Wire task dependencies such that the Java sources are generated before the Java compile task of the name-matching source set compiles them, if existing  
- * Add a task to clean the generated sources as part of the `clean` life-cycle task
 
 The following Gradle configuration changes are contributed by the rocker plugin:
  
