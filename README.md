@@ -16,6 +16,12 @@ You can find out more details about the actual Rocker source code generation in 
 
 The rocker plugin is hosted at [Bintray's JCenter](https://bintray.com/etienne/gradle-plugins/gradle-rocker-plugin).
  
+## Build scan
+
+Recent build scan: https://scans.gradle.com/s/nrhggndytzjze
+
+Find out more about build scans for Gradle and Maven at https://scans.gradle.com.
+
 # Functionality
 
 The following functionality is provided by the rocker plugin:
