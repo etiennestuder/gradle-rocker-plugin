@@ -9,6 +9,7 @@ import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
+import org.gradle.util.GradleVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +20,11 @@ public class RockerPlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
+        // abort if old Gradle version is not supported
+        if (GradleVersion.current().getBaseVersion().compareTo(GradleVersion.version("5.0")) < 0) {
+            throw new IllegalStateException("This version of the rocker plugin is not compatible with Gradle < 5.0");
+        }
+
         // apply Java base plugin, making it possible to also use the rocker plugin for Android builds
         project.getPlugins().apply(JavaBasePlugin.class);
 
