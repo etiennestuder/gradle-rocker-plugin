@@ -1,5 +1,5 @@
 plugins {
-    id 'nu.studer.rocker' version '0.4'
+    id 'nu.studer.rocker' version '1.0'
     id 'java'
 }
 
@@ -7,7 +7,7 @@ repositories {
     jcenter()
 }
 
-rockerVersion = '0.20.0'
+rockerVersion = '1.2.2'
 
 rocker {
     main {
