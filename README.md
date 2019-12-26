@@ -29,7 +29,6 @@ The following functionality is provided by the rocker plugin:
  * Generate Java sources from a given set of Rocker templates
  * Add the generated Java sources to the name-matching source set, if existing
  * Wire task dependencies such that the Java sources are generated before the Java compile task of the name-matching source set compiles them, if existing  
- * Add a task to clean the generated sources as part of the `clean` life-cycle task
 
 The following Gradle configuration changes are contributed by the rocker plugin:
  
@@ -153,6 +152,7 @@ Both feedback and contributions are very welcome.
 
 # Acknowledgements
 
++ [breskeby](https://github.com/breskeby) (pr #6 to avoid deprecation warnings)
 + [mark-vieira](https://github.com/mark-vieira) (pr #2 and pr #3 to make RockerCompile task itself incremental)
 + [mark-vieira](https://github.com/mark-vieira) (pr #55 to the fizzed/rocker project to fix the MODIFIED_AT issue)
 + [alkemist](https://github.com/alkemist) (design discussions)
