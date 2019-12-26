@@ -2,3 +2,4 @@
 .gradle
 classes
 build
+.DS_Store
