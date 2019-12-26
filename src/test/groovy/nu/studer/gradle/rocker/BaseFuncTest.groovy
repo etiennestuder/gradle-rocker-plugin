@@ -37,10 +37,13 @@ abstract class BaseFuncTest extends Specification {
     void setup() {
         workspaceDir = new File(tempDir.root, testName.methodName)
         gradleVersion = determineGradleVersion()
+        settingsFile << """
+            rootProject.name = 'test-project'
+        """
     }
 
     protected BuildResult runWithArguments(String... args) {
-        GradleRunner.create()
+        assertNoDeprecatedBuildResult(GradleRunner.create()
             .withPluginClasspath()
             .withTestKitDir(testKitDir)
             .withProjectDir(workspaceDir)
@@ -48,7 +51,12 @@ abstract class BaseFuncTest extends Specification {
             .withGradleVersion(gradleVersion.version)
             .withDebug(isDebuggerAttached())
             .forwardOutput()
-            .build()
+            .build())
+    }
+
+    BuildResult assertNoDeprecatedBuildResult(BuildResult buildResult) {
+        assert !buildResult.output.contains("Deprecated Gradle features were used in this build")
+        buildResult
     }
 
     protected File getBuildFile() {
