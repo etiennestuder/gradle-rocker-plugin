@@ -1,6 +1,8 @@
 gradle-rocker-plugin
 =================
 
+> The work on this software project is in no way associated with my employer nor with the role I'm having at my employer. Any requests for changes will be decided upon exclusively by myself based on my personal preferences. I maintain this project as much or as little as my spare time permits.
+
 # Overview
 
 [Gradle](http://www.gradle.org) plugin that integrates the Rocker template engine. For each named rocker configuration declared
@@ -14,6 +16,12 @@ You can find out more details about the actual Rocker source code generation in 
 
 The rocker plugin is hosted at [Bintray's JCenter](https://bintray.com/etienne/gradle-plugins/gradle-rocker-plugin).
  
+## Build scan
+
+Recent build scan: https://scans.gradle.com/s/nrhggndytzjze
+
+Find out more about build scans for Gradle and Maven at https://scans.gradle.com.
+
 # Functionality
 
 The following functionality is provided by the rocker plugin:
