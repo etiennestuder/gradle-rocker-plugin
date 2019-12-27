@@ -48,23 +48,6 @@ The following Gradle features are supported by the rocker plugin:
 
 Apply the `nu.studer.rocker` plugin to your Gradle project.
 
-### Gradle 1.x and 2.0
-
-```groovy
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'nu.studer:gradle-rocker-plugin:1.0'
-    }
-}
-
-apply plugin: 'nu.studer.rocker'
-```
-
-### Gradle 2.1 and higher
-
 ```groovy
 plugins {
   id 'nu.studer.rocker' version '1.0'
