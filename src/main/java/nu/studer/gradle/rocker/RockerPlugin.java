@@ -50,12 +50,12 @@ public class RockerPlugin implements Plugin<Project> {
             rocker.setConfig(config);
             rocker.setRuntimeClasspath(configuration);
 
-            // wire task dependencies such that the rocker task creates the sources before the corresponding Java compile task compiles them and
+            // add the output of the rocker task as a source directory of the source set with the matching name (which adds an implicit task dependency)
             // add the rocker-runtime to the compile configuration in order to be able to compile the generated sources
             SourceSetContainer sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets();
             SourceSet sourceSet = sourceSets.findByName(config.name);
             if (sourceSet != null) {
-                project.getTasks().getByName(sourceSet.getCompileJavaTaskName()).dependsOn(rocker);
+                sourceSet.getJava().srcDir(rocker);
                 project.getDependencies().add(sourceSet.getImplementationConfigurationName(), "com.fizzed:rocker-runtime");
             }
         });
