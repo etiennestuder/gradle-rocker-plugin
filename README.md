@@ -50,7 +50,7 @@ Apply the `nu.studer.rocker` plugin to your Gradle project.
 
 ```groovy
 plugins {
-  id 'nu.studer.rocker' version '1.0'
+  id 'nu.studer.rocker' version '1.0.1'
 }
 ```
 
@@ -63,7 +63,7 @@ This is a sample configuration:
 
 ```groovy
 plugins {
-    id 'nu.studer.rocker' version '1.0'
+    id 'nu.studer.rocker' version '1.0.1'
     id 'java'
 }
 
@@ -123,6 +123,7 @@ You can find a self-contained example build script [here](example).
 
 # Changelog
 
++ 1.0.1 - Made RockerCompile task compatible with Gradle's upcoming Instant Execution
 + 1.0 - Made Gradle 5.0 the minimum compatible version and replaced usage of deprecated APIs.
 + 0.4 - Removed wiring between `clean` task and deleting generated Rocker sources, uses Rocker 1.2.0 by default.
 + 0.3.1 - Fixed incremental template compilation.
