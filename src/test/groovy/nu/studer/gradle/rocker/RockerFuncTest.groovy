@@ -1,6 +1,7 @@
 package nu.studer.gradle.rocker
 
 import org.gradle.testkit.runner.TaskOutcome
+import org.gradle.util.GradleVersion
 import spock.lang.Unroll
 
 import java.nio.file.Files
@@ -53,6 +54,46 @@ rocker {
         result.output.contains("Generated 1 rocker java source files")
         result.output.contains("Generated rocker configuration ${workspaceDir.canonicalFile}/build/rocker-hot-reload/foo/rocker-compiler.conf")
         result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
+    }
+
+    void "can invoke rocker task derived from all-default configuration DSL with configuration cache"() {
+        given:
+        gradleVersion = GradleVersion.version('6.5')
+        template('src/rocker/foo/Example.rocker.html')
+
+        and:
+        buildFile << """
+plugins {
+    id 'nu.studer.rocker'
+}
+
+repositories {
+    jcenter()
+}
+
+rocker {
+  foo {
+  }
+}
+"""
+
+        when:
+        def result = runWithArguments('compileFooRocker', '--configuration-cache=on')
+
+        then:
+        fileExists('build/generated-src/rocker/foo/Example.java')
+        result.output.contains("Calculating task graph as no configuration cache is available for tasks: compileFooRocker")
+        result.output.contains("Generated 1 rocker java source files")
+        result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
+
+        when:
+        result = runWithArguments('compileFooRocker', '--configuration-cache=on')
+
+        then:
+        fileExists('build/generated-src/rocker/foo/Example.java')
+        result.output.contains("Reusing configuration cache.")
+        result.output.contains("Generated 1 rocker java source files")
+        result.task(':compileFooRocker').outcome == TaskOutcome.UP_TO_DATE
     }
 
     void "can invoke rocker task derived from single-item configuration DSL"() {
@@ -235,7 +276,7 @@ afterEvaluate {
 
         then:
         fileExists('src/generated/rocker/other/Example.java')
-        fileExists('build/classes/java/main/Example.class')|| fileExists('build/classes/main/Example.class')
+        fileExists('build/classes/java/main/Example.class') || fileExists('build/classes/main/Example.class')
         result.output.contains('dir/src/main/java---')
         result.output.contains('dir/src/generated/rocker/other---')
         !result.output.contains('dir/src/generated/rocker---')
