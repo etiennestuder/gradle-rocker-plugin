@@ -92,6 +92,7 @@ public class RockerCompile extends DefaultTask {
     void doCompile(IncrementalTaskInputs incrementalTaskInputs) {
         ExecResult execResult = null;
         final Set<File> modifiedTemplates = new HashSet<>();
+        final Set<File> removedTemplates = new HashSet<>();
 
         if (!incrementalTaskInputs.isIncremental()) {
             // delete any generated files from previous runs and any classes compiled by Rocker via hot-reloading
@@ -110,18 +111,18 @@ public class RockerCompile extends DefaultTask {
                 if (javaSourceFileName != null) {
                     ConfigurableFileTree removedFile = objects.fileTree().from(config.getOutputDir());
                     removedFile.include(javaSourceFileName);
-                    fileSystemOperations.delete(spec -> spec.delete(removedFile.getFiles()));
+                    removedTemplates.addAll(removedFile.getFiles());
                 }
 
                 String javaClassFileName = toJavaClassFileName(relativePath(config.getTemplateDir(), fileDetails.getFile()));
                 if (javaClassFileName != null) {
                     ConfigurableFileTree removedFile = objects.fileTree().from(config.getClassDir());
                     removedFile.include(javaClassFileName);
-                    fileSystemOperations.delete(spec -> spec.delete(removedFile.getFiles()));
+                    removedTemplates.addAll(removedFile.getFiles());
                 }
             });
 
-            // copy new/modified templates to a temporary folder
+            // copy new/modified templates to a temporary folder before compiling them
             if (!modifiedTemplates.isEmpty()) {
                 // copy modified files to a temp directory since we can only point Rocker to a directory
                 final File tempDir = getTemporaryDir();
@@ -137,6 +138,11 @@ public class RockerCompile extends DefaultTask {
 
                 // generate the files from the modified templates
                 execResult = executeRocker(tempDir);
+            }
+
+            // remove the compiled files for any removed templates
+            if (!removedTemplates.isEmpty()) {
+                fileSystemOperations.delete(spec -> spec.delete(removedTemplates));
             }
         }
 
