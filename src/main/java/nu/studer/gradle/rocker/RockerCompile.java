@@ -2,17 +2,21 @@ package nu.studer.gradle.rocker;
 
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.file.FileTree;
+import org.gradle.api.file.FileSystemOperations;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
+import org.gradle.process.ExecOperations;
 import org.gradle.process.ExecResult;
 import org.gradle.process.JavaExecSpec;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,7 +32,15 @@ public class RockerCompile extends DefaultTask {
     private Action<? super JavaExecSpec> javaExecSpec;
     private Action<? super ExecResult> execResultHandler;
 
-    public RockerCompile() {
+    private final ObjectFactory objects;
+    private final FileSystemOperations fileSystemOperations;
+    private final ExecOperations execOperations;
+
+    @Inject
+    public RockerCompile(ObjectFactory objects, FileSystemOperations fileSystemOperations, ExecOperations execOperations) {
+        this.objects = objects;
+        this.fileSystemOperations = fileSystemOperations;
+        this.execOperations = execOperations;
         getOutputs().cacheIf(task -> config.isOptimize());
     }
 
@@ -83,8 +95,8 @@ public class RockerCompile extends DefaultTask {
 
         if (!incrementalTaskInputs.isIncremental()) {
             // delete any generated files from previous runs and any classes compiled by Rocker via hot-reloading
-            getProject().delete(config.getOutputDir());
-            getProject().delete(config.getClassDir());
+            fileSystemOperations.delete(spec -> spec.delete(config.getOutputDir()));
+            fileSystemOperations.delete(spec -> spec.delete(config.getClassDir()));
 
             // generate the files from the templates
             execResult = executeRocker(config.getTemplateDir());
@@ -93,31 +105,29 @@ public class RockerCompile extends DefaultTask {
             incrementalTaskInputs.outOfDate(fileDetails -> modifiedTemplates.add(fileDetails.getFile()));
 
             // clean any stale files
-             incrementalTaskInputs.removed(fileDetails -> {
-                FileTree staleSourceFiles = getProject().fileTree(config.getOutputDir(), files -> {
-                    String javaSourceFileName = toJavaSourceFileName(relativePath(config.getTemplateDir(), fileDetails.getFile()));
-                    if (javaSourceFileName != null) {
-                        files.include(javaSourceFileName);
-                    }
-                });
-                getProject().delete(staleSourceFiles);
+            incrementalTaskInputs.removed(fileDetails -> {
+                String javaSourceFileName = toJavaSourceFileName(relativePath(config.getTemplateDir(), fileDetails.getFile()));
+                if (javaSourceFileName != null) {
+                    ConfigurableFileTree removedFile = objects.fileTree().from(config.getOutputDir());
+                    removedFile.include(javaSourceFileName);
+                    fileSystemOperations.delete(spec -> spec.delete(removedFile.getFiles()));
+                }
 
-                FileTree staleClassFiles = getProject().fileTree(config.getClassDir(), files -> {
-                    String javaClassFileName = toJavaClassFileName(relativePath(config.getTemplateDir(), fileDetails.getFile()));
-                    if (javaClassFileName != null) {
-                        files.include(javaClassFileName);
-                    }
-                });
-                getProject().delete(staleClassFiles);
+                String javaClassFileName = toJavaClassFileName(relativePath(config.getTemplateDir(), fileDetails.getFile()));
+                if (javaClassFileName != null) {
+                    ConfigurableFileTree removedFile = objects.fileTree().from(config.getClassDir());
+                    removedFile.include(javaClassFileName);
+                    fileSystemOperations.delete(spec -> spec.delete(removedFile.getFiles()));
+                }
             });
 
             // copy new/modified templates to a temporary folder
             if (!modifiedTemplates.isEmpty()) {
                 // copy modified files to a temp directory since we can only point Rocker to a directory
                 final File tempDir = getTemporaryDir();
-                getProject().delete(tempDir);
+                fileSystemOperations.delete(spec -> spec.delete(tempDir));
 
-                getProject().copy(spec -> {
+                fileSystemOperations.copy(spec -> {
                     spec.from(config.getTemplateDir());
                     for (File template : modifiedTemplates) {
                         spec.include(relativePath(config.getTemplateDir(), template));
@@ -137,7 +147,7 @@ public class RockerCompile extends DefaultTask {
     }
 
     private ExecResult executeRocker(final File templateDir) {
-        return getProject().javaexec(new Action<JavaExecSpec>() {
+        return execOperations.javaexec(new Action<JavaExecSpec>() {
 
             @Override
             public void execute(JavaExecSpec spec) {
