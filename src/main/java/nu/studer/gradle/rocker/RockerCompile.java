@@ -102,10 +102,10 @@ public class RockerCompile extends DefaultTask {
             // generate the files from the templates
             execResult = executeRocker(config.getTemplateDir());
         } else {
-            // collect modified files
+            // collect new/modified templates
             incrementalTaskInputs.outOfDate(fileDetails -> modifiedTemplates.add(fileDetails.getFile()));
 
-            // clean any stale files
+            // collect stale files for removed templates
             incrementalTaskInputs.removed(fileDetails -> {
                 String javaSourceFileName = toJavaSourceFileName(relativePath(config.getTemplateDir(), fileDetails.getFile()));
                 if (javaSourceFileName != null) {
@@ -122,7 +122,7 @@ public class RockerCompile extends DefaultTask {
                 }
             });
 
-            // copy new/modified templates to a temporary folder before compiling them
+            // copy new/modified templates to a temporary folder before compiling them (to avoid recompilation of all templates)
             if (!modifiedTemplates.isEmpty()) {
                 // copy modified files to a temp directory since we can only point Rocker to a directory
                 final File tempDir = getTemporaryDir();
