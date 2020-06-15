@@ -79,7 +79,28 @@ rocker {
   }
 }
 
-rockerVersion = '1.2.2'  // optional
+rockerVersion = '1.3.0'  // optional
+```
+
+This is a sample configuretion in Kotlin DSL:
+
+```
+import nu.studer.gradle.rocker.RockerConfig
+
+plugins {
+    id("nu.studer.rocker") version "1.0.1"
+    id("java")
+}
+
+configure<NamedDomainObjectContainer<RockerConfig>>() {
+    create("main") {
+        setTemplateDir(file("src/rocker"))
+        setOutputDir(file("src/generated/rocker"))
+        setOptimize(true) // optional
+    }
+}
+
+extra["rockerVersion"] = "1.3.0"
 ```
 
 The rocker _main_ configuration declares that the Rocker templates are in _src/rocker_ and the generated Java sources need to end up in _src/generated/rocker_. It further
