@@ -2,10 +2,12 @@ package nu.studer.gradle.rocker;
 
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Task;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileSystemOperations;
 import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
@@ -41,7 +43,14 @@ public class RockerCompile extends DefaultTask {
         this.objects = objects;
         this.fileSystemOperations = fileSystemOperations;
         this.execOperations = execOperations;
-        getOutputs().cacheIf(task -> config.isOptimize());
+
+        // do not use lambda due to a bug in Gradle 6.5
+        getOutputs().cacheIf(new Spec<Task>() {
+            @Override
+            public boolean isSatisfiedBy(Task task) {
+                return config.isOptimize();
+            }
+        });
     }
 
     @SuppressWarnings("unused")

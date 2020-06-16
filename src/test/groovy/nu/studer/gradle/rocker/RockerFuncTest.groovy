@@ -56,7 +56,7 @@ rocker {
         result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
     }
 
-    void "can invoke rocker task derived from all-default configuration DSL with configuration cache"() {
+    void "can invoke rocker task derived from all-default configuration DSL with Gradle configuration cache enabled"() {
         given:
         gradleVersion = GradleVersion.version('6.5')
         template('src/rocker/foo/Example.rocker.html')
@@ -87,13 +87,14 @@ rocker {
         result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
 
         when:
+        new File(workspaceDir, 'build/generated-src/rocker/foo/Example.java').delete()
         result = runWithArguments('compileFooRocker', '--configuration-cache=on')
 
         then:
         fileExists('build/generated-src/rocker/foo/Example.java')
         result.output.contains("Reusing configuration cache.")
         result.output.contains("Generated 1 rocker java source files")
-        result.task(':compileFooRocker').outcome == TaskOutcome.UP_TO_DATE
+        result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
     }
 
     void "can invoke rocker task derived from single-item configuration DSL"() {
