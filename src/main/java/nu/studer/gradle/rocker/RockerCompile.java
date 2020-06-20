@@ -38,6 +38,7 @@ public class RockerCompile extends DefaultTask {
     private final FileSystemOperations fileSystemOperations;
     private final ExecOperations execOperations;
 
+    // todo use new incremental task API https://docs.gradle.org/current/javadoc/org/gradle/work/InputChanges.html
     @Inject
     public RockerCompile(ObjectFactory objects, FileSystemOperations fileSystemOperations, ExecOperations execOperations) {
         this.objects = objects;
