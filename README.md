@@ -5,7 +5,7 @@ gradle-rocker-plugin
 
 # Overview
 
-[Gradle](http://www.gradle.org) plugin that integrates the Rocker template engine. For each named rocker configuration declared
+[Gradle](http://www.gradle.org) plugin that integrates the Rocker template engine. For each named Rocker configuration declared
 in the build, the plugin adds a task to generate the Java sources from the specified Rocker templates and includes the
 generated Java sources in the matching source set, if existing. The code generation tasks participate in incremental builds,
 in task output caching by the [Gradle Build Cache](https://docs.gradle.org/current/userguide/build_cache.html), and in build
@@ -15,7 +15,7 @@ The plugin can be applied on both Java projects and Android projects.
 
 You can find out more details about the actual Rocker source code generation in the [Rocker documentation](https://github.com/fizzed/rocker).
 
-The rocker plugin is hosted at [Bintray's JCenter](https://bintray.com/etienne/gradle-plugins/gradle-rocker-plugin).
+The Rocker plugin is hosted at [Bintray's JCenter](https://bintray.com/etienne/gradle-plugins/gradle-rocker-plugin).
 
 ## Build scan
 
@@ -25,23 +25,23 @@ Find out more about build scans for Gradle and Maven at https://scans.gradle.com
 
 # Functionality
 
-The following functionality is provided by the rocker plugin:
+The following functionality is provided by the Rocker plugin:
 
  * Generate Java sources from a given set of Rocker templates
  * Add the generated Java sources to the name-matching source set, if existing
  * Wire task dependencies such that the Java sources are generated before the Java compile task of the name-matching source set compiles them, if existing
 
-The following Gradle configuration changes are contributed by the rocker plugin:
+The following Gradle configuration changes are contributed by the Rocker plugin:
 
  * Add the `com.fizzed:rocker-compiler` dependency needed to execute the Rocker template engine to the new `rockerCompiler` configuration
  * Add the `com.fizzed:rocker-runtime` dependency to the name-matching `implementation` configuration to successfully compile the Java sources generated from the Rocker templates
  * Use the customizable Rocker version across all `com.fizzed:rocker-*` dependencies
 
-The following Gradle features are supported by the rocker plugin:
+The following Gradle features are supported by the Rocker plugin:
 
  * `RockerCompile` task instances are themselves incremental
  * `RockerCompile` task instances participate in incremental builds
- * `RockerCompile` task instances participate in task output caching (if the rocker hot reload feature is disabled)
+ * `RockerCompile` task instances participate in task output caching (if the Rocker hot reload feature is disabled)
  * `RockerCompile` task instances are compatible with the Gradle Configuration Cache
 
 # Compatibility
@@ -53,7 +53,7 @@ The following Gradle features are supported by the rocker plugin:
 
 # Configuration
 
-## Apply rocker plugin
+## Apply Rocker plugin
 
 Apply the `nu.studer.rocker` plugin to your Gradle project.
 
@@ -66,7 +66,7 @@ plugins {
 Please refer to the [Gradle DSL PluginDependenciesSpec](http://www.gradle.org/docs/current/dsl/org.gradle.plugin.use.PluginDependenciesSpec.html) to
 understand the behavior and limitations when using the new syntax to declare plugin dependencies.
 
-## Define rocker configurations
+## Define Rocker configurations
 
 This is a sample configuration:
 
@@ -101,10 +101,10 @@ generates the Java sources from the Rocker templates, and then compiles these Ja
 Since we declared to use version _1.3.0_ of the Rocker template engine, all Rocker dependencies of all Gradle configurations will be of that given version.
 
 > I suggest you use the [Continuous build](https://docs.gradle.org/current/userguide/continuous_build.html) feature of Gradle instead of using the Rocker hot reload feature.
-> Declare `optimize = true` in the rocker configuration of your Gradle build, and then run your build with the `-t` command line option. In addition, deactivating the hot
-> reload feature of Rocker will enable the rocker tasks for task output caching by the [Gradle Build Cache](https://docs.gradle.org/current/userguide/build_cache.html).
+> Declare `optimize = true` in the Rocker configuration of your Gradle build, and then run your build with the `-t` command line option. In addition, deactivating the hot
+> reload feature of Rocker will enable the Rocker tasks for task output caching by the [Gradle Build Cache](https://docs.gradle.org/current/userguide/build_cache.html).
 
-## Complete rocker configuration options
+## Complete Rocker configuration options
 
 For each named configuration, the following options can be configured:
 
@@ -113,15 +113,15 @@ For each named configuration, the following options can be configured:
   * `extendsModelClass` (String): the class that all template models should extend
   * `javaVersion` (String): the Java version that the templates' compile & runtime must be compatible with
   * `targetCharset` (String): the target charset of the generated Java sources
-  * `templateDir` (Path): the base directory where rocker recursively starts from when locating and parsing template files
-  * `outputDir` (Path): the directory where rocker will generate the Java sources into
+  * `templateDir` (Path): the base directory where Rocker recursively starts from when locating and parsing template files
+  * `outputDir` (Path): the directory where Rocker will generate the Java sources into
   * `classDir` (Path): the directory where the hot reload feature will compile classes to at runtime
 
 > Warning: do not configure any of `templateDir`, `outputDir`, and `classDir` to point to the same directory or to a directory that also contains other content.
 
 # Invocation
 
-## Invoke rocker task
+## Invoke Rocker task
 
 You can generate the Java sources for a given named configuration by invoking the command `compile<configName>Rocker`, e.g. `compileTestRocker`. The only exception being _main_
 that is abbreviated to `compileRocker`, similarly to how it is done for the `JavaCompile` tasks contributed by the `java` plugin.
