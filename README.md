@@ -44,6 +44,13 @@ The following Gradle features are supported by the rocker plugin:
  * `RockerCompile` task instances participate in task output caching (if the rocker hot reload feature is disabled)
  * `RockerCompile` task instances are compatible with the Gradle Configuration Cache
 
+# Compatibility
+
+| Plugin version | Supported Gradle versions | Support for Gradle Configuration Cache |
+| -------------- |-------------------------- | -------------------------------------- |
+| 2.0            | 6.0+                      | Yes |
+| 1.0.1          | 5.0+                      | No |
+
 # Configuration
 
 ## Apply rocker plugin
