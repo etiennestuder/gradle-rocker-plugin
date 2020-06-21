@@ -6,6 +6,7 @@ import org.gradle.api.Task;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileSystemOperations;
+import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Classpath;
@@ -35,13 +36,15 @@ public class RockerCompile extends DefaultTask {
     private Action<? super ExecResult> execResultHandler;
 
     private final ObjectFactory objects;
+    private final ProjectLayout projectLayout;
     private final FileSystemOperations fileSystemOperations;
     private final ExecOperations execOperations;
 
     // todo use new incremental task API https://docs.gradle.org/current/javadoc/org/gradle/work/InputChanges.html
     @Inject
-    public RockerCompile(ObjectFactory objects, FileSystemOperations fileSystemOperations, ExecOperations execOperations) {
+    public RockerCompile(ObjectFactory objects, ProjectLayout projectLayout, FileSystemOperations fileSystemOperations, ExecOperations execOperations) {
         this.objects = objects;
+        this.projectLayout = projectLayout;
         this.fileSystemOperations = fileSystemOperations;
         this.execOperations = execOperations;
 
@@ -169,6 +172,7 @@ public class RockerCompile extends DefaultTask {
             public void execute(JavaExecSpec spec) {
                 spec.setMain("com.fizzed.rocker.compiler.JavaGeneratorMain");
                 spec.setClasspath(runtimeClasspath);
+                spec.setWorkingDir(projectLayout.getProjectDirectory());
                 spec.systemProperty("rocker.option.optimize", Boolean.toString(config.isOptimize()));
                 systemPropertyIfNotNull("rocker.option.extendsClass", config.getExtendsClass(), spec);
                 systemPropertyIfNotNull("rocker.option.extendsModelClass", config.getExtendsModelClass(), spec);
