@@ -88,7 +88,7 @@ rocker {
   }
 }
 
-rockerVersion = '1.2.2'  // optional
+rockerVersion = '1.3.0'  // optional
 ```
 
 The rocker _main_ configuration declares that the Rocker templates are in _src/rocker_ and the generated Java sources need to end up in _src/generated/rocker_. It further
