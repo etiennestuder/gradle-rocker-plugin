@@ -7,7 +7,7 @@ import java.util.Objects;
 final class RockerVersion {
 
     private static final String PROJECT_PROPERTY = "rockerVersion";
-    private static final String DEFAULT = "1.2.2";
+    private static final String DEFAULT = "1.3.0";
 
     private final String versionString;
 
