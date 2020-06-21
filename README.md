@@ -7,12 +7,13 @@ gradle-rocker-plugin
 
 [Gradle](http://www.gradle.org) plugin that integrates the Rocker template engine. For each named rocker configuration declared
 in the build, the plugin adds a task to generate the Java sources from the specified Rocker templates and includes the
-generated Java sources in the matching source set, if existing. The code generation tasks participate in incremental builds and
-in task output caching by the [Gradle build cache](https://docs.gradle.org/current/userguide/build_cache.html). Additionally,
+generated Java sources in the matching source set, if existing. The code generation tasks participate in incremental builds,
+in task output caching by the [Gradle Build Cache](https://docs.gradle.org/current/userguide/build_cache.html), and in build
+configuration caching by the [Gradle Configuration Cache](https://docs.gradle.org/nightly/userguide/configuration_cache.html). Additionally,
 the compile task itself is incremental, meaning it is optimized so that only templates which have changed are regenerated.
 The plugin can be applied on both Java projects and Android projects.
 
-You can find out more details about the actual Rocker source code generation in the [Rocker documentation](https://github.com/fizzed).
+You can find out more details about the actual Rocker source code generation in the [Rocker documentation](https://github.com/fizzed/rocker).
 
 The rocker plugin is hosted at [Bintray's JCenter](https://bintray.com/etienne/gradle-plugins/gradle-rocker-plugin).
 
@@ -51,7 +52,7 @@ Apply the `nu.studer.rocker` plugin to your Gradle project.
 
 ```groovy
 plugins {
-  id 'nu.studer.rocker' version '1.0.1'
+  id 'nu.studer.rocker' version '2.0'
 }
 ```
 
@@ -64,7 +65,7 @@ This is a sample configuration:
 
 ```groovy
 plugins {
-    id 'nu.studer.rocker' version '1.0.1'
+    id 'nu.studer.rocker' version '2.0'
     id 'java'
 }
 
@@ -94,7 +95,7 @@ Since we declared to use version _1.2.2_ of the Rocker template engine, all Rock
 
 > I suggest you use the [Continuous build](https://docs.gradle.org/current/userguide/continuous_build.html) feature of Gradle instead of using the Rocker hot reload feature.
 > Declare `optimize = true` in the rocker configuration of your Gradle build, and then run your build with the `-t` command line option. In addition, deactivating the hot
-> reload feature of Rocker will enable the rocker tasks for task output caching by the [Gradle build cache](https://docs.gradle.org/current/userguide/build_cache.html).
+> reload feature of Rocker will enable the rocker tasks for task output caching by the [Gradle Build Cache](https://docs.gradle.org/current/userguide/build_cache.html).
 
 ## Complete rocker configuration options
 
@@ -124,12 +125,13 @@ You can find a self-contained example build script [here](example).
 
 # Changelog
 
-+ 1.0.1 - Made RockerCompile task compatible with Gradle's upcoming Instant Execution
++ 2.0 - Made RockerCompile task compatible with the upcoming Gradle Configuration Cache.
++ 1.0.1 - Made RockerCompile task compatible with Gradle's upcoming Instant Execution.
 + 1.0 - Made Gradle 5.0 the minimum compatible version and replaced usage of deprecated APIs.
 + 0.4 - Removed wiring between `clean` task and deleting generated Rocker sources, uses Rocker 1.2.0 by default.
 + 0.3.1 - Fixed incremental template compilation.
 + 0.3 - Incremental template compilation, i.e. only the modified templates are compiled.
-+ 0.2 - New DSL, more Rocker configuration options, support for Gradle build cache.
++ 0.2 - New DSL, more Rocker configuration options, support for the Gradle Build Cache.
 + 0.1 - Initial version
 
 # Feedback and Contributions
