@@ -49,7 +49,7 @@ The following Gradle features are supported by the Rocker plugin:
 | Plugin version | Supported Gradle versions | Support for Gradle Configuration Cache |
 | -------------- |-------------------------- | -------------------------------------- |
 | 2.0            | 6.0+                      | Yes |
-| 1.0.1          | 5.0+                      | No |
+| 1.0.1          | 5.0+, 6.0+                | No |
 
 # Configuration
 
