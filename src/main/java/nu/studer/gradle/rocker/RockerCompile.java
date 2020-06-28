@@ -4,6 +4,7 @@ import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.file.ConfigurableFileTree;
+import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileSystemOperations;
 import org.gradle.api.file.FileType;
@@ -102,7 +103,8 @@ public class RockerCompile extends DefaultTask {
     @SuppressWarnings("unused")
     @TaskAction
     void doCompile(InputChanges inputChanges) {
-        final File templateDir = config.getTemplateDir().get().getAsFile();
+        final DirectoryProperty templateDir = config.getTemplateDir();
+        final File templateDirAsFile = templateDir.get().getAsFile();
 
         final Set<String> modifiedTemplates = new HashSet<>();
         final Set<File> removedTemplates = new HashSet<>();
@@ -114,9 +116,9 @@ public class RockerCompile extends DefaultTask {
             fileSystemOperations.delete(spec -> spec.delete(config.getClassDir()));
 
             // generate the files from the templates
-            execResult = executeRocker(templateDir);
+            execResult = executeRocker(templateDirAsFile);
         } else {
-            inputChanges.getFileChanges(getConfig().getTemplateDir()).forEach(change -> {
+            inputChanges.getFileChanges(templateDir).forEach(change -> {
                 if (change.getFileType() == FileType.DIRECTORY) {
                     return;
                 }
@@ -147,7 +149,7 @@ public class RockerCompile extends DefaultTask {
                 fileSystemOperations.delete(spec -> spec.delete(tempDir));
 
                 fileSystemOperations.copy(spec -> {
-                    spec.from(config.getTemplateDir());
+                    spec.from(templateDir);
                     for (String template : modifiedTemplates) {
                         spec.include(template);
                     }
