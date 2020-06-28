@@ -107,27 +107,42 @@ public class RockerCompile extends DefaultTask {
         final Set<File> modifiedTemplates = new HashSet<>();
         final Set<File> removedTemplates = new HashSet<>();
 
+//        inputChanges.getFileChanges(getConfig().getTemplateDir()).each {
+//            change ->
+//            if (change.fileType == FileType.DIRECTORY) return
+//
+//                def targetFile = outputDir.file(change.normalizedPath).get().asFile
+//            if (change.changeType == ChangeType.REMOVED) {
+//                targetFile.delete()
+//            } else {
+//                targetFile.text = change.file.text.reverse()
+//            }
+//        }
+//
+
+        File templateDir = config.getTemplateDir().get().getAsFile();
+
         if (!incrementalTaskInputs.isIncremental()) {
             // delete any generated files from previous runs and any classes compiled by Rocker via hot-reloading
             fileSystemOperations.delete(spec -> spec.delete(config.getOutputDir()));
             fileSystemOperations.delete(spec -> spec.delete(config.getClassDir()));
 
             // generate the files from the templates
-            execResult = executeRocker(config.getTemplateDir());
+            execResult = executeRocker(templateDir);
         } else {
             // collect new/modified templates
             incrementalTaskInputs.outOfDate(fileDetails -> modifiedTemplates.add(fileDetails.getFile()));
 
             // collect stale files for removed templates
             incrementalTaskInputs.removed(fileDetails -> {
-                String javaSourceFileName = toJavaSourceFileName(relativePath(config.getTemplateDir(), fileDetails.getFile()));
+                String javaSourceFileName = toJavaSourceFileName(relativePath(templateDir, fileDetails.getFile()));
                 if (javaSourceFileName != null) {
                     ConfigurableFileTree removedFile = objects.fileTree().from(config.getOutputDir());
                     removedFile.include(javaSourceFileName);
                     removedTemplates.addAll(removedFile.getFiles());
                 }
 
-                String javaClassFileName = toJavaClassFileName(relativePath(config.getTemplateDir(), fileDetails.getFile()));
+                String javaClassFileName = toJavaClassFileName(relativePath(templateDir, fileDetails.getFile()));
                 if (javaClassFileName != null) {
                     ConfigurableFileTree removedFile = objects.fileTree().from(config.getClassDir());
                     removedFile.include(javaClassFileName);
@@ -144,7 +159,7 @@ public class RockerCompile extends DefaultTask {
                 fileSystemOperations.copy(spec -> {
                     spec.from(config.getTemplateDir());
                     for (File template : modifiedTemplates) {
-                        spec.include(relativePath(config.getTemplateDir(), template));
+                        spec.include(relativePath(templateDir, template));
                     }
                     spec.into(tempDir);
                 });
@@ -179,8 +194,8 @@ public class RockerCompile extends DefaultTask {
                 systemPropertyIfNotNull("rocker.option.javaVersion", config.getJavaVersion(), spec);
                 systemPropertyIfNotNull("rocker.option.targetCharset", config.getTargetCharset(), spec);
                 spec.systemProperty("rocker.template.dir", templateDir.getAbsolutePath());
-                spec.systemProperty("rocker.output.dir", config.getOutputDir().getAbsolutePath());
-                spec.systemProperty("rocker.class.dir", config.getClassDir().getAbsolutePath());
+                spec.systemProperty("rocker.output.dir", config.getOutputDir().get().getAsFile().getAbsolutePath());
+                spec.systemProperty("rocker.class.dir", config.getClassDir().get().getAsFile().getAbsolutePath());
 
                 if (javaExecSpec != null) {
                     javaExecSpec.execute(spec);

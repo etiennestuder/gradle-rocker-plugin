@@ -1,6 +1,8 @@
 package nu.studer.gradle.rocker;
 
 import org.gradle.api.Project;
+import org.gradle.api.file.Directory;
+import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Internal;
@@ -22,9 +24,9 @@ public class RockerConfig {
     private String javaVersion;
     private String targetCharset;
 
-    private File templateDir;
-    private File outputDir;
-    private File classDir;
+    private final DirectoryProperty templateDir;
+    private final DirectoryProperty outputDir;
+    private final DirectoryProperty classDir;
 
     RockerConfig(String name, Project project) {
         this.name = name;
@@ -35,9 +37,9 @@ public class RockerConfig {
         this.javaVersion = Runtime.class.getPackage().getSpecificationVersion();
         this.targetCharset = "UTF-8";
 
-        this.templateDir = new File(project.getProjectDir(), "src/rocker/" + name);
-        this.outputDir = new File(project.getBuildDir(), "generated-src/rocker/" + name);
-        this.classDir = new File(project.getBuildDir(), "rocker-hot-reload/" + name);
+        this.templateDir = project.getObjects().directoryProperty().convention(project.getLayout().getProjectDirectory().dir("src/rocker/" + name));
+        this.outputDir = project.getObjects().directoryProperty().convention(project.getLayout().getBuildDirectory().dir("generated-src/rocker/" + name));
+        this.classDir = project.getObjects().directoryProperty().convention(project.getLayout().getBuildDirectory().dir("rocker-hot-reload/" + name));
     }
 
     @Input
@@ -97,34 +99,49 @@ public class RockerConfig {
     @SkipWhenEmpty
     @InputDirectory
     @PathSensitive(PathSensitivity.RELATIVE)
-    File getTemplateDir() {
+    DirectoryProperty getTemplateDir() {
         return templateDir;
     }
 
     @SuppressWarnings("unused")
     public void setTemplateDir(File templateDir) {
-        this.templateDir = templateDir;
+        this.templateDir.set(templateDir);
+    }
+
+    @SuppressWarnings("unused")
+    public void setTemplateDir(Directory templateDir) {
+        this.templateDir.set(templateDir);
     }
 
     @OutputDirectory
-    File getOutputDir() {
+    DirectoryProperty getOutputDir() {
         return outputDir;
     }
 
     @SuppressWarnings("unused")
     public void setOutputDir(File outputDir) {
-        this.outputDir = outputDir;
+        this.outputDir.set(outputDir);
+    }
+
+    @SuppressWarnings("unused")
+    public void setOutputDir(Directory outputDir) {
+        this.outputDir.set(outputDir);
     }
 
     // do not include in uptodate check, not as input nor as output
     @Internal
-    File getClassDir() {
+    DirectoryProperty getClassDir() {
         return classDir;
     }
 
     @SuppressWarnings("unused")
     public void setClassDir(File classDir) {
-        this.classDir = classDir;
+        this.classDir.set(classDir);
+    }
+
+    @SuppressWarnings("unused")
+    public void setClassDir(Directory classDir) {
+        this.classDir.set(classDir);
     }
 
     @Internal
