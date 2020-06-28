@@ -48,7 +48,7 @@ The following Gradle features are supported by the Rocker plugin:
 
 | Plugin version | Supported Gradle versions | Support for Gradle Configuration Cache |
 | -------------- |-------------------------- | -------------------------------------- |
-| 2.0            | 6.0+                      | Yes |
+| 2.0+           | 6.0+                      | Yes |
 | 1.0.1          | 5.0+, 6.0+                | No |
 
 # Configuration
@@ -59,7 +59,7 @@ Apply the `nu.studer.rocker` plugin to your Gradle project.
 
 ```groovy
 plugins {
-  id 'nu.studer.rocker' version '2.0'
+  id 'nu.studer.rocker' version '2.1'
 }
 ```
 
@@ -72,7 +72,7 @@ This is a sample configuration:
 
 ```groovy
 plugins {
-    id 'nu.studer.rocker' version '2.0'
+    id 'nu.studer.rocker' version '2.1'
     id 'java'
 }
 
@@ -132,6 +132,7 @@ You can find a self-contained example build script [here](example).
 
 # Changelog
 
++ 2.1 - Internal refactoring to get rid of deprecated APIs that will be removed in Gradle 7.
 + 2.0 - Made RockerCompile task compatible with the upcoming Gradle Configuration Cache.
 + 1.0.1 - Made RockerCompile task compatible with Gradle's upcoming Instant Execution.
 + 1.0 - Made Gradle 5.0 the minimum compatible version and replaced usage of deprecated APIs.
