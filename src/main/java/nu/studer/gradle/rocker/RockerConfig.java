@@ -3,6 +3,8 @@ package nu.studer.gradle.rocker;
 import org.gradle.api.Project;
 import org.gradle.api.file.Directory;
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.file.ProjectLayout;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Internal;
@@ -37,9 +39,12 @@ public class RockerConfig {
         this.javaVersion = Runtime.class.getPackage().getSpecificationVersion();
         this.targetCharset = "UTF-8";
 
-        this.templateDir = project.getObjects().directoryProperty().convention(project.getLayout().getProjectDirectory().dir("src/rocker/" + name));
-        this.outputDir = project.getObjects().directoryProperty().convention(project.getLayout().getBuildDirectory().dir("generated-src/rocker/" + name));
-        this.classDir = project.getObjects().directoryProperty().convention(project.getLayout().getBuildDirectory().dir("rocker-hot-reload/" + name));
+        ObjectFactory objects = project.getObjects();
+        ProjectLayout layout = project.getLayout();
+
+        this.templateDir = objects.directoryProperty().convention(layout.getProjectDirectory().dir("src/rocker/" + name));
+        this.outputDir = objects.directoryProperty().convention(layout.getBuildDirectory().dir("generated-src/rocker/" + name));
+        this.classDir = objects.directoryProperty().convention(layout.getBuildDirectory().dir("rocker-hot-reload/" + name));
     }
 
     @Input
