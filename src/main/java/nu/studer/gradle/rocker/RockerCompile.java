@@ -37,14 +37,12 @@ public class RockerCompile extends DefaultTask {
     private Action<? super JavaExecSpec> javaExecSpec;
     private Action<? super ExecResult> execResultHandler;
 
-    private final ObjectFactory objects;
     private final ProjectLayout projectLayout;
     private final FileSystemOperations fileSystemOperations;
     private final ExecOperations execOperations;
 
     @Inject
-    public RockerCompile(ObjectFactory objects, ProjectLayout projectLayout, FileSystemOperations fileSystemOperations, ExecOperations execOperations) {
-        this.objects = objects;
+    public RockerCompile(ProjectLayout projectLayout, FileSystemOperations fileSystemOperations, ExecOperations execOperations) {
         this.projectLayout = projectLayout;
         this.fileSystemOperations = fileSystemOperations;
         this.execOperations = execOperations;
