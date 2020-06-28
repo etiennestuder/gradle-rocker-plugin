@@ -10,7 +10,7 @@ in the build, the plugin adds a task to generate the Java sources from the speci
 generated Java sources in the matching source set, if existing. The code generation tasks participate in incremental builds,
 in task output caching by the [Gradle Build Cache](https://docs.gradle.org/current/userguide/build_cache.html), and in build
 configuration caching by the [Gradle Configuration Cache](https://docs.gradle.org/nightly/userguide/configuration_cache.html). Additionally,
-the compile task itself is incremental, meaning it is optimized so that only templates which have changed are regenerated.
+the compile task itself is [incremental](https://docs.gradle.org/current/dsl/org.gradle.work.InputChanges.html), meaning it is optimized so that only templates which have changed are regenerated.
 The plugin can be applied on both Java projects and Android projects.
 
 You can find out more details about the actual Rocker source code generation in the [Rocker documentation](https://github.com/fizzed/rocker).
