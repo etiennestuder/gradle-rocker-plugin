@@ -3,13 +3,14 @@ package nu.studer.gradle.rocker;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
-import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileSystemOperations;
 import org.gradle.api.file.FileType;
 import org.gradle.api.file.ProjectLayout;
+import org.gradle.api.file.RegularFile;
 import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.InputFiles;
@@ -107,7 +108,7 @@ public class RockerCompile extends DefaultTask {
         final File templateDirAsFile = templateDir.get().getAsFile();
 
         final Set<String> modifiedTemplates = new HashSet<>();
-        final Set<File> removedTemplates = new HashSet<>();
+        final Set<Provider<RegularFile>> removedTemplates = new HashSet<>();
         ExecResult execResult = null;
 
         if (!inputChanges.isIncremental()) {
@@ -128,16 +129,12 @@ public class RockerCompile extends DefaultTask {
                 } else if (change.getChangeType() == ChangeType.REMOVED) {
                     String javaSourceFileName = toJavaSourceFileName(change.getNormalizedPath());
                     if (javaSourceFileName != null) {
-                        ConfigurableFileTree removedFile = objects.fileTree().from(config.getOutputDir());
-                        removedFile.include(javaSourceFileName);
-                        removedTemplates.addAll(removedFile.getFiles());
+                        removedTemplates.add(config.getOutputDir().file(javaSourceFileName));
                     }
 
                     String javaClassFileName = toJavaClassFileName(change.getNormalizedPath());
                     if (javaClassFileName != null) {
-                        ConfigurableFileTree removedFile = objects.fileTree().from(config.getClassDir());
-                        removedFile.include(javaClassFileName);
-                        removedTemplates.addAll(removedFile.getFiles());
+                        removedTemplates.add(config.getClassDir().file(javaClassFileName));
                     }
                 }
             });
