@@ -350,6 +350,34 @@ rocker {
         result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
     }
 
+    void "skipped when no inputs"() {
+        given:
+        buildFile << """
+plugins {
+    id 'nu.studer.rocker'
+    id 'java'
+}
+
+repositories {
+    jcenter()
+}
+
+rocker {
+  main {
+    optimize = true
+    templateDir = file('src/rocker')
+    outputDir = file('src/generated/rocker')
+  }
+}
+"""
+
+        when:
+        def result = runWithArguments('compileRocker')
+
+        then:
+        result.task(':compileRocker').outcome == TaskOutcome.NO_SOURCE
+    }
+
     void "participates in incremental build"() {
         given:
         exampleTemplate()

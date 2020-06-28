@@ -8,6 +8,7 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
+import org.gradle.api.tasks.SkipWhenEmpty;
 
 import java.io.File;
 
@@ -93,6 +94,7 @@ public class RockerConfig {
         this.targetCharset = targetCharset;
     }
 
+    @SkipWhenEmpty
     @InputDirectory
     @PathSensitive(PathSensitivity.RELATIVE)
     File getTemplateDir() {
