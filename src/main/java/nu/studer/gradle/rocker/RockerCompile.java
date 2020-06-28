@@ -6,6 +6,7 @@ import org.gradle.api.Task;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileSystemOperations;
+import org.gradle.api.file.FileType;
 import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.specs.Spec;
@@ -14,10 +15,11 @@ import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.TaskAction;
-import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 import org.gradle.process.ExecOperations;
 import org.gradle.process.ExecResult;
 import org.gradle.process.JavaExecSpec;
+import org.gradle.work.ChangeType;
+import org.gradle.work.InputChanges;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -40,7 +42,6 @@ public class RockerCompile extends DefaultTask {
     private final FileSystemOperations fileSystemOperations;
     private final ExecOperations execOperations;
 
-    // todo use new incremental task API https://docs.gradle.org/current/javadoc/org/gradle/work/InputChanges.html
     @Inject
     public RockerCompile(ObjectFactory objects, ProjectLayout projectLayout, FileSystemOperations fileSystemOperations, ExecOperations execOperations) {
         this.objects = objects;
@@ -102,27 +103,14 @@ public class RockerCompile extends DefaultTask {
 
     @SuppressWarnings("unused")
     @TaskAction
-    void doCompile(IncrementalTaskInputs incrementalTaskInputs) {
-        ExecResult execResult = null;
+    void doCompile(InputChanges inputChanges) {
+        final File templateDir = config.getTemplateDir().get().getAsFile();
+
         final Set<File> modifiedTemplates = new HashSet<>();
         final Set<File> removedTemplates = new HashSet<>();
+        ExecResult execResult = null;
 
-//        inputChanges.getFileChanges(getConfig().getTemplateDir()).each {
-//            change ->
-//            if (change.fileType == FileType.DIRECTORY) return
-//
-//                def targetFile = outputDir.file(change.normalizedPath).get().asFile
-//            if (change.changeType == ChangeType.REMOVED) {
-//                targetFile.delete()
-//            } else {
-//                targetFile.text = change.file.text.reverse()
-//            }
-//        }
-//
-
-        File templateDir = config.getTemplateDir().get().getAsFile();
-
-        if (!incrementalTaskInputs.isIncremental()) {
+        if (!inputChanges.isIncremental()) {
             // delete any generated files from previous runs and any classes compiled by Rocker via hot-reloading
             fileSystemOperations.delete(spec -> spec.delete(config.getOutputDir()));
             fileSystemOperations.delete(spec -> spec.delete(config.getClassDir()));
@@ -130,23 +118,27 @@ public class RockerCompile extends DefaultTask {
             // generate the files from the templates
             execResult = executeRocker(templateDir);
         } else {
-            // collect new/modified templates
-            incrementalTaskInputs.outOfDate(fileDetails -> modifiedTemplates.add(fileDetails.getFile()));
-
-            // collect stale files for removed templates
-            incrementalTaskInputs.removed(fileDetails -> {
-                String javaSourceFileName = toJavaSourceFileName(relativePath(templateDir, fileDetails.getFile()));
-                if (javaSourceFileName != null) {
-                    ConfigurableFileTree removedFile = objects.fileTree().from(config.getOutputDir());
-                    removedFile.include(javaSourceFileName);
-                    removedTemplates.addAll(removedFile.getFiles());
+            inputChanges.getFileChanges(getConfig().getTemplateDir()).forEach(change -> {
+                if (change.getFileType() == FileType.DIRECTORY) {
+                    return;
                 }
 
-                String javaClassFileName = toJavaClassFileName(relativePath(templateDir, fileDetails.getFile()));
-                if (javaClassFileName != null) {
-                    ConfigurableFileTree removedFile = objects.fileTree().from(config.getClassDir());
-                    removedFile.include(javaClassFileName);
-                    removedTemplates.addAll(removedFile.getFiles());
+                if (change.getChangeType() == ChangeType.ADDED || change.getChangeType() == ChangeType.MODIFIED) {
+                    modifiedTemplates.add(change.getFile());
+                } else if (change.getChangeType() == ChangeType.REMOVED) {
+                    String javaSourceFileName = toJavaSourceFileName(relativePath(templateDir, change.getFile()));
+                    if (javaSourceFileName != null) {
+                        ConfigurableFileTree removedFile = objects.fileTree().from(config.getOutputDir());
+                        removedFile.include(javaSourceFileName);
+                        removedTemplates.addAll(removedFile.getFiles());
+                    }
+
+                    String javaClassFileName = toJavaClassFileName(relativePath(templateDir, change.getFile()));
+                    if (javaClassFileName != null) {
+                        ConfigurableFileTree removedFile = objects.fileTree().from(config.getClassDir());
+                        removedFile.include(javaClassFileName);
+                        removedTemplates.addAll(removedFile.getFiles());
+                    }
                 }
             });
 
