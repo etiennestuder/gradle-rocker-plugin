@@ -44,7 +44,8 @@ public class RockerPlugin implements Plugin<Project> {
         // create a rocker task for each rocker configuration domain object
         container.all(config -> {
             // create rocker task
-            RockerCompile rocker = project.getTasks().create(config.getCompileTaskName(), RockerCompile.class);
+            String taskName = "compile" + (config.name.equals("main") ? "" : StringUtils.capitalize(config.name)) + "Rocker";
+            RockerCompile rocker = project.getTasks().create(taskName, RockerCompile.class);
             rocker.setDescription("Invokes the Rocker template engine.");
             rocker.setGroup("Rocker");
             rocker.setConfig(config);
