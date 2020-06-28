@@ -26,8 +26,6 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
-import static nu.studer.gradle.rocker.FileUtils.relativePath;
-
 public class RockerCompile extends DefaultTask {
 
     private static final String ROCKER_FILE_EXTENSION_PREFIX = ".rocker";
@@ -106,7 +104,7 @@ public class RockerCompile extends DefaultTask {
     void doCompile(InputChanges inputChanges) {
         final File templateDir = config.getTemplateDir().get().getAsFile();
 
-        final Set<File> modifiedTemplates = new HashSet<>();
+        final Set<String> modifiedTemplates = new HashSet<>();
         final Set<File> removedTemplates = new HashSet<>();
         ExecResult execResult = null;
 
@@ -124,16 +122,16 @@ public class RockerCompile extends DefaultTask {
                 }
 
                 if (change.getChangeType() == ChangeType.ADDED || change.getChangeType() == ChangeType.MODIFIED) {
-                    modifiedTemplates.add(change.getFile());
+                    modifiedTemplates.add(change.getNormalizedPath());
                 } else if (change.getChangeType() == ChangeType.REMOVED) {
-                    String javaSourceFileName = toJavaSourceFileName(relativePath(templateDir, change.getFile()));
+                    String javaSourceFileName = toJavaSourceFileName(change.getNormalizedPath());
                     if (javaSourceFileName != null) {
                         ConfigurableFileTree removedFile = objects.fileTree().from(config.getOutputDir());
                         removedFile.include(javaSourceFileName);
                         removedTemplates.addAll(removedFile.getFiles());
                     }
 
-                    String javaClassFileName = toJavaClassFileName(relativePath(templateDir, change.getFile()));
+                    String javaClassFileName = toJavaClassFileName(change.getNormalizedPath());
                     if (javaClassFileName != null) {
                         ConfigurableFileTree removedFile = objects.fileTree().from(config.getClassDir());
                         removedFile.include(javaClassFileName);
@@ -150,8 +148,8 @@ public class RockerCompile extends DefaultTask {
 
                 fileSystemOperations.copy(spec -> {
                     spec.from(config.getTemplateDir());
-                    for (File template : modifiedTemplates) {
-                        spec.include(relativePath(templateDir, template));
+                    for (String template : modifiedTemplates) {
+                        spec.include(template);
                     }
                     spec.into(tempDir);
                 });
