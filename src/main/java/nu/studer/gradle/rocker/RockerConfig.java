@@ -59,7 +59,7 @@ public class RockerConfig {
 
     @Optional
     @Input
-    String getExtendsClass() {
+    public String getExtendsClass() {
         return extendsClass;
     }
 
@@ -70,7 +70,7 @@ public class RockerConfig {
 
     @Optional
     @Input
-    String getExtendsModelClass() {
+    public String getExtendsModelClass() {
         return extendsModelClass;
     }
 
@@ -81,7 +81,7 @@ public class RockerConfig {
 
     @Optional
     @Input
-    String getJavaVersion() {
+    public String getJavaVersion() {
         return javaVersion;
     }
 
@@ -92,7 +92,7 @@ public class RockerConfig {
 
     @Optional
     @Input
-    String getTargetCharset() {
+    public  String getTargetCharset() {
         return targetCharset;
     }
 
@@ -104,7 +104,7 @@ public class RockerConfig {
     @SkipWhenEmpty
     @InputDirectory
     @PathSensitive(PathSensitivity.RELATIVE)
-    DirectoryProperty getTemplateDir() {
+    public DirectoryProperty getTemplateDir() {
         return templateDir;
     }
 
@@ -119,7 +119,7 @@ public class RockerConfig {
     }
 
     @OutputDirectory
-    DirectoryProperty getOutputDir() {
+    public DirectoryProperty getOutputDir() {
         return outputDir;
     }
 
@@ -135,7 +135,7 @@ public class RockerConfig {
 
     // do not include in uptodate check, not as input nor as output
     @Internal
-    DirectoryProperty getClassDir() {
+    public DirectoryProperty getClassDir() {
         return classDir;
     }
 
