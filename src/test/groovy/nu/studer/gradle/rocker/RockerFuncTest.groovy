@@ -171,6 +171,42 @@ rocker {
         !result.task(':compileRocker')
     }
 
+    void "can invoke rocker task derived from configuration DSL using Kotlin DSL"() {
+        given:
+        exampleTemplate()
+
+        and:
+        file('build.gradle.kts') << """
+plugins {
+    id("nu.studer.rocker")
+}
+
+repositories {
+    jcenter()
+}
+
+val rockerVersion by extra("1.3.0")
+
+rocker {
+    create("foo") {
+        optimize.set(true)
+        templateDir.set(file("src/rocker"))
+        outputDir.set(file("src/generated/rocker"))
+    }
+}
+"""
+
+        when:
+        def result = runWithArguments('compileFooRocker')
+
+        then:
+        fileExists('src/generated/rocker/Example.java')
+        result.output.contains("Parsing 1 rocker template files")
+        result.output.contains("Generated 1 rocker java source files")
+        result.output.contains("Optimize flag on. Did not generate rocker configuration file")
+        result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
+    }
+
     void "rocker task derived from 'main' configuration omits the configuration name in the RockerCompile task instances"() {
         given:
         exampleTemplate()
