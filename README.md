@@ -59,7 +59,7 @@ Apply the `nu.studer.rocker` plugin to your Gradle project.
 
 ```groovy
 plugins {
-  id 'nu.studer.rocker' version '2.1'
+  id 'nu.studer.rocker' version '2.1.1'
 }
 ```
 
@@ -72,7 +72,7 @@ This is a sample configuration:
 
 ```groovy
 plugins {
-    id 'nu.studer.rocker' version '2.1'
+    id 'nu.studer.rocker' version '2.1.1'
     id 'java'
 }
 
@@ -132,6 +132,7 @@ You can find a self-contained example build script [here](example).
 
 # Changelog
 
++ 2.1.1 - Internal refactoring to improve lazy properties usage.
 + 2.1 - Internal refactoring to get rid of deprecated APIs that will be removed in Gradle 7.
 + 2.0 - Made RockerCompile task compatible with the upcoming Gradle Configuration Cache.
 + 1.0.1 - Made RockerCompile task compatible with Gradle's upcoming Instant Execution.
