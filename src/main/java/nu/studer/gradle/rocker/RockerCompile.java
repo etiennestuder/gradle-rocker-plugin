@@ -9,7 +9,6 @@ import org.gradle.api.file.FileSystemOperations;
 import org.gradle.api.file.FileType;
 import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.file.RegularFile;
-import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Classpath;
@@ -51,7 +50,7 @@ public class RockerCompile extends DefaultTask {
         getOutputs().cacheIf(new Spec<Task>() {
             @Override
             public boolean isSatisfiedBy(Task task) {
-                return config.isOptimize();
+                return config.getOptimize().get();
             }
         });
     }
@@ -175,11 +174,11 @@ public class RockerCompile extends DefaultTask {
                 spec.setMain("com.fizzed.rocker.compiler.JavaGeneratorMain");
                 spec.setClasspath(runtimeClasspath);
                 spec.setWorkingDir(projectLayout.getProjectDirectory());
-                spec.systemProperty("rocker.option.optimize", Boolean.toString(config.isOptimize()));
-                systemPropertyIfNotNull("rocker.option.extendsClass", config.getExtendsClass(), spec);
-                systemPropertyIfNotNull("rocker.option.extendsModelClass", config.getExtendsModelClass(), spec);
-                systemPropertyIfNotNull("rocker.option.javaVersion", config.getJavaVersion(), spec);
-                systemPropertyIfNotNull("rocker.option.targetCharset", config.getTargetCharset(), spec);
+                spec.systemProperty("rocker.option.optimize", config.getOptimize().get().toString());
+                systemPropertyIfNotNull("rocker.option.extendsClass", config.getExtendsClass().getOrNull(), spec);
+                systemPropertyIfNotNull("rocker.option.extendsModelClass", config.getExtendsModelClass().getOrNull(), spec);
+                systemPropertyIfNotNull("rocker.option.javaVersion", config.getJavaVersion().getOrNull(), spec);
+                systemPropertyIfNotNull("rocker.option.targetCharset", config.getTargetCharset().getOrNull(), spec);
                 spec.systemProperty("rocker.template.dir", templateDir.getAbsolutePath());
                 spec.systemProperty("rocker.output.dir", config.getOutputDir().get().getAsFile().getAbsolutePath());
                 spec.systemProperty("rocker.class.dir", config.getClassDir().get().getAsFile().getAbsolutePath());

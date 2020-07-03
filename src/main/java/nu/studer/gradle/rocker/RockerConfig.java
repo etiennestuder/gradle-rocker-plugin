@@ -4,6 +4,7 @@ import org.gradle.api.Project;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Internal;
@@ -19,11 +20,11 @@ public class RockerConfig {
 
     final String name;
 
-    private boolean optimize;
-    private String extendsClass;
-    private String extendsModelClass;
-    private String javaVersion;
-    private String targetCharset;
+    private final Property<Boolean> optimize;
+    private final Property<String> extendsClass;
+    private final Property<String> extendsModelClass;
+    private final Property<String> javaVersion;
+    private final Property<String> targetCharset;
 
     private final DirectoryProperty templateDir;
     private final DirectoryProperty outputDir;
@@ -33,14 +34,14 @@ public class RockerConfig {
     public RockerConfig(String name, Project project) {
         this.name = name;
 
-        this.optimize = false;
-        this.extendsClass = null;
-        this.extendsModelClass = null;
-        this.javaVersion = Runtime.class.getPackage().getSpecificationVersion();
-        this.targetCharset = "UTF-8";
-
         ObjectFactory objects = project.getObjects();
         ProjectLayout layout = project.getLayout();
+
+        this.optimize = objects.property(Boolean.class).convention(Boolean.FALSE);
+        this.extendsClass = objects.property(String.class).convention((String) null);
+        this.extendsModelClass = objects.property(String.class).convention((String) null);
+        this.javaVersion = objects.property(String.class).convention(Runtime.class.getPackage().getSpecificationVersion());
+        this.targetCharset = objects.property(String.class).convention("UTF-8");
 
         this.templateDir = objects.directoryProperty().convention(layout.getProjectDirectory().dir("src/rocker/" + name));
         this.outputDir = objects.directoryProperty().convention(layout.getBuildDirectory().dir("generated-src/rocker/" + name));
@@ -48,57 +49,32 @@ public class RockerConfig {
     }
 
     @Input
-    public boolean isOptimize() {
+    public Property<Boolean> getOptimize() {
         return optimize;
     }
 
-    @SuppressWarnings("unused")
-    public void setOptimize(boolean optimize) {
-        this.optimize = optimize;
-    }
-
     @Optional
     @Input
-    public String getExtendsClass() {
+    public Property<String> getExtendsClass() {
         return extendsClass;
     }
 
-    @SuppressWarnings("unused")
-    public void setExtendsClass(String extendsClass) {
-        this.extendsClass = extendsClass;
-    }
-
     @Optional
     @Input
-    public String getExtendsModelClass() {
+    public Property<String> getExtendsModelClass() {
         return extendsModelClass;
     }
 
-    @SuppressWarnings("unused")
-    public void setExtendsModelClass(String extendsModelClass) {
-        this.extendsModelClass = extendsModelClass;
-    }
-
     @Optional
     @Input
-    public String getJavaVersion() {
+    public Property<String> getJavaVersion() {
         return javaVersion;
     }
 
-    @SuppressWarnings("unused")
-    public void setJavaVersion(String javaVersion) {
-        this.javaVersion = javaVersion;
-    }
-
     @Optional
     @Input
-    public String getTargetCharset() {
+    public Property<String> getTargetCharset() {
         return targetCharset;
-    }
-
-    @SuppressWarnings("unused")
-    public void setTargetCharset(String targetCharset) {
-        this.targetCharset = targetCharset;
     }
 
     @SkipWhenEmpty
