@@ -1,7 +1,6 @@
 package nu.studer.gradle.rocker;
 
 import org.gradle.api.Project;
-import org.gradle.api.file.Directory;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.model.ObjectFactory;
@@ -14,7 +13,7 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SkipWhenEmpty;
 
-import java.io.File;
+import javax.inject.Inject;
 
 public class RockerConfig {
 
@@ -30,7 +29,8 @@ public class RockerConfig {
     private final DirectoryProperty outputDir;
     private final DirectoryProperty classDir;
 
-    RockerConfig(String name, Project project) {
+    @Inject
+    public RockerConfig(String name, Project project) {
         this.name = name;
 
         this.optimize = false;
@@ -48,7 +48,7 @@ public class RockerConfig {
     }
 
     @Input
-    boolean isOptimize() {
+    public boolean isOptimize() {
         return optimize;
     }
 
@@ -92,7 +92,7 @@ public class RockerConfig {
 
     @Optional
     @Input
-    public  String getTargetCharset() {
+    public String getTargetCharset() {
         return targetCharset;
     }
 
@@ -108,45 +108,15 @@ public class RockerConfig {
         return templateDir;
     }
 
-    @SuppressWarnings("unused")
-    public void setTemplateDir(File templateDir) {
-        this.templateDir.set(templateDir);
-    }
-
-    @SuppressWarnings("unused")
-    public void setTemplateDir(Directory templateDir) {
-        this.templateDir.set(templateDir);
-    }
-
     @OutputDirectory
     public DirectoryProperty getOutputDir() {
         return outputDir;
-    }
-
-    @SuppressWarnings("unused")
-    public void setOutputDir(File outputDir) {
-        this.outputDir.set(outputDir);
-    }
-
-    @SuppressWarnings("unused")
-    public void setOutputDir(Directory outputDir) {
-        this.outputDir.set(outputDir);
     }
 
     // do not include in uptodate check, not as input nor as output
     @Internal
     public DirectoryProperty getClassDir() {
         return classDir;
-    }
-
-    @SuppressWarnings("unused")
-    public void setClassDir(File classDir) {
-        this.classDir.set(classDir);
-    }
-
-    @SuppressWarnings("unused")
-    public void setClassDir(Directory classDir) {
-        this.classDir.set(classDir);
     }
 
     @Override

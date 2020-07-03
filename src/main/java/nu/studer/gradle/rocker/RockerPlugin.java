@@ -35,7 +35,7 @@ public class RockerPlugin implements Plugin<Project> {
         enforceRockerVersion(project);
 
         // add rocker DSL extension
-        NamedDomainObjectContainer<RockerConfig> container = project.container(RockerConfig.class, name -> new RockerConfig(name, project));
+        NamedDomainObjectContainer<RockerConfig> container = project.container(RockerConfig.class, name -> project.getObjects().newInstance(RockerConfig.class, name, project));
         project.getExtensions().add("rocker", container);
 
         // create configuration for the runtime classpath of the rocker compiler (shared by all rocker configuration domain objects)
