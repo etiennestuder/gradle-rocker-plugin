@@ -148,6 +148,8 @@ Both feedback and contributions are very welcome.
 
 # Acknowledgements
 
++ [wolfs](https://github.com/wolfs) (support to make lazy properties work)
++ [eskatos](https://github.com/eskatos) (support to make configuration caching work)
 + [breskeby](https://github.com/breskeby) (pr #6 to avoid deprecation warnings)
 + [mark-vieira](https://github.com/mark-vieira) (pr #2 and pr #3 to make RockerCompile task itself incremental)
 + [mark-vieira](https://github.com/mark-vieira) (pr #55 to the fizzed/rocker project to fix the MODIFIED_AT issue)
