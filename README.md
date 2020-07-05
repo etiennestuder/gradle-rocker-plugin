@@ -59,7 +59,7 @@ Apply the `nu.studer.rocker` plugin to your Gradle project.
 
 ```groovy
 plugins {
-  id 'nu.studer.rocker' version '2.1.1'
+  id 'nu.studer.rocker' version '2.2'
 }
 ```
 
@@ -72,7 +72,7 @@ This is a sample configuration:
 
 ```groovy
 plugins {
-    id 'nu.studer.rocker' version '2.1.1'
+    id 'nu.studer.rocker' version '2.2'
     id 'java'
 }
 
