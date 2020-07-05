@@ -9,6 +9,7 @@ import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.util.GradleVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,13 +44,14 @@ public class RockerPlugin implements Plugin<Project> {
 
         // create a rocker task for each rocker configuration domain object
         container.all(config -> {
-            // create rocker task
+            // register rocker task, create it lazily
             String taskName = "compile" + (config.name.equals("main") ? "" : StringUtils.capitalize(config.name)) + "Rocker";
-            RockerCompile rocker = project.getTasks().create(taskName, RockerCompile.class);
-            rocker.setDescription("Invokes the Rocker template engine.");
-            rocker.setGroup("Rocker");
-            rocker.setConfig(config);
-            rocker.setRuntimeClasspath(configuration);
+            TaskProvider<RockerCompile> rocker = project.getTasks().register(taskName, RockerCompile.class, task -> {
+                task.setDescription("Invokes the Rocker template engine.");
+                task.setGroup("Rocker");
+                task.setConfig(config);
+                task.setRuntimeClasspath(configuration);
+            });
 
             // add the output of the rocker task as a source directory of the source set with the matching name (which adds an implicit task dependency)
             // add the rocker-runtime to the compile configuration in order to be able to compile the generated sources
