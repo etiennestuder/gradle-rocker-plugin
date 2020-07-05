@@ -1,6 +1,5 @@
 package nu.studer.gradle.rocker;
 
-import org.gradle.api.Project;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.model.ObjectFactory;
@@ -31,11 +30,8 @@ public class RockerConfig {
     private final DirectoryProperty classDir;
 
     @Inject
-    public RockerConfig(String name, Project project) {
+    public RockerConfig(String name, ObjectFactory objects, ProjectLayout layout) {
         this.name = name;
-
-        ObjectFactory objects = project.getObjects();
-        ProjectLayout layout = project.getLayout();
 
         this.optimize = objects.property(Boolean.class).convention(Boolean.FALSE);
         this.extendsClass = objects.property(String.class).convention((String) null);
