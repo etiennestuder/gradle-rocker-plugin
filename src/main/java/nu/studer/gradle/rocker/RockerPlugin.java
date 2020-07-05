@@ -64,7 +64,7 @@ public class RockerPlugin implements Plugin<Project> {
         });
     }
 
-    private void enforceRockerVersion(Project project) {
+    private static void enforceRockerVersion(Project project) {
         project.getConfigurations().all(configuration ->
             configuration.getResolutionStrategy().eachDependency(details -> {
                 ModuleVersionSelector requested = details.getRequested();
@@ -75,7 +75,7 @@ public class RockerPlugin implements Plugin<Project> {
         );
     }
 
-    private Configuration createRockerCompilerRuntimeConfiguration(Project project) {
+    private static Configuration createRockerCompilerRuntimeConfiguration(Project project) {
         Configuration rockerCompilerRuntime = project.getConfigurations().create("rockerCompiler");
         rockerCompilerRuntime.setDescription("The classpath used to invoke the Rocker template engine. Add your additional dependencies here.");
         project.getDependencies().add(rockerCompilerRuntime.getName(), "com.fizzed:rocker-compiler");
