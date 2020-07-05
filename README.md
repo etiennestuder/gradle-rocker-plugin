@@ -7,8 +7,8 @@ gradle-rocker-plugin
 
 [Gradle](http://www.gradle.org) plugin that integrates the Rocker template engine. For each named Rocker configuration declared
 in the build, the plugin adds a task to generate the Java sources from the specified Rocker templates and includes the
-generated Java sources in the matching source set, if existing. The code generation tasks participate in [incremental builds](https://docs.gradle.org/current/userguide/more_about_tasks.html#sec:up_to_date_checks), in [task configuration avoidance](https://docs.gradle.org/current/userguide/task_configuration_avoidance.html), in task output caching by the [Gradle Build Cache](https://docs.gradle.org/current/userguide/build_cache.html), and in build
-configuration caching by the [Gradle Configuration Cache](https://docs.gradle.org/nightly/userguide/configuration_cache.html). Additionally,
+generated Java sources in the matching source set, if existing. The code generation tasks participate in [incremental builds](https://docs.gradle.org/current/userguide/more_about_tasks.html#sec:up_to_date_checks), in [task configuration avoidance](https://docs.gradle.org/current/userguide/task_configuration_avoidance.html), in [task output caching](https://docs.gradle.org/current/userguide/build_cache.html) by the Gradle Build Cache, and in [build
+configuration caching](https://docs.gradle.org/nightly/userguide/configuration_cache.html) by the Gradle Configuration Cache. Additionally,
 the compile task itself is [incremental](https://docs.gradle.org/current/dsl/org.gradle.work.InputChanges.html), meaning it is optimized so that only templates which have changed are regenerated.
 The plugin can be applied on both Java projects and Android projects.
 
