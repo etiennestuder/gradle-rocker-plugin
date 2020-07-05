@@ -132,6 +132,7 @@ See the self-contained example build scripts for the [Groovy DSL](example/gradle
 
 # Changelog
 
++ 2.2 - Made RockerCompile task support configuration avoidance.
 + 2.1.1 - Internal refactoring to improve lazy properties usage.
 + 2.1 - Internal refactoring to get rid of deprecated APIs that will be removed in Gradle 7.
 + 2.0 - Made RockerCompile task compatible with the upcoming Gradle Configuration Cache.
