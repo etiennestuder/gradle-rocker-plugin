@@ -40,7 +40,7 @@ public class RockerPlugin implements Plugin<Project> {
         project.getExtensions().add("rocker", container);
 
         // create configuration for the runtime classpath of the rocker compiler (shared by all rocker configuration domain objects)
-        final Configuration configuration = createRockerCompilerRuntimeConfiguration(project);
+        final Configuration runtimeConfiguration = createRockerCompilerRuntimeConfiguration(project);
 
         // create a rocker task for each rocker configuration domain object
         container.all(config -> {
@@ -50,7 +50,7 @@ public class RockerPlugin implements Plugin<Project> {
                 task.setDescription("Invokes the Rocker template engine.");
                 task.setGroup("Rocker");
                 task.setConfig(config);
-                task.setRuntimeClasspath(configuration);
+                task.setRuntimeClasspath(runtimeConfiguration);
             });
 
             // add the output of the rocker task as a source directory of the source set with the matching name (which adds an implicit task dependency)
