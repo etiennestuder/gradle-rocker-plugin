@@ -75,7 +75,7 @@ public class RockerCompile extends DefaultTask {
 
     @SuppressWarnings("unused")
     @Internal
-    Action<? super JavaExecSpec> getJavaExecSpec() {
+    public Action<? super JavaExecSpec> getJavaExecSpec() {
         return javaExecSpec;
     }
 
@@ -86,7 +86,7 @@ public class RockerCompile extends DefaultTask {
 
     @SuppressWarnings("unused")
     @Internal
-    Action<? super ExecResult> getExecResultHandler() {
+    public Action<? super ExecResult> getExecResultHandler() {
         return execResultHandler;
     }
 
