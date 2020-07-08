@@ -46,11 +46,10 @@ public class RockerPlugin implements Plugin<Project> {
         container.all(config -> {
             // register rocker task, create it lazily
             String taskName = "compile" + (config.name.equals("main") ? "" : StringUtils.capitalize(config.name)) + "Rocker";
-            TaskProvider<RockerCompile> rocker = project.getTasks().register(taskName, RockerCompile.class, config);
+            TaskProvider<RockerCompile> rocker = project.getTasks().register(taskName, RockerCompile.class, config, runtimeConfiguration);
             rocker.configure(task -> {
                 task.setDescription("Invokes the Rocker template engine.");
                 task.setGroup("Rocker");
-                task.getRuntimeClasspath().setFrom(runtimeConfiguration);
             });
 
             // add the output of the rocker task as a source directory of the source set with the matching name (which adds an implicit task dependency)

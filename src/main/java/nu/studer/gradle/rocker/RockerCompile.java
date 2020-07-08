@@ -5,6 +5,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileSystemOperations;
 import org.gradle.api.file.FileType;
 import org.gradle.api.file.ProjectLayout;
@@ -42,9 +43,9 @@ public class RockerCompile extends DefaultTask {
     private final ExecOperations execOperations;
 
     @Inject
-    public RockerCompile(RockerConfig config, ObjectFactory objects, ProjectLayout projectLayout, FileSystemOperations fileSystemOperations, ExecOperations execOperations) {
+    public RockerCompile(RockerConfig config, FileCollection runtimeClasspath, ObjectFactory objects, ProjectLayout projectLayout, FileSystemOperations fileSystemOperations, ExecOperations execOperations) {
         this.config = config;
-        this.runtimeClasspath = objects.fileCollection();
+        this.runtimeClasspath = objects.fileCollection().from(runtimeClasspath);
 
         this.projectLayout = projectLayout;
         this.fileSystemOperations = fileSystemOperations;
