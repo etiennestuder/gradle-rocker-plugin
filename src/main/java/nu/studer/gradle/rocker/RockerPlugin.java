@@ -30,7 +30,7 @@ public class RockerPlugin implements Plugin<Project> {
         project.getPlugins().apply(JavaBasePlugin.class);
 
         // allow to configure the rocker version via extension property
-        RockerVersion.applyDefaultVersion(project);
+        RockerVersionProperty.applyDefaultVersion(project);
 
         // use the configured rocker version on all rocker dependencies
         enforceRockerVersion(project);
@@ -68,7 +68,8 @@ public class RockerPlugin implements Plugin<Project> {
             configuration.getResolutionStrategy().eachDependency(details -> {
                 ModuleVersionSelector requested = details.getRequested();
                 if (requested.getGroup().equals("com.fizzed") && requested.getName().startsWith("rocker-")) {
-                    details.useVersion(RockerVersion.fromProject(project).asString());
+                    String version = RockerVersionProperty.fromProject(project).asVersion();
+                    details.useVersion(version);
                 }
             })
         );
