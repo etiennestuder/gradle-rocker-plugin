@@ -386,6 +386,50 @@ rocker {
         result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
     }
 
+    void "supports task avoidance"() {
+        given:
+        exampleTemplate()
+
+        and:
+        buildFile << """
+plugins {
+    id 'nu.studer.rocker'
+    id 'java'
+}
+
+repositories {
+    jcenter()
+}
+
+tasks.configureEach {
+    println("\${Thread.currentThread().id} Configuring \${it.path}")
+}
+
+task dummy {}
+
+rocker {
+  main {
+    optimize = true
+    templateDir = file('src/rocker')
+    outputDir = file('src/generated/rocker')
+  }
+}
+"""
+
+        when:
+        def result = runWithArguments(task)
+
+        then:
+        result.output.contains('Configuring :compileRocker') == expectCompileRocker
+        result.output.contains('Configuring :compileJava') == expectCompileJava
+
+        where:
+        task            | expectCompileRocker | expectCompileJava
+        'dummy'         | false               | false
+        // 'compileRocker' | true                | false
+        'compileJava'   | true                | true
+    }
+
     void "skipped when no inputs"() {
         given:
         buildFile << """
