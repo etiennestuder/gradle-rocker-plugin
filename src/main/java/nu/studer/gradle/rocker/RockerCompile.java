@@ -32,7 +32,7 @@ public class RockerCompile extends DefaultTask {
 
     private static final String ROCKER_FILE_EXTENSION_PREFIX = ".rocker";
 
-    private RockerConfig config;
+    private final RockerConfig config;
     private final ConfigurableFileCollection runtimeClasspath;
     private Action<? super JavaExecSpec> javaExecSpec;
     private Action<? super ExecResult> execResultHandler;
@@ -42,7 +42,8 @@ public class RockerCompile extends DefaultTask {
     private final ExecOperations execOperations;
 
     @Inject
-    public RockerCompile(ObjectFactory objects, ProjectLayout projectLayout, FileSystemOperations fileSystemOperations, ExecOperations execOperations) {
+    public RockerCompile(RockerConfig config, ObjectFactory objects, ProjectLayout projectLayout, FileSystemOperations fileSystemOperations, ExecOperations execOperations) {
+        this.config = config;
         this.runtimeClasspath = objects.fileCollection();
 
         this.projectLayout = projectLayout;
@@ -62,10 +63,6 @@ public class RockerCompile extends DefaultTask {
     @Nested
     public RockerConfig getConfig() {
         return config;
-    }
-
-    void setConfig(RockerConfig config) {
-        this.config = config;
     }
 
     @SuppressWarnings("unused")
