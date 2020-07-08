@@ -50,7 +50,7 @@ public class RockerPlugin implements Plugin<Project> {
                 task.setDescription("Invokes the Rocker template engine.");
                 task.setGroup("Rocker");
                 task.setConfig(config);
-                task.setRuntimeClasspath(runtimeConfiguration);
+                task.getRuntimeClasspath().setFrom(runtimeConfiguration);
             });
 
             // add the output of the rocker task as a source directory of the source set with the matching name (which adds an implicit task dependency)

@@ -3,12 +3,13 @@ package nu.studer.gradle.rocker;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.DirectoryProperty;
-import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileSystemOperations;
 import org.gradle.api.file.FileType;
 import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.file.RegularFile;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Classpath;
@@ -32,7 +33,7 @@ public class RockerCompile extends DefaultTask {
     private static final String ROCKER_FILE_EXTENSION_PREFIX = ".rocker";
 
     private RockerConfig config;
-    private FileCollection runtimeClasspath;
+    private final ConfigurableFileCollection runtimeClasspath;
     private Action<? super JavaExecSpec> javaExecSpec;
     private Action<? super ExecResult> execResultHandler;
 
@@ -41,7 +42,9 @@ public class RockerCompile extends DefaultTask {
     private final ExecOperations execOperations;
 
     @Inject
-    public RockerCompile(ProjectLayout projectLayout, FileSystemOperations fileSystemOperations, ExecOperations execOperations) {
+    public RockerCompile(ObjectFactory objects, ProjectLayout projectLayout, FileSystemOperations fileSystemOperations, ExecOperations execOperations) {
+        this.runtimeClasspath = objects.fileCollection();
+
         this.projectLayout = projectLayout;
         this.fileSystemOperations = fileSystemOperations;
         this.execOperations = execOperations;
@@ -68,12 +71,8 @@ public class RockerCompile extends DefaultTask {
     @SuppressWarnings("unused")
     @Classpath
     @InputFiles
-    public FileCollection getRuntimeClasspath() {
+    public ConfigurableFileCollection getRuntimeClasspath() {
         return runtimeClasspath;
-    }
-
-    void setRuntimeClasspath(FileCollection runtimeClasspath) {
-        this.runtimeClasspath = runtimeClasspath;
     }
 
     @SuppressWarnings("unused")
