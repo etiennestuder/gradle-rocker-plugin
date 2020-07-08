@@ -867,7 +867,7 @@ compileFooRocker {
     }
 
     @SuppressWarnings("GroovyAccessibility")
-    private Writer rockerMainBuildFile(boolean optimize, String templateDir, String outputDir, String rockerVersion = RockerVersion.DEFAULT) {
+    private Writer rockerMainBuildFile(boolean optimize, String templateDir, String outputDir, String rockerVersion = RockerVersionProperty.DEFAULT) {
         buildFile.newWriter().withWriter { w ->
             w << """
 plugins {
