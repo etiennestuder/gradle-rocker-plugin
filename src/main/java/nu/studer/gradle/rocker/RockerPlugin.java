@@ -65,7 +65,7 @@ public class RockerPlugin implements Plugin<Project> {
     }
 
     private static void enforceRockerVersion(Project project) {
-        project.getConfigurations().all(configuration ->
+        project.getConfigurations().configureEach(configuration ->
             configuration.getResolutionStrategy().eachDependency(details -> {
                 ModuleVersionSelector requested = details.getRequested();
                 if (requested.getGroup().equals("com.fizzed") && requested.getName().startsWith("rocker-")) {
