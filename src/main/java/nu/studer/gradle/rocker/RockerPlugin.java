@@ -7,12 +7,13 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ModuleVersionSelector;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
-import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.util.GradleVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.lang.String.format;
 
 @SuppressWarnings("unused")
 public class RockerPlugin implements Plugin<Project> {
@@ -43,23 +44,24 @@ public class RockerPlugin implements Plugin<Project> {
         final Configuration runtimeConfiguration = createRockerCompilerRuntimeConfiguration(project);
 
         // create a rocker task for each rocker configuration domain object
-        container.all(config -> {
+        container.configureEach(config -> {
             // register rocker task, create it lazily
             String taskName = "compile" + (config.name.equals("main") ? "" : StringUtils.capitalize(config.name)) + "Rocker";
             TaskProvider<RockerCompile> rocker = project.getTasks().register(taskName, RockerCompile.class, config, runtimeConfiguration);
             rocker.configure(task -> {
-                task.setDescription("Invokes the Rocker template engine.");
+                task.setDescription(format("Compiles the Rocker templates of the %s rocker configuration.", config.name));
                 task.setGroup("Rocker");
             });
 
             // add the output of the rocker task as a source directory of the source set with the matching name (which adds an implicit task dependency)
             // add the rocker-runtime to the compile configuration in order to be able to compile the generated sources
             SourceSetContainer sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets();
-            SourceSet sourceSet = sourceSets.findByName(config.name);
-            if (sourceSet != null) {
-                sourceSet.getJava().srcDir(rocker);
-                project.getDependencies().add(sourceSet.getImplementationConfigurationName(), "com.fizzed:rocker-runtime");
-            }
+            sourceSets.configureEach(sourceSet -> {
+                if (sourceSet.getName().equals(config.name)) {
+                    sourceSet.getJava().srcDir(rocker);
+                    project.getDependencies().add(sourceSet.getImplementationConfigurationName(), "com.fizzed:rocker-runtime");
+                }
+            });
         });
     }
 
