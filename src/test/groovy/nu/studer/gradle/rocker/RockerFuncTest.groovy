@@ -268,7 +268,7 @@ rocker {
 
         then:
         fileExists('src/generated/rocker/Example.java')
-        fileExists('build/classes/java/main/Example.class') || fileExists('build/classes/main/Example.class')
+        fileExists('build/classes/java/main/Example.class')
         result.task(':compileRocker').outcome == TaskOutcome.SUCCESS
         result.task(':classes').outcome == TaskOutcome.SUCCESS
     }
@@ -312,11 +312,12 @@ afterEvaluate {
         def result = runWithArguments('classes')
 
         then:
+        !fileExists('src/generated/rocker/Example.java')
         fileExists('src/generated/rocker/other/Example.java')
-        fileExists('build/classes/java/main/Example.class') || fileExists('build/classes/main/Example.class')
-        result.output.contains('dir/src/main/java---')
-        result.output.contains('dir/src/generated/rocker/other---')
+        fileExists('build/classes/java/main/Example.class')
         !result.output.contains('dir/src/generated/rocker---')
+        result.output.contains('dir/src/generated/rocker/other---')
+        result.output.contains('dir/src/main/java---')
         result.task(':compileRocker').outcome == TaskOutcome.SUCCESS
         result.task(':classes').outcome == TaskOutcome.SUCCESS
     }
@@ -424,10 +425,10 @@ rocker {
         result.output.contains('Configuring :compileJava') == expectCompileJava
 
         where:
-        task            | expectCompileRocker | expectCompileJava
-        'dummy'         | false               | false
+        task          | expectCompileRocker | expectCompileJava
+        'dummy'       | false               | false
         // 'compileRocker' | true                | false
-        'compileJava'   | true                | true
+        'compileJava' | true                | true
     }
 
     void "skipped when no inputs"() {
