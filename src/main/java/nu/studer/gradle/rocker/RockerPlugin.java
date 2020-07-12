@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static java.lang.String.format;
+import static nu.studer.gradle.rocker.StringUtils.capitalize;
 
 @SuppressWarnings("unused")
 public class RockerPlugin implements Plugin<Project> {
@@ -46,7 +47,7 @@ public class RockerPlugin implements Plugin<Project> {
         // create a rocker task for each rocker configuration domain object
         container.configureEach(config -> {
             // register rocker task, create it lazily
-            String taskName = "compile" + (config.name.equals("main") ? "" : StringUtils.capitalize(config.name)) + "Rocker";
+            String taskName = "compile" + (config.name.equals("main") ? "" : capitalize(config.name)) + "Rocker";
             TaskProvider<RockerCompile> rocker = project.getTasks().register(taskName, RockerCompile.class, config, runtimeConfiguration);
             rocker.configure(task -> {
                 task.setDescription(format("Compiles the Rocker templates of the %s rocker configuration.", config.name));
