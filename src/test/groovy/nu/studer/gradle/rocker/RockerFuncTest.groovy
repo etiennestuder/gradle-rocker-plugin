@@ -352,8 +352,8 @@ rocker {
         def result = runWithArguments('dependencies')
 
         then:
-        result.output.contains('com.fizzed:rocker-compiler -> 0.15.0') || result.output.contains('com.fizzed:rocker-compiler: -> 0.15.0')
-        result.output.contains('com.fizzed:rocker-runtime -> 0.15.0')  || result.output.contains('com.fizzed:rocker-runtime: -> 0.15.0')
+        result.output.contains('com.fizzed:rocker-compiler -> 0.15.0')
+        result.output.contains('com.fizzed:rocker-runtime -> 0.15.0')
     }
 
     void "can set custom target charset"() {
