@@ -315,9 +315,9 @@ afterEvaluate {
         !fileExists('src/generated/rocker/Example.java')
         fileExists('src/generated/rocker/other/Example.java')
         fileExists('build/classes/java/main/Example.class')
-        !result.output.contains('dir/src/generated/rocker---')
-        result.output.contains('dir/src/generated/rocker/other---')
-        result.output.contains('dir/src/main/java---')
+        !result.output.contains('/src/generated/rocker---')
+        result.output.contains('/src/generated/rocker/other---')
+        result.output.contains('/src/main/java---')
         result.task(':compileRocker').outcome == TaskOutcome.SUCCESS
         result.task(':classes').outcome == TaskOutcome.SUCCESS
     }
