@@ -684,6 +684,44 @@ rocker {
         !result.task(':cleanCompileRocker')
     }
 
+    void "cleans sources by calling clean task rule"() {
+        given:
+        exampleTemplate()
+
+        and:
+        buildFile << """
+plugins {
+    id 'nu.studer.rocker'
+    id 'java'
+}
+
+repositories {
+    jcenter()
+}
+
+rocker {
+  main {
+    optimize = true
+    templateDir = file('src/rocker')
+    outputDir = file('src/generated/rocker')
+  }
+}
+"""
+
+        when:
+        runWithArguments('compileRocker')
+
+        then:
+        fileExists('src/generated/rocker/Example.java')
+
+        when:
+        def result = runWithArguments('cleanCompileRocker')
+
+        then:
+        !new File(workspaceDir, 'src/generated/rocker/Example.java').exists()
+        result.task(':cleanCompileRocker').outcome == TaskOutcome.SUCCESS
+    }
+
     void "can customize java execution and handle execution result"() {
         given:
         exampleTemplate()
