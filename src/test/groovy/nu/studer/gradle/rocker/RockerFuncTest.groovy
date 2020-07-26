@@ -764,7 +764,7 @@ compileFooRocker {
 
         then:
         fileExists('src/generated/rocker/Example.java')
-        result.output.contains("Rocker template compilation succeeded")
+        result.output.contains('Rocker template compilation succeeded')
         result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
     }
 
