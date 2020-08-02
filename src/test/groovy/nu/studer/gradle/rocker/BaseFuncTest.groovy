@@ -5,7 +5,6 @@ import org.gradle.testkit.runner.GradleRunner
 import org.gradle.util.GradleVersion
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
-import org.junit.rules.TestName
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -32,8 +31,18 @@ abstract class BaseFuncTest extends Specification {
     GradleVersion gradleVersion
 
     void setup() {
-        workspaceDir = new File(tempDir.root, specificationContext.currentIteration.name.replace(':', '.'))
+        def testFolder = specificationContext.currentIteration.name.replace(':', '.').replace('\'', '')
+        workspaceDir = new File(tempDir.root, testFolder)
         gradleVersion = determineGradleVersion()
+
+        def localBuildCacheDirectory = new File(workspaceDir, 'local-cache')
+        settingsFile << """
+buildCache {
+  local {
+    directory '${localBuildCacheDirectory.toURI()}'
+  }
+}
+        """
     }
 
     protected BuildResult runWithArguments(String... args) {
