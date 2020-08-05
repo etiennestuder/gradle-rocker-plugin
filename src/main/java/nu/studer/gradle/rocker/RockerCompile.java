@@ -67,7 +67,7 @@ public class RockerCompile extends DefaultTask {
 
     @SuppressWarnings("unused")
     @Classpath
-    public ConfigurableFileCollection getRuntimeClasspath() {
+    public FileCollection getRuntimeClasspath() {
         return runtimeClasspath;
     }
 
