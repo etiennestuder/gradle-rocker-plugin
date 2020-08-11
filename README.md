@@ -14,7 +14,8 @@ The plugin can be applied on both Java projects and Android projects.
 
 You can find out more details about the actual Rocker source code generation in the [Rocker documentation](https://github.com/fizzed/rocker).
 
-The Rocker plugin is hosted at [Bintray's JCenter](https://bintray.com/etienne/gradle-plugins/gradle-rocker-plugin).
+The Rocker plugin is hosted at [Bintray's JCenter](https://bintray.com/etienne/gradle-plugins/gradle-rocker-plugin), also available from
+the [Gradle Plugin Portal](https://plugins.gradle.org/plugin/nu.studer.rocker).
 
 ## Build scan
 
