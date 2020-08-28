@@ -4,14 +4,6 @@ import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputDirectory;
-import org.gradle.api.tasks.Internal;
-import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.OutputDirectory;
-import org.gradle.api.tasks.PathSensitive;
-import org.gradle.api.tasks.PathSensitivity;
-import org.gradle.api.tasks.SkipWhenEmpty;
 
 import javax.inject.Inject;
 
@@ -44,50 +36,34 @@ public class RockerConfig {
         this.classDir = objects.directoryProperty().convention(layout.getBuildDirectory().dir("rocker-hot-reload/" + name));
     }
 
-    @Input
     public Property<Boolean> getOptimize() {
         return optimize;
     }
 
-    @Optional
-    @Input
     public Property<String> getExtendsClass() {
         return extendsClass;
     }
 
-    @Optional
-    @Input
     public Property<String> getExtendsModelClass() {
         return extendsModelClass;
     }
 
-    @Optional
-    @Input
     public Property<String> getJavaVersion() {
         return javaVersion;
     }
 
-    @Optional
-    @Input
     public Property<String> getTargetCharset() {
         return targetCharset;
     }
 
-    @SkipWhenEmpty
-    @InputDirectory
-    @PathSensitive(PathSensitivity.RELATIVE)
     public DirectoryProperty getTemplateDir() {
         return templateDir;
     }
 
-    // declared as output on RockerCompile task
-    @Internal
     public DirectoryProperty getOutputDir() {
         return outputDir;
     }
 
-    // do not include in uptodate check, not as input nor as output
-    @Internal
     public DirectoryProperty getClassDir() {
         return classDir;
     }

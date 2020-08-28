@@ -5,19 +5,22 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.Directory;
-import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileSystemOperations;
 import org.gradle.api.file.FileType;
 import org.gradle.api.file.ProjectLayout;
-import org.gradle.api.file.RegularFile;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Classpath;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Internal;
-import org.gradle.api.tasks.Nested;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
+import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.process.ExecOperations;
 import org.gradle.process.ExecResult;
@@ -34,9 +37,15 @@ public class RockerCompile extends DefaultTask {
 
     private static final String ROCKER_FILE_EXTENSION_PREFIX = ".rocker";
 
-    private final RockerConfig config;
+    private final Provider<Boolean> optimize;
+    private final Provider<String> extendsClass;
+    private final Provider<String> extendsModelClass;
+    private final Provider<String> javaVersion;
+    private final Provider<String> targetCharset;
+    private final Provider<Directory> templateDir;
     private final ConfigurableFileCollection runtimeClasspath;
-    private final DirectoryProperty outputDir;
+    private final Provider<Directory> outputDir;
+    private final Provider<Directory> classDir;
     private Action<? super JavaExecSpec> javaExecSpec;
     private Action<? super ExecResult> execResultHandler;
 
@@ -46,9 +55,15 @@ public class RockerCompile extends DefaultTask {
 
     @Inject
     public RockerCompile(RockerConfig config, FileCollection runtimeClasspath, ObjectFactory objects, ProjectLayout projectLayout, FileSystemOperations fileSystemOperations, ExecOperations execOperations) {
-        this.config = config;
+        this.optimize = objects.property(Boolean.class).value(config.getOptimize());
+        this.extendsClass = objects.property(String.class).value(config.getExtendsClass());
+        this.extendsModelClass = objects.property(String.class).value(config.getExtendsModelClass());
+        this.javaVersion = objects.property(String.class).value(config.getJavaVersion());
+        this.targetCharset = objects.property(String.class).value(config.getTargetCharset());
+        this.templateDir = objects.directoryProperty().value(config.getTemplateDir());
         this.runtimeClasspath = objects.fileCollection().from(runtimeClasspath);
         this.outputDir = objects.directoryProperty().value(config.getOutputDir());
+        this.classDir = objects.directoryProperty().value(config.getClassDir());
 
         this.projectLayout = projectLayout;
         this.fileSystemOperations = fileSystemOperations;
@@ -58,15 +73,45 @@ public class RockerCompile extends DefaultTask {
         getOutputs().cacheIf(new Spec<Task>() {
             @Override
             public boolean isSatisfiedBy(Task task) {
-                return config.getOptimize().get();
+                return optimize.get();
             }
         });
     }
 
-    @SuppressWarnings("unused")
-    @Nested
-    public RockerConfig getConfig() {
-        return config;
+    @Input
+    public Provider<Boolean> getOptimize() {
+        return optimize;
+    }
+
+    @Optional
+    @Input
+    public Provider<String> getExtendsClass() {
+        return extendsClass;
+    }
+
+    @Optional
+    @Input
+    public Provider<String> getExtendsModelClass() {
+        return extendsModelClass;
+    }
+
+    @Optional
+    @Input
+    public Provider<String> getJavaVersion() {
+        return javaVersion;
+    }
+
+    @Optional
+    @Input
+    public Provider<String> getTargetCharset() {
+        return targetCharset;
+    }
+
+    @SkipWhenEmpty
+    @InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
+    public Provider<Directory> getTemplateDir() {
+        return templateDir;
     }
 
     @SuppressWarnings("unused")
@@ -78,6 +123,11 @@ public class RockerCompile extends DefaultTask {
     @OutputDirectory
     public Provider<Directory> getOutputDir() {
         return outputDir;
+    }
+
+    @Internal
+    public Provider<Directory> getClassDir() {
+        return classDir;
     }
 
     @SuppressWarnings("unused")
@@ -105,17 +155,16 @@ public class RockerCompile extends DefaultTask {
     @SuppressWarnings("unused")
     @TaskAction
     void doCompile(InputChanges inputChanges) {
-        final DirectoryProperty templateDir = config.getTemplateDir();
         final File templateDirAsFile = templateDir.get().getAsFile();
 
         final Set<String> modifiedTemplates = new HashSet<>();
-        final Set<Provider<RegularFile>> removedTemplates = new HashSet<>();
+        final Set<File> removedTemplates = new HashSet<>();
         ExecResult execResult = null;
 
         if (!inputChanges.isIncremental()) {
             // delete any generated files from previous runs and any classes compiled by Rocker via hot-reloading
             fileSystemOperations.delete(spec -> spec.delete(outputDir));
-            fileSystemOperations.delete(spec -> spec.delete(config.getClassDir()));
+            fileSystemOperations.delete(spec -> spec.delete(classDir));
 
             // generate the files from the templates
             execResult = executeRocker(templateDirAsFile);
@@ -130,12 +179,12 @@ public class RockerCompile extends DefaultTask {
                 } else if (change.getChangeType() == ChangeType.REMOVED) {
                     String javaSourceFileName = toJavaSourceFileName(change.getNormalizedPath());
                     if (javaSourceFileName != null) {
-                        removedTemplates.add(outputDir.file(javaSourceFileName));
+                        removedTemplates.add(outputDir.get().file(javaSourceFileName).getAsFile());
                     }
 
                     String javaClassFileName = toJavaClassFileName(change.getNormalizedPath());
                     if (javaClassFileName != null) {
-                        removedTemplates.add(config.getClassDir().file(javaClassFileName));
+                        removedTemplates.add(classDir.get().file(javaClassFileName).getAsFile());
                     }
                 }
             });
@@ -178,14 +227,14 @@ public class RockerCompile extends DefaultTask {
                 spec.setMain("com.fizzed.rocker.compiler.JavaGeneratorMain");
                 spec.setClasspath(runtimeClasspath);
                 spec.setWorkingDir(projectLayout.getProjectDirectory());
-                spec.systemProperty("rocker.option.optimize", config.getOptimize().get().toString());
-                systemPropertyIfNotNull("rocker.option.extendsClass", config.getExtendsClass().getOrNull(), spec);
-                systemPropertyIfNotNull("rocker.option.extendsModelClass", config.getExtendsModelClass().getOrNull(), spec);
-                systemPropertyIfNotNull("rocker.option.javaVersion", config.getJavaVersion().getOrNull(), spec);
-                systemPropertyIfNotNull("rocker.option.targetCharset", config.getTargetCharset().getOrNull(), spec);
+                spec.systemProperty("rocker.option.optimize", optimize.get().toString());
+                systemPropertyIfNotNull("rocker.option.extendsClass", extendsClass.getOrNull(), spec);
+                systemPropertyIfNotNull("rocker.option.extendsModelClass", extendsModelClass.getOrNull(), spec);
+                systemPropertyIfNotNull("rocker.option.javaVersion", javaVersion.getOrNull(), spec);
+                systemPropertyIfNotNull("rocker.option.targetCharset", targetCharset.getOrNull(), spec);
                 spec.systemProperty("rocker.template.dir", templateDir.getAbsolutePath());
                 spec.systemProperty("rocker.output.dir", outputDir.get().getAsFile().getAbsolutePath());
-                spec.systemProperty("rocker.class.dir", config.getClassDir().get().getAsFile().getAbsolutePath());
+                spec.systemProperty("rocker.class.dir", classDir.get().getAsFile().getAbsolutePath());
 
                 if (javaExecSpec != null) {
                     javaExecSpec.execute(spec);
