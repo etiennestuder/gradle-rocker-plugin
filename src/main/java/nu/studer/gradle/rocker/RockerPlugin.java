@@ -61,7 +61,14 @@ public class RockerPlugin implements Plugin<Project> {
         enforceRockerVersion(project, rockerExtension);
     }
 
-    // todo (etst) switch method order
+    private static Configuration createRockerCompilerRuntimeConfiguration(Project project) {
+        Configuration rockerCompilerRuntime = project.getConfigurations().create("rockerCompiler");
+        rockerCompilerRuntime.setDescription("The classpath used to invoke the Rocker template engine. Add your additional dependencies here.");
+        project.getDependencies().add(rockerCompilerRuntime.getName(), "com.fizzed:rocker-compiler");
+        project.getDependencies().add(rockerCompilerRuntime.getName(), "org.slf4j:slf4j-simple:1.7.30");
+        return rockerCompilerRuntime;
+    }
+
     private static void enforceRockerVersion(Project project, RockerExtension rockerExtension) {
         project.getConfigurations().configureEach(configuration ->
             configuration.getResolutionStrategy().eachDependency(details -> {
@@ -72,14 +79,6 @@ public class RockerPlugin implements Plugin<Project> {
                 }
             })
         );
-    }
-
-    private static Configuration createRockerCompilerRuntimeConfiguration(Project project) {
-        Configuration rockerCompilerRuntime = project.getConfigurations().create("rockerCompiler");
-        rockerCompilerRuntime.setDescription("The classpath used to invoke the Rocker template engine. Add your additional dependencies here.");
-        project.getDependencies().add(rockerCompilerRuntime.getName(), "com.fizzed:rocker-compiler");
-        project.getDependencies().add(rockerCompilerRuntime.getName(), "org.slf4j:slf4j-simple:1.7.30");
-        return rockerCompilerRuntime;
     }
 
 }
