@@ -5,7 +5,6 @@ plugins {
 }
 
 group = 'nu.studer'
-version = '2.2.2-DEV'
 
 dependencies {
     testImplementation 'org.spockframework:spock-core:2.0-M3-groovy-2.5'
