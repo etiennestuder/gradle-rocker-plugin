@@ -31,15 +31,17 @@ repositories {
 }
 
 rocker {
-  foo {
-    // `optimize` defaults to false
-    // `extendsClass` defaults to null, deferring to the Rocker default
-    // `extendsModelClass` defaults to null, deferring to the Rocker default
-    // `javaVersion` defaults to current JVM version
-    // `targetCharset` defaults to UTF-8
-    // `templateDir` defaults to <projectDir>/src/rocker/<configName>
-    // `outputDir` defaults to <buildDir>/generated-src/rocker/<configName>
-    // `classDir` defaults to <buildDir>/rocker-hot-reload/<configName>
+  configurations {
+    foo {
+      // `optimize` defaults to false
+      // `extendsClass` defaults to null, deferring to the Rocker default
+      // `extendsModelClass` defaults to null, deferring to the Rocker default
+      // `javaVersion` defaults to current JVM version
+      // `targetCharset` defaults to UTF-8
+      // `templateDir` defaults to <projectDir>/src/rocker/<configName>
+      // `outputDir` defaults to <buildDir>/generated-src/rocker/<configName>
+      // `classDir` defaults to <buildDir>/rocker-hot-reload/<configName>
+    }
   }
 }
 """
@@ -72,7 +74,9 @@ repositories {
 }
 
 rocker {
-  foo {
+  configurations {
+    foo {
+    }
   }
 }
 """
@@ -112,10 +116,12 @@ repositories {
 }
 
 rocker {
-  foo {
-    optimize = true
-    templateDir = file('src/rocker')
-    outputDir = file('src/generated/rocker')
+  configurations {
+    foo {
+      optimize = true
+      templateDir = file('src/rocker')
+      outputDir = file('src/generated/rocker')
+    }
   }
 }
 """
@@ -147,15 +153,17 @@ repositories {
 }
 
 rocker {
-  main {
-    optimize = true
-    templateDir = file('src/rocker/main')
-    outputDir = file('src/generated/rocker/main')
-  }
-  integTest {
-    optimize = true
-    templateDir = file('src/rocker/test')
-    outputDir = file('src/generated/rocker/test')
+  configurations {
+    main {
+      optimize = true
+      templateDir = file('src/rocker/main')
+      outputDir = file('src/generated/rocker/main')
+    }
+    integTest {
+      optimize = true
+      templateDir = file('src/rocker/test')
+      outputDir = file('src/generated/rocker/test')
+    }
   }
 }
 """
@@ -185,13 +193,14 @@ repositories {
     jcenter()
 }
 
-val rockerVersion by extra("1.3.0")
-
 rocker {
-    create("foo") {
-        optimize.set(true)
-        templateDir.set(file("src/rocker"))
-        outputDir.set(file("src/generated/rocker"))
+    version.set("1.3.0")
+    configurations {
+        create("foo") {
+            optimize.set(true)
+            templateDir.set(file("src/rocker"))
+            outputDir.set(file("src/generated/rocker"))
+        }
     }
 }
 """
@@ -222,9 +231,11 @@ repositories {
 }
 
 rocker {
-  main {
-    templateDir = file('src/rocker')
-    outputDir = file('src/generated/rocker')
+  configurations {
+    main {
+      templateDir = file('src/rocker')
+      outputDir = file('src/generated/rocker')
+    }
   }
 }
 """
@@ -255,10 +266,12 @@ repositories {
 }
 
 rocker {
-  main {
-    optimize = true
-    templateDir = file('src/rocker')
-    outputDir = file('src/generated/rocker')
+  configurations {
+    main {
+      optimize = true
+      templateDir = file('src/rocker')
+      outputDir = file('src/generated/rocker')
+    }
   }
 }
 """
@@ -289,14 +302,16 @@ repositories {
 }
 
 rocker {
-  main {
-    optimize = true
-    templateDir = file('src/rocker')
-    outputDir = file('src/generated/rocker')
+  configurations {
+    main {
+      optimize = true
+      templateDir = file('src/rocker')
+      outputDir = file('src/generated/rocker')
+    }
   }
 }
 
-rocker.main.outputDir = file('src/generated/rocker/other')
+rocker.configurations.main.outputDir = file('src/generated/rocker/other')
 
 afterEvaluate {
   SourceSetContainer sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
@@ -337,13 +352,14 @@ repositories {
     jcenter()
 }
 
-rockerVersion = '0.15.0'
-
 rocker {
-  main {
-    optimize = true
-    templateDir = file('src/rocker')
-    outputDir = file('src/generated/rocker')
+  version = '0.15.0'
+  configurations {
+    main {
+      optimize = true
+      templateDir = file('src/rocker')
+      outputDir = file('src/generated/rocker')
+    }
   }
 }
 """
@@ -371,10 +387,12 @@ repositories {
 }
 
 rocker {
-  foo {
-    targetCharset= 'ISO-8859-1'
-    templateDir = file('src/rocker')
-    outputDir = file('src/generated/rocker')
+  configurations {
+    foo {
+      targetCharset= 'ISO-8859-1'
+      templateDir = file('src/rocker')
+      outputDir = file('src/generated/rocker')
+    }
   }
 }
 """
@@ -409,10 +427,12 @@ tasks.configureEach {
 task dummy {}
 
 rocker {
-  main {
-    optimize = true
-    templateDir = file('src/rocker')
-    outputDir = file('src/generated/rocker')
+  configurations {
+    main {
+      optimize = true
+      templateDir = file('src/rocker')
+      outputDir = file('src/generated/rocker')
+    }
   }
 }
 """
@@ -444,10 +464,12 @@ repositories {
 }
 
 rocker {
-  main {
-    optimize = true
-    templateDir = file('src/rocker')
-    outputDir = file('src/generated/rocker')
+  configurations {
+    main {
+      optimize = true
+      templateDir = file('src/rocker')
+      outputDir = file('src/generated/rocker')
+    }
   }
 }
 """
@@ -475,10 +497,12 @@ repositories {
 }
 
 rocker {
-  main {
-    optimize = true
-    templateDir = file('src/rocker')
-    outputDir = file('src/generated/rocker')
+  configurations {
+    main {
+      optimize = true
+      templateDir = file('src/rocker')
+      outputDir = file('src/generated/rocker')
+    }
   }
 }
 """
@@ -542,10 +566,12 @@ repositories {
 }
 
 rocker {
-  main {
-    optimize = $optimize
-    templateDir = file('src/rocker/main')
-    outputDir = file('src/generated/rocker/main')
+  configurations {
+    main {
+      optimize = $optimize
+      templateDir = file('src/rocker/main')
+      outputDir = file('src/generated/rocker/main')
+    }
   }
 }
 """
@@ -587,10 +613,12 @@ repositories {
 }
 
 rocker {
-  foo {
-    optimize = true
-    templateDir = file('src/rocker')
-    outputDir = file('src/generated/rocker')
+  configurations {
+    foo {
+      optimize = true
+      templateDir = file('src/rocker')
+      outputDir = file('src/generated/rocker')
+    }
   }
 }
 
@@ -624,10 +652,12 @@ repositories {
 }
 
 rocker {
-  foo {
-    optimize = false
-    templateDir = file('src/rocker')
-    outputDir = file('src/generated/rocker')
+  configurations {
+    foo {
+      optimize = false
+      templateDir = file('src/rocker')
+      outputDir = file('src/generated/rocker')
+    }
   }
 }
 
@@ -662,10 +692,12 @@ repositories {
 }
 
 rocker {
-  main {
-    optimize = true
-    templateDir = file('src/rocker')
-    outputDir = file('src/generated/rocker')
+  configurations {
+    main {
+      optimize = true
+      templateDir = file('src/rocker')
+      outputDir = file('src/generated/rocker')
+    }
   }
 }
 """
@@ -700,10 +732,12 @@ repositories {
 }
 
 rocker {
-  main {
-    optimize = true
-    templateDir = file('src/rocker')
-    outputDir = file('src/generated/rocker')
+  configurations {
+    main {
+      optimize = true
+      templateDir = file('src/rocker')
+      outputDir = file('src/generated/rocker')
+    }
   }
 }
 """
@@ -737,10 +771,12 @@ repositories {
 }
 
 rocker {
-  foo {
-    optimize = true
-    templateDir = file('src/rocker')
-    outputDir = file('src/generated/rocker')
+  configurations {
+    foo {
+      optimize = true
+      templateDir = file('src/rocker')
+      outputDir = file('src/generated/rocker')
+    }
   }
 }
 
@@ -906,7 +942,7 @@ compileFooRocker {
     }
 
     @SuppressWarnings("GroovyAccessibility")
-    private Writer rockerMainBuildFile(boolean optimize, String templateDir, String outputDir, String rockerVersion = RockerVersionProperty.DEFAULT) {
+    private Writer rockerMainBuildFile(boolean optimize, String templateDir, String outputDir, String rockerVersion = RockerExtension.DEFAULT_VERSION) {
         buildFile.newWriter().withWriter { w ->
             w << """
 plugins {
@@ -918,13 +954,14 @@ repositories {
     jcenter()
 }
 
-rockerVersion = '${rockerVersion}'
-
 rocker {
-  main {
-    optimize = ${Boolean.toString(optimize)}
-    templateDir = file('${templateDir}')
-    outputDir = file('${outputDir}')
+  version = '${rockerVersion}'
+  configurations {
+    main {
+      optimize = ${Boolean.toString(optimize)}
+      templateDir = file('${templateDir}')
+      outputDir = file('${outputDir}')
+    }
   }
 }
 """

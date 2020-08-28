@@ -1,6 +1,5 @@
 package nu.studer.gradle.rocker;
 
-import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -31,21 +30,14 @@ public class RockerPlugin implements Plugin<Project> {
         // apply Java base plugin, making it possible to also use the rocker plugin for Android builds
         project.getPlugins().apply(JavaBasePlugin.class);
 
-        // allow to configure the rocker version via extension property
-        RockerVersionProperty.applyDefaultVersion(project);
-
-        // use the configured rocker version on all rocker dependencies
-        enforceRockerVersion(project);
-
-        // add rocker DSL extension
-        NamedDomainObjectContainer<RockerConfig> container = project.container(RockerConfig.class, name -> project.getObjects().newInstance(RockerConfig.class, name));
-        project.getExtensions().add("rocker", container);
+        // add Rocker DSL extension
+        RockerExtension rockerExtension = project.getExtensions().create("rocker", RockerExtension.class);
 
         // create configuration for the runtime classpath of the rocker compiler (shared by all rocker configuration domain objects)
         final Configuration runtimeConfiguration = createRockerCompilerRuntimeConfiguration(project);
 
         // create a rocker task for each rocker configuration domain object
-        container.configureEach(config -> {
+        rockerExtension.getConfigurations().configureEach(config -> {
             // register rocker task, create it lazily
             String taskName = "compile" + (config.name.equals("main") ? "" : capitalize(config.name)) + "Rocker";
             TaskProvider<RockerCompile> rocker = project.getTasks().register(taskName, RockerCompile.class, config, runtimeConfiguration);
@@ -59,19 +51,23 @@ public class RockerPlugin implements Plugin<Project> {
             SourceSetContainer sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets();
             sourceSets.configureEach(sourceSet -> {
                 if (sourceSet.getName().equals(config.name)) {
-                    sourceSet.getJava().srcDir(rocker);
+                    sourceSet.getJava().srcDir(rocker); // todo pass output dir instead of task
                     project.getDependencies().add(sourceSet.getImplementationConfigurationName(), "com.fizzed:rocker-runtime");
                 }
             });
         });
+
+        // use the configured rocker version on all rocker dependencies
+        enforceRockerVersion(project, rockerExtension);
     }
 
-    private static void enforceRockerVersion(Project project) {
+    // todo (etst) switch method order
+    private static void enforceRockerVersion(Project project, RockerExtension rockerExtension) {
         project.getConfigurations().configureEach(configuration ->
             configuration.getResolutionStrategy().eachDependency(details -> {
                 ModuleVersionSelector requested = details.getRequested();
                 if (requested.getGroup().equals("com.fizzed") && requested.getName().startsWith("rocker-")) {
-                    String version = RockerVersionProperty.fromProject(project).asVersion();
+                    String version = rockerExtension.getVersion().get();
                     details.useVersion(version);
                 }
             })
