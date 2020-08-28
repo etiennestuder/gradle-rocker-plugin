@@ -92,19 +92,4 @@ public class RockerConfig {
         return classDir;
     }
 
-    @Override
-    public String toString() {
-        return "RockerConfig{" +
-            "name='" + name + '\'' +
-            ", optimize=" + optimize +
-            ", extendsClass='" + extendsClass + '\'' +
-            ", extendsModelClass='" + extendsModelClass + '\'' +
-            ", javaVersion='" + javaVersion + '\'' +
-            ", targetCharset='" + targetCharset + '\'' +
-            ", templateDir=" + templateDir +
-            ", outputDir=" + outputDir +
-            ", classDir=" + classDir +
-            '}';
-    }
-
 }
