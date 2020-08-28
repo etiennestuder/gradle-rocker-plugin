@@ -51,7 +51,7 @@ public class RockerPlugin implements Plugin<Project> {
             SourceSetContainer sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets();
             sourceSets.configureEach(sourceSet -> {
                 if (sourceSet.getName().equals(config.name)) {
-                    sourceSet.getJava().srcDir(rocker); // todo pass output dir instead of task
+                    sourceSet.getJava().srcDir(rocker.flatMap(RockerCompile::getOutputDir));
                     project.getDependencies().add(sourceSet.getImplementationConfigurationName(), "com.fizzed:rocker-runtime");
                 }
             });
