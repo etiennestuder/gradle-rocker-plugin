@@ -80,7 +80,8 @@ public class RockerConfig {
         return templateDir;
     }
 
-    @OutputDirectory
+    // declared as output on RockerCompile task
+    @Internal
     public DirectoryProperty getOutputDir() {
         return outputDir;
     }
