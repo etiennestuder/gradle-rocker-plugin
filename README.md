@@ -51,11 +51,11 @@ The following Gradle features are supported by the Rocker plugin:
 
 # Compatibility
 
-| Plugin version | Compatible Gradle versions | Support for Gradle Kotlin DSL          | Support for Gradle Configuration Cache |
-| -------------- | -------------------------- | -------------------------------------- | -------------------------------------- |
-| 3.0+           | 6.1+                       | Yes                                    | Yes |
-| 2.0+           | 6.0+                       | Yes                                    | Yes |
-| 1.0.1          | 5.0+, 6.0+                 | Yes                                    | No |
+|Plugin version|Compatible Gradle versions|Support for Gradle Kotlin DSL         |Support for Gradle Configuration Cache|
+|--------------|--------------------------|--------------------------------------|--------------------------------------|
+| 3.0+         | 6.1+                     | Yes                                  | Yes |
+| 2.0+         | 6.0+                     | Yes                                  | Yes |
+| 1.0.1        | 5.0+, 6.0+               | Yes                                  | No |
 
 # Configuration
 
