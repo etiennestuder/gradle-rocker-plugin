@@ -51,10 +51,11 @@ The following Gradle features are supported by the Rocker plugin:
 
 # Compatibility
 
-| Plugin version | Compatible Gradle versions | Support for Gradle Configuration Cache |
-| -------------- |-------------------------- | -------------------------------------- |
-| 2.0+           | 6.0+                      | Yes |
-| 1.0.1          | 5.0+, 6.0+                | No |
+| Plugin version | Compatible Gradle versions | Support for Gradle Kotlin DSL          | Support for Gradle Configuration Cache |
+| -------------- | -------------------------- | -------------------------------------- | -------------------------------------- |
+| 3.0+           | 6.1+                       | Yes                                    | Yes |
+| 2.0+           | 6.0+                       | Yes                                    | Yes |
+| 1.0.1          | 5.0+, 6.0+                 | Yes                                    | No |
 
 # Configuration
 
@@ -64,7 +65,7 @@ Apply the `nu.studer.rocker` plugin to your Gradle project.
 
 ```groovy
 plugins {
-  id 'nu.studer.rocker' version '2.2.1'
+    id 'nu.studer.rocker' version '3.0'
 }
 ```
 
@@ -77,7 +78,7 @@ This is a sample configuration:
 
 ```groovy
 plugins {
-    id 'nu.studer.rocker' version '2.2.1'
+    id 'nu.studer.rocker' version '3.0'
     id 'java'
 }
 
@@ -86,14 +87,15 @@ repositories {
 }
 
 rocker {
-  main {
-    templateDir = file('src/rocker')
-    outputDir = file('src/generated/rocker')
-    optimize = true  // optional
-  }
+    version = '1.3.0'  // optional
+    configurations{
+        main {
+            templateDir = file('src/rocker')
+            outputDir = file('src/generated/rocker')
+            optimize = true  // optional
+        }
+    }
 }
-
-rockerVersion = '1.3.0'  // optional
 ```
 
 The rocker _main_ configuration declares that the Rocker templates are in _src/rocker_ and the generated Java sources need to end up in _src/generated/rocker_. It further
@@ -137,6 +139,7 @@ See the self-contained example build scripts for the [Groovy DSL](example/gradle
 
 # Changelog
 
++ 3.0 - Changed the DSL.
 + 2.2.1 - Improved support for configuration avoidance.
 + 2.2 - Made RockerCompile task support configuration avoidance.
 + 2.1.1 - Internal refactoring to improve lazy properties usage.

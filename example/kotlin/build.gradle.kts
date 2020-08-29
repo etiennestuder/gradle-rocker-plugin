@@ -1,5 +1,5 @@
 plugins {
-    id("nu.studer.rocker") version "2.2.1"
+    id("nu.studer.rocker") version "3.0"
     id("java")
 }
 
@@ -7,12 +7,13 @@ repositories {
     jcenter()
 }
 
-val rockerVersion by extra("1.3.0")
-
 rocker {
-    create("main") {
-        optimize.set(true) // optional
-        templateDir.set(file("src/rocker"))
-        outputDir.set(file("src/generated/rocker"))
+    version.set("1.3.0")
+    configurations {
+        create("main") {
+            optimize.set(true) // optional
+            templateDir.set(file("src/rocker"))
+            outputDir.set(file("src/generated/rocker"))
+        }
     }
 }
