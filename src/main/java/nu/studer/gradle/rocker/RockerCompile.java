@@ -30,6 +30,8 @@ import org.gradle.work.InputChanges;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.FileFilter;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -210,6 +212,7 @@ public class RockerCompile extends DefaultTask {
             // remove the compiled files for any removed templates
             if (!removedTemplates.isEmpty()) {
                 fileSystemOperations.delete(spec -> spec.delete(removedTemplates));
+                deleteEmptyDirRecursively(outputDir.get().getAsFile());
             }
         }
 
@@ -258,6 +261,16 @@ public class RockerCompile extends DefaultTask {
     private static String toJavaClassFileName(String templateName) {
         int extension = templateName.indexOf(ROCKER_FILE_EXTENSION_PREFIX);
         return extension > -1 ? templateName.substring(0, extension) + ".class" : null;
+    }
+
+    private void deleteEmptyDirRecursively(File aDir) {
+        if (!aDir.exists() || !aDir.isDirectory()) {
+            return;
+        }
+        Arrays.stream(aDir.listFiles(File::isDirectory)).forEach(this::deleteEmptyDirRecursively);
+        if (aDir.list().length == 0) {
+            fileSystemOperations.delete(spec -> spec.delete(aDir));
+        }
     }
 
 }
