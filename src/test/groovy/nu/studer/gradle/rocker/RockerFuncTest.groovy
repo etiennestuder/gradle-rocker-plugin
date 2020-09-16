@@ -521,6 +521,54 @@ rocker {
         result.task(':compileRocker').outcome == TaskOutcome.UP_TO_DATE
     }
 
+    void "incremental compilation doesn't leave empty directories"() {
+        given:
+        template('src/rocker/foo/Foo.rocker.html')
+        template('src/rocker/foo/bar/Bar.rocker.html')
+        template('src/rocker/baz/Baz.rocker.html')
+
+        and:
+        buildFile << """
+plugins {
+    id 'nu.studer.rocker'
+    id 'java'
+}
+
+repositories {
+    jcenter()
+}
+
+rocker {
+  configurations {
+    main {
+      optimize = true
+      templateDir = file('src/rocker')
+      outputDir = file('src/generated/rocker')
+    }
+  }
+}
+"""
+
+        when:
+        def result = runWithArguments('compileRocker')
+
+        then:
+        fileExists('src/generated/rocker/foo/Foo.java')
+        fileExists('src/generated/rocker/foo/bar/Bar.java')
+        fileExists('src/generated/rocker/baz/Baz.java')
+        result.task(':compileRocker').outcome == TaskOutcome.SUCCESS
+
+        when:
+        template('src/rocker/foo/Foo.rocker.html').delete()
+        template('src/rocker/foo/bar/Bar.rocker.html').delete()
+        result = runWithArguments('compileRocker')
+
+        then:
+        !dirExists('src/generated/rocker/foo')
+        fileExists('src/generated/rocker/baz/Baz.java')
+        result.task(':compileRocker').outcome == TaskOutcome.SUCCESS
+    }
+
     void "detects when task is not uptodate anymore"() {
         given:
         template("${templateDirFirst}/Example1.rocker.html")
@@ -986,6 +1034,11 @@ Hello @message!$customText
     private boolean fileExists(String filePath) {
         def file = new File(workspaceDir, filePath)
         file.exists() && file.file
+    }
+
+    private boolean dirExists(String dirPath) {
+        def dir = new File(workspaceDir, dirPath)
+        dir.exists() && dir.directory
     }
 
     private String fileContent(String filePath) {
