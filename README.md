@@ -160,6 +160,7 @@ Both feedback and contributions are very welcome.
 
 # Acknowledgements
 
++ [facewindu](https://github.com/facewindu) (pr #10 to remove empty output directories)
 + [wolfs](https://github.com/wolfs) (support to make lazy properties work)
 + [eskatos](https://github.com/eskatos) (support to make configuration caching work)
 + [breskeby](https://github.com/breskeby) (pr #6 to avoid deprecation warnings)
