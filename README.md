@@ -65,7 +65,7 @@ Apply the `nu.studer.rocker` plugin to your Gradle project.
 
 ```groovy
 plugins {
-    id 'nu.studer.rocker' version '3.0'
+    id 'nu.studer.rocker' version '3.0.1'
 }
 ```
 
@@ -78,7 +78,7 @@ This is a sample configuration:
 
 ```groovy
 plugins {
-    id 'nu.studer.rocker' version '3.0'
+    id 'nu.studer.rocker' version '3.0.1'
     id 'java'
 }
 
@@ -139,6 +139,7 @@ See the self-contained example build scripts for the [Groovy DSL](example/gradle
 
 # Changelog
 
++ 3.0.1 - Made RockerCompile task remove empty output directories.
 + 3.0 - Changed the DSL.
 + 2.2.1 - Improved support for configuration avoidance.
 + 2.2 - Made RockerCompile task support configuration avoidance.
