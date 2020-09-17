@@ -135,7 +135,7 @@ that is abbreviated to `compileRocker`, similarly to how it is done for the `Jav
 
 # Examples
 
-See the self-contained example build scripts for the [Groovy DSL](example/gradle) and the [Kotlin DSL](example/kotlin).
+See the self-contained example build scripts for the [Groovy DSL](example/groovy) and the [Kotlin DSL](example/kotlin).
 
 # Changelog
 
