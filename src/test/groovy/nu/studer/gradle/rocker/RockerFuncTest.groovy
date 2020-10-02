@@ -646,7 +646,7 @@ rocker {
         optimize << [true, false]
     }
 
-    void "task output is cacheable if optimize flag is on"() {
+    void "task output is cacheable if optimize=on"() {
         given:
         exampleTemplate()
 
@@ -685,7 +685,7 @@ rocker {
         result.task(':compileFooRocker').outcome == TaskOutcome.FROM_CACHE
     }
 
-    void "task output is not cacheable if optimize flag is off"() {
+    void "task output is not cacheable if optimize=off"() {
         given:
         exampleTemplate()
 
@@ -852,13 +852,67 @@ compileFooRocker {
         result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
     }
 
-    def "only changed templates are regenerated when optimize=#optimize"() {
+    def "only added templates are regenerated when optimize=on"() {
+        given:
+        exampleTemplate()
+
+        and:
+        rockerMainBuildFile(true, 'src/rocker', 'src/generated/rocker')
+
+        when:
+        def result = runWithArguments('compileRocker')
+
+        then:
+        def exampleLastModified = lastModified('src/generated/rocker/Example.java')
+        result.output.contains('Generated 1 rocker java source files')
+
+        when:
+        template('src/rocker/Inserted.rocker.html')
+
+        and:
+        sleep(1000) // lazy workaround for the fact that Java's last modified time accuracy is pretty poor
+        result = runWithArguments('compileRocker')
+
+        then:
+        exampleLastModified == lastModified('src/generated/rocker/Example.java')
+        fileExists('src/generated/rocker/Inserted.java')
+        result.output.contains('Generated 1 rocker java source files')
+    }
+
+    def "all templates are regenerated when template added when optimize=off"() {
+        given:
+        exampleTemplate()
+
+        and:
+        rockerMainBuildFile(false, 'src/rocker', 'src/generated/rocker')
+
+        when:
+        def result = runWithArguments('compileRocker')
+
+        then:
+        def exampleLastModified = lastModified('src/generated/rocker/Example.java')
+        result.output.contains('Generated 1 rocker java source files')
+
+        when:
+        template('src/rocker/Inserted.rocker.html')
+
+        and:
+        sleep(1000) // lazy workaround for the fact that Java's last modified time accuracy is pretty poor
+        result = runWithArguments('compileRocker')
+
+        then:
+        exampleLastModified < lastModified('src/generated/rocker/Example.java')
+        fileExists('src/generated/rocker/Inserted.java')
+        result.output.contains('Generated 2 rocker java source files')
+    }
+
+    def "only changed templates are regenerated when optimize=on"() {
         given:
         exampleTemplate()
         def updatedTemplate = template('src/rocker/Updated.rocker.html')
 
         and:
-        rockerMainBuildFile(optimize, 'src/rocker', 'src/generated/rocker')
+        rockerMainBuildFile(true, 'src/rocker', 'src/generated/rocker')
 
         when:
         def result = runWithArguments('compileRocker')
@@ -879,18 +933,44 @@ compileFooRocker {
         exampleLastModified == lastModified('src/generated/rocker/Example.java')
         updatedLastModified < lastModified('src/generated/rocker/Updated.java')
         result.output.contains('Generated 1 rocker java source files')
-
-        where:
-        optimize << [true, false]
     }
 
-    def "removed templates are cleaned up when optimize=#optimize"() {
+    def "all templates are regenerated when template changed when optimize=off"() {
+        given:
+        exampleTemplate()
+        def updatedTemplate = template('src/rocker/Updated.rocker.html')
+
+        and:
+        rockerMainBuildFile(false, 'src/rocker', 'src/generated/rocker')
+
+        when:
+        def result = runWithArguments('compileRocker')
+
+        then:
+        def exampleLastModified = lastModified('src/generated/rocker/Example.java')
+        def updatedLastModified = lastModified('src/generated/rocker/Updated.java')
+        result.output.contains('Generated 2 rocker java source files')
+
+        when:
+        updatedTemplate << "Some more content"
+
+        and:
+        sleep(1000) // lazy workaround for the fact that Java's last modified time accuracy is pretty poor
+        result = runWithArguments('compileRocker')
+
+        then:
+        exampleLastModified < lastModified('src/generated/rocker/Example.java')
+        updatedLastModified < lastModified('src/generated/rocker/Updated.java')
+        result.output.contains('Generated 2 rocker java source files')
+    }
+
+    def "removed templates are cleaned up when optimize=on"() {
         given:
         exampleTemplate()
         def deletedTemplate = template('src/rocker/Deleted.rocker.html')
 
         and:
-        rockerMainBuildFile(optimize, 'src/rocker', 'src/generated/rocker')
+        rockerMainBuildFile(true, 'src/rocker', 'src/generated/rocker')
 
         when:
         def result = runWithArguments('compileRocker')
@@ -910,26 +990,53 @@ compileFooRocker {
         fileExists('src/generated/rocker/Example.java')
         !fileExists('src/generated/rocker/Deleted.java')
         !(result.output =~ /Generated \d+ rocker java source files/)
-
-        where:
-        optimize << [true, false]
     }
 
-    def "changed templates are regenerated and removed templates are cleaned up when optimize=#optimize"() {
+    def "all templates are regenerated when template removed when optimize=off"() {
         given:
-        def updatedTemplate = template('src/rocker/Updated.rocker.html')
+        exampleTemplate()
         def deletedTemplate = template('src/rocker/Deleted.rocker.html')
 
         and:
-        rockerMainBuildFile(optimize, 'src/rocker', 'src/generated/rocker')
+        rockerMainBuildFile(false, 'src/rocker', 'src/generated/rocker')
 
         when:
         def result = runWithArguments('compileRocker')
 
         then:
-        fileExists('src/generated/rocker/Updated.java')
+        fileExists('src/generated/rocker/Example.java')
         fileExists('src/generated/rocker/Deleted.java')
         result.output.contains('Generated 2 rocker java source files')
+
+        when:
+        deletedTemplate.delete()
+
+        and:
+        result = runWithArguments('compileRocker')
+
+        then:
+        fileExists('src/generated/rocker/Example.java')
+        !fileExists('src/generated/rocker/Deleted.java')
+        result.output.contains('Generated 1 rocker java source files')
+    }
+
+    def "changed templates are regenerated and removed templates are cleaned up when optimize=on"() {
+        given:
+        exampleTemplate()
+        def updatedTemplate = template('src/rocker/Updated.rocker.html')
+        def deletedTemplate = template('src/rocker/Deleted.rocker.html')
+
+        and:
+        rockerMainBuildFile(true, 'src/rocker', 'src/generated/rocker')
+
+        when:
+        def result = runWithArguments('compileRocker')
+
+        then:
+        fileExists('src/generated/rocker/Example.java')
+        fileExists('src/generated/rocker/Updated.java')
+        fileExists('src/generated/rocker/Deleted.java')
+        result.output.contains('Generated 3 rocker java source files')
 
         when:
         updatedTemplate << "Some more content"
@@ -939,54 +1046,75 @@ compileFooRocker {
         result = runWithArguments('compileRocker')
 
         then:
+        fileExists('src/generated/rocker/Example.java')
         fileExists('src/generated/rocker/Updated.java')
         !fileExists('src/generated/rocker/Deleted.java')
         result.output =~ /Generated 1 rocker java source files/
-
-        where:
-        optimize << [true, false]
     }
 
-    def "subsequent incremental builds produce correct output when optimize=#optimize"() {
+    def "all templates are regenerated when template changed and template removed when optimize=off"() {
         given:
-        def updatedTemplate = template('src/rocker/Initial.rocker.html')
+        exampleTemplate()
+        def updatedTemplate = template('src/rocker/Updated.rocker.html')
+        def deletedTemplate = template('src/rocker/Deleted.rocker.html')
 
         and:
-        rockerMainBuildFile(optimize, 'src/rocker', 'src/generated/rocker')
+        rockerMainBuildFile(false, 'src/rocker', 'src/generated/rocker')
 
         when:
         def result = runWithArguments('compileRocker')
 
         then:
-        fileExists('src/generated/rocker/Initial.java')
-        result.output.contains('Generated 1 rocker java source files')
+        fileExists('src/generated/rocker/Example.java')
+        fileExists('src/generated/rocker/Updated.java')
+        fileExists('src/generated/rocker/Deleted.java')
+        result.output.contains('Generated 3 rocker java source files')
 
         when:
-        def newTemplate = template('src/rocker/New.rocker.html')
+        updatedTemplate << "Some more content"
+        deletedTemplate.delete()
 
         and:
         result = runWithArguments('compileRocker')
 
         then:
-        fileExists('src/generated/rocker/Initial.java')
-        fileExists('src/generated/rocker/New.java')
-        result.output =~ /Generated 1 rocker java source files/
+        fileExists('src/generated/rocker/Example.java')
+        fileExists('src/generated/rocker/Updated.java')
+        !fileExists('src/generated/rocker/Deleted.java')
+        result.output =~ /Generated 2 rocker java source files/
+    }
 
-        when:
-        newTemplate.delete()
-        template('src/rocker/Renamed.rocker.html')
+    def "subsequent incremental builds produce correct rocker-compiler.conf when template changed when optimize=false"() {
+        given:
+        exampleTemplate()
+        def aTemplate = template('src/rocker/Initial.rocker.html')
 
         and:
-        result = runWithArguments('compileRocker')
+        rockerMainBuildFile(false, 'src/rocker', 'build/generated-src/rocker/')
+
+        when:
+        def result = runWithArguments('compileRocker')
 
         then:
-        fileExists('src/generated/rocker/Initial.java')
-        fileExists('src/generated/rocker/Renamed.java')
-        !fileExists('src/generated/rocker/New.java')
-        result.output =~ /Generated 1 rocker java source files/
+        fileExists('build/generated-src/rocker/Example.java')
+        fileExists('build/generated-src/rocker/Initial.java')
+        propertiesFileContent('build/rocker-hot-reload/main/rocker-compiler.conf').get('rocker.template.dir') ==
+            new File(workspaceDir, 'src/rocker').canonicalPath
+        result.output =~ /Generated 2 rocker java source files/
 
-        where:
-        optimize << [true, false]
+        when:
+        aTemplate.delete()
+        template('src/rocker/Initial.rocker.html', 'Some change')
+
+        and:
+        runWithArguments('compileRocker')
+
+        then:
+        fileExists('build/generated-src/rocker/Example.java')
+        fileExists('build/generated-src/rocker/Initial.java')
+        propertiesFileContent('build/rocker-hot-reload/main/rocker-compiler.conf').get('rocker.template.dir') ==
+            new File(workspaceDir, 'src/rocker').canonicalPath
+        result.output =~ /Generated 2 rocker java source files/
     }
 
     @SuppressWarnings("GroovyAccessibility")
@@ -1047,6 +1175,16 @@ Hello @message!$customText
         file.text
     }
 
+    private Properties propertiesFileContent(String filePath) {
+        assert fileExists(filePath)
+        def file = new File(workspaceDir, filePath)
+        Properties properties = new Properties()
+        file.withInputStream {
+            properties.load(it)
+        }
+        properties
+    }
+
     private long lastModified(String filePath) {
         assert fileExists(filePath)
         def file = new File(workspaceDir, filePath)
@@ -1057,6 +1195,14 @@ Hello @message!$customText
         assert fileExists(filePath)
         def file = new File(workspaceDir, filePath)
         file.setLastModified(System.currentTimeMillis() + 1000)
+    }
+
+    private Properties loadProperties(File propertiesFile) {
+        Properties properties = new Properties()
+        propertiesFile.withInputStream {
+            properties.load(it)
+        }
+        properties
     }
 
 }

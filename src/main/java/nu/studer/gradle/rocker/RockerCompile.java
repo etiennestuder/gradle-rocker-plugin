@@ -162,7 +162,7 @@ public class RockerCompile extends DefaultTask {
         final Set<File> removedTemplates = new HashSet<>();
         ExecResult execResult = null;
 
-        if (!inputChanges.isIncremental()) {
+        if (!inputChanges.isIncremental() || !optimize.get()) {
             // delete any generated files from previous runs and any classes compiled by Rocker via hot-reloading
             fileSystemOperations.delete(spec -> spec.delete(outputDir));
             fileSystemOperations.delete(spec -> spec.delete(classDir));
