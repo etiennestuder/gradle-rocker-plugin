@@ -46,7 +46,7 @@ The following Gradle features are supported by the Rocker plugin:
  * `RockerCompile` task instances participate in task configuration avoidance
  * `RockerCompile` task instances participate in configuration caching
  * `RockerCompile` task instances participate in incremental builds
- * `RockerCompile` task instances are themselves incremental
+ * `RockerCompile` task instances are themselves incremental (if the Rocker hot reload feature is disabled)
  * `RockerCompile` task instances participate in task output caching (if the Rocker hot reload feature is disabled)
 
 # Compatibility
@@ -65,7 +65,7 @@ Apply the `nu.studer.rocker` plugin to your Gradle project.
 
 ```groovy
 plugins {
-    id 'nu.studer.rocker' version '3.0.1'
+    id 'nu.studer.rocker' version '3.0.2'
 }
 ```
 
@@ -78,7 +78,7 @@ This is a sample configuration:
 
 ```groovy
 plugins {
-    id 'nu.studer.rocker' version '3.0.1'
+    id 'nu.studer.rocker' version '3.0.2'
     id 'java'
 }
 
@@ -139,6 +139,7 @@ See the self-contained example build scripts for the [Groovy DSL](example/groovy
 
 # Changelog
 
++ 3.0.2 - Incremental task functionality turned off when Rocker's hot reload feature is enabled.
 + 3.0.1 - Made RockerCompile task remove empty output directories.
 + 3.0 - Changed the DSL.
 + 2.2.1 - Improved support for configuration avoidance.
@@ -160,6 +161,7 @@ Both feedback and contributions are very welcome.
 
 # Acknowledgements
 
++ [gregopet](https://github.com/gregopet) (detailed issue report #11)
 + [facewindu](https://github.com/facewindu) (pr #10 to remove empty output directories)
 + [wolfs](https://github.com/wolfs) (support to make lazy properties work)
 + [eskatos](https://github.com/eskatos) (support to make configuration caching work)
