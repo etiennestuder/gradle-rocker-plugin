@@ -1,3 +1,5 @@
+![Build Gradle project](https://github.com/etiennestuder/gradle-rocker-plugin/workflows/Build%20Gradle%20project/badge.svg?branch=master)
+
 gradle-rocker-plugin
 =================
 
