@@ -3,7 +3,6 @@ package nu.studer.gradle.rocker;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
-import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.Directory;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileSystemOperations;
@@ -44,7 +43,7 @@ public class RockerCompile extends DefaultTask {
     private final Provider<String> javaVersion;
     private final Provider<String> targetCharset;
     private final Provider<Directory> templateDir;
-    private final ConfigurableFileCollection runtimeClasspath;
+    private final FileCollection runtimeClasspath;
     private final Provider<Directory> outputDir;
     private final Provider<Directory> classDir;
     private Action<? super JavaExecSpec> javaExecSpec;
