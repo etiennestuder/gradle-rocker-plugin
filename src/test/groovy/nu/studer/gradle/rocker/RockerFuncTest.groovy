@@ -60,7 +60,7 @@ rocker {
 
     void "can invoke rocker task derived from all-default configuration DSL with Gradle configuration cache enabled"() {
         given:
-        gradleVersion = GradleVersion.version('6.5')
+        gradleVersion = GradleVersion.version('6.8.2')
         template('src/rocker/foo/Example.rocker.html')
 
         and:
@@ -82,7 +82,7 @@ rocker {
 """
 
         when:
-        def result = runWithArguments('compileFooRocker', '--configuration-cache=on')
+        def result = runWithArguments('compileFooRocker', '--configuration-cache')
 
         then:
         fileExists('build/generated-src/rocker/foo/Example.java')
@@ -92,7 +92,7 @@ rocker {
 
         when:
         new File(workspaceDir, 'build/generated-src/rocker/foo/Example.java').delete()
-        result = runWithArguments('compileFooRocker', '--configuration-cache=on')
+        result = runWithArguments('compileFooRocker', '--configuration-cache')
 
         then:
         fileExists('build/generated-src/rocker/foo/Example.java')
