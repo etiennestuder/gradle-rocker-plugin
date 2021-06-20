@@ -60,7 +60,7 @@ rocker {
 
     void "can invoke rocker task derived from all-default configuration DSL with Gradle configuration cache enabled"() {
         given:
-        gradleVersion = GradleVersion.version('6.8.2')
+        gradleVersion = GradleVersion.version('6.9')
         template('src/rocker/foo/Example.rocker.html')
 
         and:
