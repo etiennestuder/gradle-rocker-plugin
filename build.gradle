@@ -17,6 +17,11 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+tasks.withType(Test).configureEach {
+    maxParallelForks = 2
+    useJUnitPlatform()
+}
+
 plugindev {
     pluginDescription 'Gradle plugin that integrates the Rocker template engine.'
     pluginImplementationClass 'nu.studer.gradle.rocker.RockerPlugin'
@@ -28,13 +33,6 @@ plugindev {
     projectUrl 'https://github.com/etiennestuder/gradle-rocker-plugin'
     projectInceptionYear '2018'
     done()
-}
-
-bintray {
-    user = credentials.BINTRAY_USER
-    key = credentials.BINTRAY_API_KEY
-    pkg.repo = 'gradle-plugins'
-    dryRun = false
 }
 
 def testAll = tasks.create('testAll') {
@@ -53,9 +51,4 @@ testedGradleVersions.each { version ->
         systemProperty 'testContext.gradleVersion', version
         testAll.dependsOn(it)
     }
-}
-
-tasks.withType(Test).configureEach {
-    maxParallelForks = 2
-    useJUnitPlatform()
 }
