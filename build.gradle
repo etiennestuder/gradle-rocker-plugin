@@ -1,5 +1,6 @@
 plugins {
-    id 'nu.studer.plugindev' version '2.0'
+    id 'nu.studer.plugindev' version '3.0'
+    id 'com.gradle.plugin-publish' version '0.15.0'
     id 'nu.studer.credentials' version '2.1'
     id 'org.nosphere.gradle.github.actions' version '1.2.0'
     id 'groovy'
@@ -12,27 +13,9 @@ dependencies {
     testImplementation 'org.spockframework:spock-core:2.0-groovy-2.5'
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
 tasks.withType(Test).configureEach {
     maxParallelForks = 2
     useJUnitPlatform()
-}
-
-plugindev {
-    pluginDescription 'Gradle plugin that integrates the Rocker template engine.'
-    pluginImplementationClass 'nu.studer.gradle.rocker.RockerPlugin'
-    pluginLicenses 'Apache-2.0'
-    pluginTags 'gradle', 'plugin', 'rocker'
-    authorId 'etiennestuder'
-    authorName 'Etienne Studer'
-    authorEmail 'etienne@studer.nu'
-    projectUrl 'https://github.com/etiennestuder/gradle-rocker-plugin'
-    projectInceptionYear '2018'
-    done()
 }
 
 def testAll = tasks.create('testAll') {
@@ -41,14 +24,41 @@ def testAll = tasks.create('testAll') {
 }
 
 List<String> testedGradleVersions = []
-testedGradleVersions << "7.1"
-testedGradleVersions << "7.0.2"
-testedGradleVersions << "6.9"
-testedGradleVersions << "6.1.1"
+testedGradleVersions << '7.1'
+testedGradleVersions << '7.0.2'
+testedGradleVersions << '6.9'
+testedGradleVersions << '6.1.1'
 
 testedGradleVersions.each { version ->
     project.tasks.create("test_" + version.replaceAll("[^a-zA-Z0-9]", "_"), Test).with {
         systemProperty 'testContext.gradleVersion', version
         testAll.dependsOn(it)
+    }
+}
+
+gradlePlugin {
+    plugins {
+        pluginDevPlugin {
+            id = 'nu.studer.rocker'
+            implementationClass = 'nu.studer.gradle.rocker.RockerPlugin'
+        }
+    }
+}
+
+pluginBundle {
+    website = 'https://github.com/etiennestuder/gradle-rocker-plugin'
+    vcsUrl = 'https://github.com/etiennestuder/gradle-rocker-plugin'
+    description = 'Gradle plugin that integrates the Rocker template engine.'
+    tags = ['rocker']
+
+    plugins {
+        pluginDevPlugin {
+            displayName = 'gradle-rocker-plugin'
+        }
+    }
+
+    mavenCoordinates {
+        groupId = 'nu.studer'
+        artifactId = 'gradle-rocker-plugin'
     }
 }
