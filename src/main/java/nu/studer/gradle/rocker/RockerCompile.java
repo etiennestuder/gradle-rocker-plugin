@@ -225,7 +225,7 @@ public class RockerCompile extends DefaultTask {
 
             @Override
             public void execute(JavaExecSpec spec) {
-                spec.setMain("com.fizzed.rocker.compiler.JavaGeneratorMain");
+                spec.getMainClass().set("com.fizzed.rocker.compiler.JavaGeneratorMain");
                 spec.setClasspath(runtimeClasspath);
                 spec.setWorkingDir(projectLayout.getProjectDirectory());
                 spec.systemProperty("rocker.option.optimize", optimize.get().toString());
