@@ -143,7 +143,7 @@ See the self-contained example build scripts for the [Groovy DSL](example/groovy
 
 # Changelog
 
-+ 3.0.3 - Avoid usage of deprecated APIs for newer versions of Gradle
++ 3.0.3 - Avoid usage of deprecated APIs for newer versions of Gradle.
 + 3.0.2 - Incremental task functionality turned off when Rocker's hot reload feature is enabled.
 + 3.0.1 - Made RockerCompile task remove empty output directories.
 + 3.0 - Changed the DSL.
