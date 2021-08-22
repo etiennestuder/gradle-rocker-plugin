@@ -1,5 +1,5 @@
 plugins {
-    id 'nu.studer.plugindev' version '3.0'
+    id 'nu.studer.plugindev' version '4.0'
     id 'com.gradle.plugin-publish' version '0.15.0'
     id 'org.nosphere.gradle.github.actions' version '1.2.0'
     id 'groovy'
@@ -10,6 +10,13 @@ version = '3.0.3-DEV'
 
 dependencies {
     testImplementation 'org.spockframework:spock-core:2.0-groovy-3.0'
+}
+
+tasks.withType(AbstractCompile).configureEach {
+    options.compilerArgs <<
+        "-Werror" <<
+        "-Xlint:all" <<
+        "-Xlint:-deprecation"  // do not fail on deprecations introduced very lately in Gradle 7.1
 }
 
 tasks.withType(Test).configureEach {
