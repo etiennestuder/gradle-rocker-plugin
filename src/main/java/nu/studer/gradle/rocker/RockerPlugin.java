@@ -6,6 +6,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ModuleVersionSelector;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.util.GradleVersion;
@@ -48,7 +49,12 @@ public class RockerPlugin implements Plugin<Project> {
 
             // add the output of the rocker task as a source directory of the source set with the matching name (which adds an implicit task dependency)
             // add the rocker-runtime to the compile configuration in order to be able to compile the generated sources
-            SourceSetContainer sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets();
+            SourceSetContainer sourceSets;
+            if (GradleVersion.current().getBaseVersion().compareTo(GradleVersion.version("7.1")) >= 0) {
+                sourceSets = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets();
+            } else {
+                sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets();
+            }
             sourceSets.configureEach(sourceSet -> {
                 if (sourceSet.getName().equals(config.name)) {
                     sourceSet.getJava().srcDir(rocker.flatMap(RockerCompile::getOutputDir));

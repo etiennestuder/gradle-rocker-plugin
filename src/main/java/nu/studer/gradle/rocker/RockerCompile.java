@@ -24,6 +24,7 @@ import org.gradle.api.tasks.TaskAction;
 import org.gradle.process.ExecOperations;
 import org.gradle.process.ExecResult;
 import org.gradle.process.JavaExecSpec;
+import org.gradle.util.GradleVersion;
 import org.gradle.work.ChangeType;
 import org.gradle.work.InputChanges;
 
@@ -225,7 +226,12 @@ public class RockerCompile extends DefaultTask {
 
             @Override
             public void execute(JavaExecSpec spec) {
-                spec.setMain("com.fizzed.rocker.compiler.JavaGeneratorMain");
+                String mainClass = "com.fizzed.rocker.compiler.JavaGeneratorMain";
+                if (GradleVersion.current().getBaseVersion().compareTo(GradleVersion.version("6.4")) >= 0) {
+                    spec.getMainClass().set(mainClass);
+                } else {
+                    spec.setMain(mainClass);
+                }
                 spec.setClasspath(runtimeClasspath);
                 spec.setWorkingDir(projectLayout.getProjectDirectory());
                 spec.systemProperty("rocker.option.optimize", optimize.get().toString());
