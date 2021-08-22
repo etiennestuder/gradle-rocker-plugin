@@ -2,6 +2,7 @@ package nu.studer.gradle.rocker
 
 import org.gradle.testkit.runner.TaskOutcome
 import org.gradle.util.GradleVersion
+import spock.lang.Requires
 import spock.lang.Unroll
 
 import java.nio.file.Files
@@ -58,9 +59,9 @@ rocker {
         result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
     }
 
+    @Requires({ (determineGradleVersion().baseVersion >= GradleVersion.version('6.9')) })
     void "can invoke rocker task derived from all-default configuration DSL with Gradle configuration cache enabled"() {
         given:
-        gradleVersion = GradleVersion.version('6.9')
         template('src/rocker/foo/Example.rocker.html')
 
         and:
