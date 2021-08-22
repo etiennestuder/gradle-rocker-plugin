@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static java.lang.String.format;
+import static nu.studer.gradle.rocker.GradleUtils.isAtLeastGradleVersion;
 import static nu.studer.gradle.rocker.StringUtils.capitalize;
 
 @SuppressWarnings("unused")
@@ -50,7 +51,7 @@ public class RockerPlugin implements Plugin<Project> {
             // add the output of the rocker task as a source directory of the source set with the matching name (which adds an implicit task dependency)
             // add the rocker-runtime to the compile configuration in order to be able to compile the generated sources
             SourceSetContainer sourceSets;
-            if (GradleVersion.current().getBaseVersion().compareTo(GradleVersion.version("7.1")) >= 0) {
+            if (isAtLeastGradleVersion("7.1")) {
                 sourceSets = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets();
             } else {
                 sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets();
