@@ -15,8 +15,7 @@ dependencies {
 tasks.withType(AbstractCompile).configureEach {
     options.compilerArgs <<
         "-Werror" <<
-        "-Xlint:all" <<
-        "-Xlint:-deprecation"  // do not fail on deprecations introduced very lately in Gradle 7.1
+        "-Xlint:all"
 }
 
 tasks.withType(Test).configureEach {

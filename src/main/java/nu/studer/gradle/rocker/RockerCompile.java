@@ -24,7 +24,6 @@ import org.gradle.api.tasks.TaskAction;
 import org.gradle.process.ExecOperations;
 import org.gradle.process.ExecResult;
 import org.gradle.process.JavaExecSpec;
-import org.gradle.util.GradleVersion;
 import org.gradle.work.ChangeType;
 import org.gradle.work.InputChanges;
 
@@ -33,6 +32,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import static nu.studer.gradle.rocker.GradleUtils.isAtLeastGradleVersion;
 
 public class RockerCompile extends DefaultTask {
 
@@ -226,12 +227,7 @@ public class RockerCompile extends DefaultTask {
 
             @Override
             public void execute(JavaExecSpec spec) {
-                String mainClass = "com.fizzed.rocker.compiler.JavaGeneratorMain";
-                if (GradleVersion.current().getBaseVersion().compareTo(GradleVersion.version("6.4")) >= 0) {
-                    spec.getMainClass().set(mainClass);
-                } else {
-                    spec.setMain(mainClass);
-                }
+                setMainClass("com.fizzed.rocker.compiler.JavaGeneratorMain", spec);
                 spec.setClasspath(runtimeClasspath);
                 spec.setWorkingDir(projectLayout.getProjectDirectory());
                 spec.systemProperty("rocker.option.optimize", optimize.get().toString());
@@ -246,6 +242,19 @@ public class RockerCompile extends DefaultTask {
                 if (javaExecSpec != null) {
                     javaExecSpec.execute(spec);
                 }
+            }
+
+            private void setMainClass(String mainClass, JavaExecSpec spec) {
+                if (isAtLeastGradleVersion("6.4")) {
+                    spec.getMainClass().set(mainClass);
+                } else {
+                    setMainClassDeprecated(mainClass, spec);
+                }
+            }
+
+            @SuppressWarnings("deprecation")
+            private void setMainClassDeprecated(String mainClass, JavaExecSpec spec) {
+                spec.setMain(mainClass);
             }
 
             private void systemPropertyIfNotNull(String option, String value, JavaExecSpec spec) {
