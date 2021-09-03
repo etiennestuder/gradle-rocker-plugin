@@ -69,7 +69,7 @@ Apply the `nu.studer.rocker` plugin to your Gradle project.
 
 ```groovy
 plugins {
-    id 'nu.studer.rocker' version '3.0.3'
+    id 'nu.studer.rocker' version '3.0.4'
 }
 ```
 
@@ -82,7 +82,7 @@ This is a sample configuration:
 
 ```groovy
 plugins {
-    id 'nu.studer.rocker' version '3.0.3'
+    id 'nu.studer.rocker' version '3.0.4'
     id 'java'
 }
 
@@ -143,6 +143,7 @@ See the self-contained example build scripts for the [Groovy DSL](example/groovy
 
 # Changelog
 
++ 3.0.4 - Ignore empty directories when snapshotting template dir.
 + 3.0.3 - Avoid usage of deprecated APIs for newer versions of Gradle.
 + 3.0.2 - Incremental task functionality turned off when Rocker's hot reload feature is enabled.
 + 3.0.1 - Made RockerCompile task remove empty output directories.
