@@ -79,6 +79,12 @@ buildCache {
         file
     }
 
+    protected static File dir(String parent, String path) {
+        def dir = new File(parent, path)
+        assert dir.mkdirs() && dir.isDirectory()
+        dir
+    }
+
     protected static GradleVersion determineGradleVersion() {
         def injectedGradleVersionString = System.getProperty('testContext.gradleVersion')
         injectedGradleVersionString ? GradleVersion.version(injectedGradleVersionString) : GradleVersion.current()

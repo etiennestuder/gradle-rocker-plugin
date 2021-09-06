@@ -1118,6 +1118,49 @@ compileFooRocker {
         result.output =~ /Generated 2 rocker java source files/
     }
 
+    void "ignores empty directories in templateDir input directory"() {
+        given:
+        exampleTemplate()
+        def srcDirectory = 'src/rocker'
+
+        and:
+        buildFile << """
+plugins {
+    id 'nu.studer.rocker'
+    id 'java'
+}
+
+repositories {
+    jcenter()
+}
+
+rocker {
+  configurations {
+    main {
+      templateDir = file('$srcDirectory')
+      outputDir = file('src/generated/rocker')
+    }
+  }
+}
+"""
+
+        when:
+        def result = runWithArguments('compileRocker')
+
+        then:
+        fileExists('src/generated/rocker/Example.java')
+        result.task(':compileRocker').outcome == TaskOutcome.SUCCESS
+
+        when: "there is an empty input directory"
+        dir(srcDirectory, 'empty')
+
+        and: "the task is re-executed"
+        result = runWithArguments('compileRocker')
+
+        then: "the task still is up to date, as the empty directory is ignored via the @IgnoreEmptyDirectories annotation"
+        result.task(':compileRocker').outcome == TaskOutcome.UP_TO_DATE
+    }
+
     @SuppressWarnings("GroovyAccessibility")
     private Writer rockerMainBuildFile(boolean optimize, String templateDir, String outputDir, String rockerVersion = RockerExtension.DEFAULT_VERSION) {
         buildFile.newWriter().withWriter { w ->
