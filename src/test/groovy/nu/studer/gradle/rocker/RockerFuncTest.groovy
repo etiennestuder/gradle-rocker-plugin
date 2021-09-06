@@ -1198,12 +1198,4 @@ Hello @message!$customText
         file.setLastModified(System.currentTimeMillis() + 1000)
     }
 
-    private Properties loadProperties(File propertiesFile) {
-        Properties properties = new Properties()
-        propertiesFile.withInputStream {
-            properties.load(it)
-        }
-        properties
-    }
-
 }

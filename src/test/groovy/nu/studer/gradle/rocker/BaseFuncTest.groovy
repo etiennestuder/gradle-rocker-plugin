@@ -68,7 +68,7 @@ buildCache {
         file(workspaceDir, path)
     }
 
-    protected File file(File dir, String path) {
+    protected static File file(File dir, String path) {
         def file = new File(dir, path)
         assert file.parentFile.mkdirs() || file.parentFile.directory
         if (file.exists()) {
