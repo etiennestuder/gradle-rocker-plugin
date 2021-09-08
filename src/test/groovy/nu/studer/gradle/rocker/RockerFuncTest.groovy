@@ -600,7 +600,7 @@ rocker {
         true          | true           | 'src/rocker'     | 'src/rocker'      | 'src/generated/rocker1' | 'src/generated/rocker2'
     }
 
-    void "generates exactly the same output for the same input if optimize=true (was #optimize)"() {
+    void "generates exactly the same output for the same input iff optimize=true (was #optimize)"() {
         given:
         template('src/rocker/main/Example.rocker.html')
 
