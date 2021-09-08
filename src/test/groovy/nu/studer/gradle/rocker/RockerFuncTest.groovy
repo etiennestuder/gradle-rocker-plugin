@@ -1118,6 +1118,7 @@ compileFooRocker {
         result.output =~ /Generated 2 rocker java source files/
     }
 
+    @Requires({ (determineGradleVersion().baseVersion >= GradleVersion.version('6.8')) })
     void "empty directories in template directory are ignored"() {
         given:
         exampleTemplate()
