@@ -1118,16 +1118,14 @@ compileFooRocker {
         result.output =~ /Generated 2 rocker java source files/
     }
 
-    void "ignores empty directories in templateDir input directory"() {
+    void "empty directories in template directory are ignored"() {
         given:
         exampleTemplate()
-        def srcDirectory = 'src/rocker'
 
         and:
         buildFile << """
 plugins {
     id 'nu.studer.rocker'
-    id 'java'
 }
 
 repositories {
@@ -1137,7 +1135,7 @@ repositories {
 rocker {
   configurations {
     main {
-      templateDir = file('$srcDirectory')
+      templateDir = file('src/rocker')
       outputDir = file('src/generated/rocker')
     }
   }
@@ -1152,12 +1150,12 @@ rocker {
         result.task(':compileRocker').outcome == TaskOutcome.SUCCESS
 
         when:
-        dir(srcDirectory, 'empty')
+        dir('src/rocker/empty')
 
         and:
         result = runWithArguments('compileRocker')
 
-        then: "the task still is up to date, as the empty directory is ignored via the @IgnoreEmptyDirectories annotation"
+        then:
         result.task(':compileRocker').outcome == TaskOutcome.UP_TO_DATE
     }
 
