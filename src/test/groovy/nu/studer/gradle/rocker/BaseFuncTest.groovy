@@ -81,7 +81,7 @@ buildCache {
 
     protected static File dir(String parent, String path) {
         def dir = new File(parent, path)
-        assert dir.mkdirs() && dir.isDirectory()
+        assert dir.mkdirs() && dir.directory
         dir
     }
 

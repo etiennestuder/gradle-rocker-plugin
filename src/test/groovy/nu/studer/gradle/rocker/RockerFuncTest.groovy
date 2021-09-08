@@ -1151,10 +1151,10 @@ rocker {
         fileExists('src/generated/rocker/Example.java')
         result.task(':compileRocker').outcome == TaskOutcome.SUCCESS
 
-        when: "there is an empty input directory"
+        when:
         dir(srcDirectory, 'empty')
 
-        and: "the task is re-executed"
+        and:
         result = runWithArguments('compileRocker')
 
         then: "the task still is up to date, as the empty directory is ignored via the @IgnoreEmptyDirectories annotation"
