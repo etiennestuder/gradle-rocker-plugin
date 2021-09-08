@@ -1118,6 +1118,47 @@ compileFooRocker {
         result.output =~ /Generated 2 rocker java source files/
     }
 
+    void "empty directories in template directory are ignored"() {
+        given:
+        exampleTemplate()
+
+        and:
+        buildFile << """
+plugins {
+    id 'nu.studer.rocker'
+}
+
+repositories {
+    jcenter()
+}
+
+rocker {
+  configurations {
+    main {
+      templateDir = file('src/rocker')
+      outputDir = file('src/generated/rocker')
+    }
+  }
+}
+"""
+
+        when:
+        def result = runWithArguments('compileRocker')
+
+        then:
+        fileExists('src/generated/rocker/Example.java')
+        result.task(':compileRocker').outcome == TaskOutcome.SUCCESS
+
+        when:
+        dir('src/rocker/empty')
+
+        and:
+        result = runWithArguments('compileRocker')
+
+        then:
+        result.task(':compileRocker').outcome == TaskOutcome.UP_TO_DATE
+    }
+
     @SuppressWarnings("GroovyAccessibility")
     private Writer rockerMainBuildFile(boolean optimize, String templateDir, String outputDir, String rockerVersion = RockerExtension.DEFAULT_VERSION) {
         buildFile.newWriter().withWriter { w ->
@@ -1196,14 +1237,6 @@ Hello @message!$customText
         assert fileExists(filePath)
         def file = new File(workspaceDir, filePath)
         file.setLastModified(System.currentTimeMillis() + 1000)
-    }
-
-    private Properties loadProperties(File propertiesFile) {
-        Properties properties = new Properties()
-        propertiesFile.withInputStream {
-            properties.load(it)
-        }
-        properties
     }
 
 }
