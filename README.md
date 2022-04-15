@@ -22,8 +22,7 @@ only templates which have changed are regenerated. The plugin can be applied on 
 
 You can find more details about the actual Rocker source code generation in the [Rocker documentation](https://github.com/fizzed/rocker).
 
-The Rocker plugin is hosted at [Bintray's JCenter](https://bintray.com/etienne/gradle-plugins/gradle-rocker-plugin), also available from
-the [Gradle Plugin Portal](https://plugins.gradle.org/plugin/nu.studer.rocker).
+The Rocker plugin is hosted at the [Gradle Plugin Portal](https://plugins.gradle.org/plugin/nu.studer.rocker).
 
 ## Build scan
 
