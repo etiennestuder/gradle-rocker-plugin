@@ -12,3 +12,15 @@ updates:
       - gradle-plugin-portal
     schedule:
       interval: "daily"
+  - package-ecosystem: "gradle"
+    directory: "/example/groovy"
+    registries:
+      - gradle-plugin-portal
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "gradle"
+    directory: "/example/kotlin"
+    registries:
+      - gradle-plugin-portal
+    schedule:
+      interval: "daily"
