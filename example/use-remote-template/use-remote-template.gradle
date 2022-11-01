@@ -1,0 +1,64 @@
+/**
+ * This Groovy script demonstrates downloading and then using a remote Rocker template.
+ *
+ * <code> apply from: file('use-remote-template.gradle') </code>
+ */
+
+repositories {
+    // Configure a repository for the template source file
+    exclusiveContent {
+        forRepository {
+            ivy {
+                url = 'https://raw.githubusercontent.com/etiennestuder/gradle-rocker-plugin/'
+                patternLayout {
+                    artifact 'v[revision]/example/kotlin/src/rocker/Hello.[ext]'
+                }
+                metadataSources {
+                    artifact()
+                }
+            }
+        }
+        filter {
+            // Only match artifacts for 'nu.studer.rocker.template:hello-template:{version}@{ext}'
+            includeModule 'nu.studer.rocker.template', 'hello-template'
+        }
+    }
+
+    // Resolve all other dependencies as usual
+    mavenCentral()
+}
+
+// Create a new configuration to hold the remote template
+configurations {
+    rockerTemplate
+}
+
+dependencies {
+    // Places the resolved artifact at '$GRADLE_HOME/caches/modules-2/files-2.1/nu.studer.rocker.template/hello-template/3.0.4'
+    rockerTemplate 'nu.studer.rocker.template:hello-template:3.0.4@rocker.html'
+}
+
+// Copy resolved dependency to known directory
+def copyRockerDestination = project.layout.buildDirectory.dir('rocker/src')
+def copyRocker = tasks.register('copyRocker', Copy) {
+    from(configurations.rockerTemplate)
+    into(copyRockerDestination)
+
+    // This determines the name of the generated class
+    rename { 'Hello.rocker.html' }
+}
+
+// Configure Rocker using destination directory of copyRocker
+rocker {
+    version = '1.3.0'
+    configurations {
+        main {
+            templateDir = copyRockerDestination
+        }
+    }
+}
+
+// Copy template files before compiling
+tasks.named('compileRocker').configure {
+    dependsOn(copyRocker)
+}
