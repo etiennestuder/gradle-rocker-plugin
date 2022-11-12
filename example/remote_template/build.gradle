@@ -1,0 +1,8 @@
+plugins {
+    id 'nu.studer.rocker' version '3.0.4'
+    id 'java'
+}
+
+// demonstrates a script that downloads a remotely located Rocker template that is
+// then consumed by the gradle-rocker-plugin
+apply from: file('remote_template.gradle')
