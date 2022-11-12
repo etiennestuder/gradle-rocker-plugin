@@ -30,7 +30,7 @@ dependencies {
 }
 
 // copy resolved dependency to known directory
-def copyRockerDestination = project.layout.buildDirectory.dir('rocker/src')
+def copyRockerDestination = project.layout.buildDirectory.dir('rocker/templates')
 def copyRocker = tasks.register('copyRocker', Copy) {
     from(configurations.rockerTemplate)
     into(copyRockerDestination)
@@ -43,7 +43,9 @@ def copyRocker = tasks.register('copyRocker', Copy) {
 rocker {
     configurations {
         main {
+            optimize = true
             templateDir = copyRockerDestination
+            outputDir = project.layout.buildDirectory.dir('generated/sources/rocker')
         }
     }
 }
