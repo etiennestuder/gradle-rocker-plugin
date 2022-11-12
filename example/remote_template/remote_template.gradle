@@ -5,7 +5,7 @@ repositories {
             // define a layout that holds templates in a given folder versioned in a GitHub repository
             ivy {
                 url = 'https://raw.githubusercontent.com/etiennestuder/gradle-rocker-plugin/'
-                patternLayout { artifact 'v[revision]/example/kotlin/src/rocker/[ext]' }
+                patternLayout { artifact 'v[revision]/example/kotlin/src/rocker/[ext].rocker.html' }
                 metadataSources { artifact() }
             }
         }
@@ -26,7 +26,7 @@ configurations {
 
 dependencies {
     // places the resolved artifact at '$GRADLE_HOME/caches/modules-2/files-2.1/nu.studer.rocker/templates/3.0.4'
-    rockerTemplate 'nu.studer.rocker:templates:3.0.4@Hello.rocker.html'
+    rockerTemplate 'nu.studer.rocker:templates:3.0.4@Hello'
 }
 
 // copy resolved dependency to known directory
