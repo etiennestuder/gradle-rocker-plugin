@@ -21,36 +21,49 @@ repositories {
 
 // create a new configuration to hold the remote templates
 configurations {
-    rockerTemplate
+    rockerTemplates
 }
 
+// add the desired templates to the configuration
 dependencies {
-    // places the resolved artifact at '$GRADLE_HOME/caches/modules-2/files-2.1/nu.studer.rocker/templates/3.0.4'
-    rockerTemplate 'nu.studer.rocker:templates:3.0.4@Hello'
+    rockerTemplates 'nu.studer.rocker:templates:3.0.4@Hello'
 }
 
-// copy resolved dependency to known directory
-def copyRockerDestination = project.layout.buildDirectory.dir('rocker/templates')
-def copyRocker = tasks.register('copyRocker', Copy) {
-    from(configurations.rockerTemplate)
-    into(copyRockerDestination)
-
-    // this determines the name of the generated class
-    rename { 'Hello.rocker.html' }
+// copy resolved templates to a dedicated location within the project
+def copyRockerTemplates = tasks.register('copyRockerTemplates', CopyRockerTemplates) {
+    files = configurations.rockerTemplates
+    targetDir = layout.buildDirectory.dir('rocker/templates')
 }
 
-// Configure Rocker using destination directory of copyRocker
+// configure Rocker to process the templates
 rocker {
     configurations {
         main {
             optimize = true
-            templateDir = copyRockerDestination
+            templateDir = copyRockerTemplates.flatMap(t -> t.targetDir)
             outputDir = project.layout.buildDirectory.dir('generated/sources/rocker')
         }
     }
 }
 
-// Copy template files before compiling
-tasks.named('compileRocker').configure {
-    dependsOn(copyRocker)
+abstract class CopyRockerTemplates extends DefaultTask {
+
+    @InputFiles
+    abstract Property<FileCollection> getFiles()
+
+    @OutputDirectory
+    abstract DirectoryProperty getTargetDir()
+
+    @Inject
+    abstract FileSystemOperations getFileSystemOperations()
+
+    @TaskAction
+    copyFiles() {
+        fileSystemOperations.copy { spec ->
+            from files
+            into targetDir
+            rename { 'Hello.rocker.html' }
+        }
+    }
+
 }
