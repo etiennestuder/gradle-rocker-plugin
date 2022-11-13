@@ -60,9 +60,10 @@ abstract class CopyRockerTemplates extends DefaultTask {
     @TaskAction
     copyFiles() {
         fileSystemOperations.copy { spec ->
+            // copies and renames downloaded templates, e.g `templates-3.0.4.Hello` becomes `Hello.rocker.html`
             from files
             into targetDir
-            rename { 'Hello.rocker.html' }
+            rename { fn -> fn.substring(fn.lastIndexOf('.') + 1) + '.rocker.html' }
         }
     }
 
