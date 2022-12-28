@@ -51,18 +51,15 @@ tasks.withType(Test).configureEach {
 }
 
 gradlePlugin {
+    website = 'https://github.com/etiennestuder/gradle-rocker-plugin'
+    vcsUrl = 'https://github.com/etiennestuder/gradle-rocker-plugin'
     plugins {
         pluginDevPlugin {
             id = 'nu.studer.rocker'
             displayName = 'gradle-rocker-plugin'
             description = 'Gradle plugin that integrates the Rocker template engine.'
+            tags.set(['rocker'])
             implementationClass = 'nu.studer.gradle.rocker.RockerPlugin'
         }
     }
-}
-
-pluginBundle {
-    website = 'https://github.com/etiennestuder/gradle-rocker-plugin'
-    vcsUrl = 'https://github.com/etiennestuder/gradle-rocker-plugin'
-    tags = ['rocker']
 }
