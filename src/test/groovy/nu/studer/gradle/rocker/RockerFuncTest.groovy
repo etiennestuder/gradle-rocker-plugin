@@ -87,7 +87,8 @@ rocker {
 
         then:
         fileExists('build/generated-src/rocker/foo/Example.java')
-        result.output.contains("Calculating task graph as no cached configuration is available for tasks: compileFooRocker")
+        result.output.contains("Calculating task graph as no configuration cache is available for tasks: compileFooRocker")
+                || result.output.contains("Calculating task graph as no cached configuration is available for tasks: compileFooRocker")
         result.output.contains("Generated 1 rocker java source files")
         result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
 
