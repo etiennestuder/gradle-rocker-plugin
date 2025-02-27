@@ -12,6 +12,7 @@ public class RockerConfig {
     final String name;
 
     private final Property<Boolean> optimize;
+    private final Property<Boolean> discardLogicWhitespace;
     private final Property<String> extendsClass;
     private final Property<String> extendsModelClass;
     private final Property<String> javaVersion;
@@ -26,6 +27,7 @@ public class RockerConfig {
         this.name = name;
 
         this.optimize = objects.property(Boolean.class).convention(Boolean.FALSE);
+        this.discardLogicWhitespace = objects.property(Boolean.class).convention(Boolean.FALSE);
         this.extendsClass = objects.property(String.class).convention((String) null);
         this.extendsModelClass = objects.property(String.class).convention((String) null);
         this.javaVersion = objects.property(String.class).convention(Runtime.class.getPackage().getSpecificationVersion());
@@ -38,6 +40,10 @@ public class RockerConfig {
 
     public Property<Boolean> getOptimize() {
         return optimize;
+    }
+
+    public Property<Boolean> getDiscardLogicWhitespace() {
+        return discardLogicWhitespace;
     }
 
     public Property<String> getExtendsClass() {
