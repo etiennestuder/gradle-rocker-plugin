@@ -43,6 +43,7 @@ public class RockerCompile extends DefaultTask {
     private static final String ROCKER_FILE_EXTENSION_PREFIX = ".rocker";
 
     private final Provider<Boolean> optimize;
+    private final Provider<Boolean> discardLogicWhitespace;
     private final Provider<String> extendsClass;
     private final Provider<String> extendsModelClass;
     private final Provider<String> javaVersion;
@@ -61,6 +62,7 @@ public class RockerCompile extends DefaultTask {
     @Inject
     public RockerCompile(RockerConfig config, FileCollection runtimeClasspath, ObjectFactory objects, ProjectLayout projectLayout, FileSystemOperations fileSystemOperations, ExecOperations execOperations) {
         this.optimize = objects.property(Boolean.class).value(config.getOptimize());
+        this.discardLogicWhitespace = objects.property(Boolean.class).value(config.getDiscardLogicWhitespace());
         this.extendsClass = objects.property(String.class).value(config.getExtendsClass());
         this.extendsModelClass = objects.property(String.class).value(config.getExtendsModelClass());
         this.javaVersion = objects.property(String.class).value(config.getJavaVersion());
@@ -86,6 +88,11 @@ public class RockerCompile extends DefaultTask {
     @Input
     public Provider<Boolean> getOptimize() {
         return optimize;
+    }
+
+    @Input
+    public Provider<Boolean> getDiscardLogicWhitespace() {
+        return discardLogicWhitespace;
     }
 
     @Optional
@@ -235,6 +242,7 @@ public class RockerCompile extends DefaultTask {
                 spec.setClasspath(runtimeClasspath);
                 spec.setWorkingDir(projectLayout.getProjectDirectory());
                 spec.systemProperty("rocker.option.optimize", optimize.get().toString());
+                spec.systemProperty("rocker.option.discardLogicWhitespace", discardLogicWhitespace.get().toString());
                 systemPropertyIfNotNull("rocker.option.extendsClass", extendsClass.getOrNull(), spec);
                 systemPropertyIfNotNull("rocker.option.extendsModelClass", extendsModelClass.getOrNull(), spec);
                 systemPropertyIfNotNull("rocker.option.javaVersion", javaVersion.getOrNull(), spec);
