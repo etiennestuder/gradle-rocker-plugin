@@ -19,7 +19,7 @@ develocity {
 
 buildCache {
     local {
-        enabled = truec
+        enabled = true
     }
     remote(develocity.buildCache) {
         enabled = true
