@@ -35,6 +35,7 @@ rocker {
   configurations {
     foo {
       // `optimize` defaults to false
+      // `discardLogicWhitespace` defaults to false
       // `extendsClass` defaults to null, deferring to the Rocker default
       // `extendsModelClass` defaults to null, deferring to the Rocker default
       // `javaVersion` defaults to current JVM version
