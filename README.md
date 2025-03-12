@@ -68,7 +68,7 @@ Apply the `nu.studer.rocker` plugin to your Gradle project.
 
 ```groovy
 plugins {
-    id 'nu.studer.rocker' version '3.0.4'
+    id 'nu.studer.rocker' version '3.0.5'
 }
 ```
 
@@ -81,12 +81,12 @@ This is a sample configuration:
 
 ```groovy
 plugins {
-    id 'nu.studer.rocker' version '3.0.4'
+    id 'nu.studer.rocker' version '3.0.5'
     id 'java'
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 rocker {
@@ -119,6 +119,7 @@ Since we declared to use version _1.3.0_ of the Rocker template engine, all Rock
 For each named configuration, the following options can be configured:
 
   * `optimize` (boolean): if _true_, hot reload support is removed from the generated templates, task output becomes cacheable
+  * `discardLogicWhitespace` (boolean): if _true_, discards lines consisting of only logic/block
   * `extendsClass` (String): the class that all template implementations should extend
   * `extendsModelClass` (String): the class that all template models should extend
   * `javaVersion` (String): the Java version that the templates' compile & runtime must be compatible with
@@ -142,6 +143,8 @@ See the self-contained example build scripts for the [Groovy DSL](example/groovy
 
 # Changelog
 
++ 3.0.6 - TBD
++ 3.0.5 - Add discardLogicWhitespace configuration option.
 + 3.0.4 - Ignore empty directories when snapshotting template dir.
 + 3.0.3 - Avoid usage of deprecated APIs for newer versions of Gradle.
 + 3.0.2 - Incremental task functionality turned off when Rocker's hot reload feature is enabled.

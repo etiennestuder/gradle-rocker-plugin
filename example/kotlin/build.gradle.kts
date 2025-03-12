@@ -1,5 +1,5 @@
 plugins {
-    id("nu.studer.rocker") version "3.0.4"
+    id("nu.studer.rocker") version "3.0.5"
     id("java")
 }
 
@@ -12,6 +12,7 @@ rocker {
     configurations {
         create("main") {
             optimize.set(true) // optional
+            discardLogicWhitespace.set(true) // optional
             templateDir.set(file("src/rocker"))
             outputDir.set(file("src/generated/rocker"))
         }
