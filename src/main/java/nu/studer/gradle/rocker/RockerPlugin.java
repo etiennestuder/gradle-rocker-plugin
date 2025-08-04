@@ -48,7 +48,7 @@ public class RockerPlugin implements Plugin<Project> {
             });
 
             // add the output of the rocker task as a source directory of the source set with the matching name (which adds an implicit task dependency)
-            // add the rocker-runtime to the compile configuration in order to be able to compile the generated sources
+            // add the rocker-runtime to the compile configuration to be able to compile the generated sources
             SourceSetContainer sourceSets = getSourceSets(project);
             sourceSets.configureEach(sourceSet -> {
                 if (sourceSet.getName().equals(config.name)) {

@@ -90,7 +90,7 @@ repositories {
 }
 
 rocker {
-    version = '1.3.0'  // optional
+    version = '2.2.1'  // optional
     configurations{
         main {
             templateDir = file('src/rocker')
@@ -108,7 +108,7 @@ of the configuration is `main`, the generated sources are added to the `main` so
 Given the configuration above, you can invoke the Rocker template engine by issuing `./gradlew compileRocker`. You can also directly call `./gradlew compileJava` which first
 generates the Java sources from the Rocker templates, and then compiles these Java sources as part of compiling all sources in the _main_ source set.
 
-Since we declared to use version _1.3.0_ of the Rocker template engine, all Rocker dependencies of all Gradle configurations will be of that given version.
+Since we declared to use version _2.2.1_ of the Rocker template engine, all Rocker dependencies of all Gradle configurations will be of that given version.
 
 > I suggest using the [Continuous build](https://docs.gradle.org/current/userguide/continuous_build.html) feature of Gradle instead of using the Rocker hot reload feature.
 > Declare `optimize = true` in the Rocker configuration of your Gradle build, and then run your build with the `-t` command line option. In addition, deactivating the hot

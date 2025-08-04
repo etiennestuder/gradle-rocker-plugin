@@ -197,7 +197,7 @@ repositories {
 }
 
 rocker {
-    version.set("1.3.0")
+    version.set("2.2.1")
     configurations {
         create("foo") {
             optimize.set(true)
