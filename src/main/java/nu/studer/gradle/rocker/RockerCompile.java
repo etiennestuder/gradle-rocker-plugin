@@ -49,9 +49,9 @@ public class RockerCompile extends DefaultTask {
     private final Provider<String> javaVersion;
     private final Provider<String> targetCharset;
     private final Provider<Directory> templateDir;
-    private final FileCollection runtimeClasspath;
     private final Provider<Directory> outputDir;
     private final Provider<Directory> classDir;
+    private final FileCollection runtimeClasspath;
     private Action<? super JavaExecSpec> javaExecSpec;
     private Action<? super ExecResult> execResultHandler;
 
@@ -68,9 +68,9 @@ public class RockerCompile extends DefaultTask {
         this.javaVersion = objects.property(String.class).value(config.getJavaVersion());
         this.targetCharset = objects.property(String.class).value(config.getTargetCharset());
         this.templateDir = objects.directoryProperty().value(config.getTemplateDir());
-        this.runtimeClasspath = objects.fileCollection().from(runtimeClasspath);
         this.outputDir = objects.directoryProperty().value(config.getOutputDir());
         this.classDir = objects.directoryProperty().value(config.getClassDir());
+        this.runtimeClasspath = objects.fileCollection().from(runtimeClasspath);
 
         this.projectLayout = projectLayout;
         this.fileSystemOperations = fileSystemOperations;
@@ -127,12 +127,6 @@ public class RockerCompile extends DefaultTask {
         return templateDir;
     }
 
-    @SuppressWarnings("unused")
-    @Classpath
-    public FileCollection getRuntimeClasspath() {
-        return runtimeClasspath;
-    }
-
     @OutputDirectory
     public Provider<Directory> getOutputDir() {
         return outputDir;
@@ -141,6 +135,12 @@ public class RockerCompile extends DefaultTask {
     @Internal
     public Provider<Directory> getClassDir() {
         return classDir;
+    }
+
+    @SuppressWarnings("unused")
+    @Classpath
+    public FileCollection getRuntimeClasspath() {
+        return runtimeClasspath;
     }
 
     @SuppressWarnings("unused")
