@@ -18,7 +18,7 @@ in [build configuration caching](https://docs.gradle.org/nightly/userguide/confi
 in [task output caching](https://docs.gradle.org/current/userguide/build_cache.html),
 and in [incremental builds](https://docs.gradle.org/current/userguide/more_about_tasks.html#sec:up_to_date_checks). Additionally,
 the compile task itself is [incremental](https://docs.gradle.org/current/dsl/org.gradle.work.InputChanges.html), meaning it is optimized so that
-only templates which have changed are regenerated. The plugin can be applied on both Java projects and Android projects.
+only templates that have changed are regenerated. The plugin can be applied to both Java projects and Android projects.
 
 You can find more details about the actual Rocker source code generation in the [Rocker documentation](https://github.com/fizzed/rocker).
 
@@ -32,19 +32,19 @@ Find out more about build scans for Gradle and Maven at https://scans.gradle.com
 
 # Functionality
 
-The following functionality is provided by the Rocker plugin:
+The Rocker plugin provides the following functionality:
 
  * Generate Java sources from a given set of Rocker templates
  * Add the generated Java sources to the name-matching source set, if existing
  * Wire task dependencies such that the Java sources are generated before the Java compile task of the name-matching source set compiles them, if existing
 
-The following Gradle configuration changes are contributed by the Rocker plugin:
+The Rocker plugin contributes the following Gradle configuration changes:
 
  * Add the `com.fizzed:rocker-compiler` dependency needed to execute the Rocker template engine to the new `rockerCompiler` configuration
  * Add the `com.fizzed:rocker-runtime` dependency to the name-matching `implementation` configuration to successfully compile the Java sources generated from the Rocker templates
  * Use the customizable Rocker version across all resolved `com.fizzed:rocker-*` dependencies
 
-The following Gradle features are supported by the Rocker plugin:
+The Rocker plugin supports the following Gradle features:
 
  * `RockerCompile` task instances participate in task configuration avoidance
  * `RockerCompile` task instances participate in configuration caching
@@ -102,7 +102,7 @@ rocker {
 ```
 
 The rocker _main_ configuration declares that the Rocker templates are in _src/rocker_ and the generated Java sources need to end up in _src/generated/rocker_. It further
-declares via the _optimize_ property that the generated Java sources should be optimized to not contain any code that allows for hot reload via Rocker. Since the name
+declares via the _optimize_ property that the generated Java sources should be optimized not to contain any code that allows for hot reload via Rocker. Since the name
 of the configuration is `main`, the generated sources are added to the `main` source set contributed by the applied `java` plugin.
 
 Given the configuration above, you can invoke the Rocker template engine by issuing `./gradlew compileRocker`. You can also directly call `./gradlew compileJava` which first
@@ -110,7 +110,7 @@ generates the Java sources from the Rocker templates, and then compiles these Ja
 
 Since we declared to use version _1.3.0_ of the Rocker template engine, all Rocker dependencies of all Gradle configurations will be of that given version.
 
-> I suggest you use the [Continuous build](https://docs.gradle.org/current/userguide/continuous_build.html) feature of Gradle instead of using the Rocker hot reload feature.
+> I suggest using the [Continuous build](https://docs.gradle.org/current/userguide/continuous_build.html) feature of Gradle instead of using the Rocker hot reload feature.
 > Declare `optimize = true` in the Rocker configuration of your Gradle build, and then run your build with the `-t` command line option. In addition, deactivating the hot
 > reload feature of Rocker will enable the Rocker tasks for task output caching by the [Gradle Build Cache](https://docs.gradle.org/current/userguide/build_cache.html).
 
@@ -134,7 +134,7 @@ For each named configuration, the following options can be configured:
 
 ## Invoke Rocker task
 
-You can generate the Java sources for a given Rocker configuration by invoking the command `compile<configName>Rocker`, e.g. `compileTestRocker`. The only exception being _main_
+You can generate the Java sources for a given Rocker configuration by invoking the command `compile<configName>Rocker`, e.g., `compileTestRocker`. The only exception being _main_
 that is abbreviated to `compileRocker`, similarly to how it is done for the `JavaCompile` tasks contributed by the `java` plugin.
 
 # Examples
@@ -159,7 +159,7 @@ See the self-contained example build scripts for the [Groovy DSL](example/groovy
 + 1.0 - Made Gradle 5.0 the minimum compatible version and replaced usage of deprecated APIs.
 + 0.4 - Removed wiring between `clean` task and deleting generated Rocker sources, uses Rocker 1.2.0 by default.
 + 0.3.1 - Fixed incremental template compilation.
-+ 0.3 - Incremental template compilation, i.e. only the modified templates are compiled.
++ 0.3 - Incremental template compilation, i.e., only the modified templates are compiled.
 + 0.2 - New DSL, more Rocker configuration options, support for the Gradle Build Cache.
 + 0.1 - Initial version
 
