@@ -1,5 +1,5 @@
 plugins {
-    id("nu.studer.rocker") version "3.0.5"
+    id("nu.studer.rocker") version "3.1"
     id("java")
 }
 
