@@ -146,7 +146,7 @@ See the self-contained example build scripts for the [Groovy DSL](example/groovy
 
 # Changelog
 
-+ 3.0.6 - TBD
++ 3.1 - Use Rocker 2.2.1 by default. Add missing configuration options available in Rocker 2.2.1.
 + 3.0.5 - Add discardLogicWhitespace configuration option.
 + 3.0.4 - Ignore empty directories when snapshotting template dir.
 + 3.0.3 - Avoid usage of deprecated APIs for newer versions of Gradle.
