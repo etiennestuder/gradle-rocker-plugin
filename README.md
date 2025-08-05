@@ -120,8 +120,11 @@ For each named configuration, the following options can be configured:
 
   * `optimize` (boolean): if _true_, hot reload support is removed from the generated templates, task output becomes cacheable
   * `discardLogicWhitespace` (boolean): if _true_, discards lines consisting of only logic/block
+  * `combineAdjacentPlain` (boolean): if _true_, combines adjacent plain text elements to form a single one
+  * `markAsGenerated` (boolean): if _true_, adds a @Generated annotation to the generated classes
   * `extendsClass` (String): the class that all template implementations should extend
   * `extendsModelClass` (String): the class that all template models should extend
+  * `postProcessing` (List<String>): the classes to post-process the template models before any Java code is generated for them
   * `javaVersion` (String): the Java version that the templates' compile & runtime must be compatible with
   * `targetCharset` (String): the target charset of the generated Java sources
   * `templateDir` (Path): the base directory where Rocker recursively starts from when locating and parsing template files
