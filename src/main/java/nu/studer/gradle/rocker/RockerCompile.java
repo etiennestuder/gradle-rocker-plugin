@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static nu.studer.gradle.rocker.GradleUtils.isAtLeastGradleVersion;
@@ -44,8 +45,11 @@ public class RockerCompile extends DefaultTask {
 
     private final Provider<Boolean> optimize;
     private final Provider<Boolean> discardLogicWhitespace;
+    private final Provider<Boolean> combineAdjacentPlain;
+    private final Provider<Boolean> markAsGenerated;
     private final Provider<String> extendsClass;
     private final Provider<String> extendsModelClass;
+    private final Provider<List<String>> postProcessing;
     private final Provider<String> javaVersion;
     private final Provider<String> targetCharset;
     private final Provider<Directory> templateDir;
@@ -63,8 +67,11 @@ public class RockerCompile extends DefaultTask {
     public RockerCompile(RockerConfig config, FileCollection runtimeClasspath, ObjectFactory objects, ProjectLayout projectLayout, FileSystemOperations fileSystemOperations, ExecOperations execOperations) {
         this.optimize = objects.property(Boolean.class).value(config.getOptimize());
         this.discardLogicWhitespace = objects.property(Boolean.class).value(config.getDiscardLogicWhitespace());
+        this.combineAdjacentPlain = objects.property(Boolean.class).value(config.getCombineAdjacentPlain());
+        this.markAsGenerated = objects.property(Boolean.class).value(config.getMarkAsGenerated());
         this.extendsClass = objects.property(String.class).value(config.getExtendsClass());
         this.extendsModelClass = objects.property(String.class).value(config.getExtendsModelClass());
+        this.postProcessing = objects.listProperty(String.class).value(config.getPostProcessing());
         this.javaVersion = objects.property(String.class).value(config.getJavaVersion());
         this.targetCharset = objects.property(String.class).value(config.getTargetCharset());
         this.templateDir = objects.directoryProperty().value(config.getTemplateDir());
@@ -85,14 +92,28 @@ public class RockerCompile extends DefaultTask {
         });
     }
 
+    @Optional
     @Input
     public Provider<Boolean> getOptimize() {
         return optimize;
     }
 
+    @Optional
     @Input
     public Provider<Boolean> getDiscardLogicWhitespace() {
         return discardLogicWhitespace;
+    }
+
+    @Optional
+    @Input
+    public Provider<Boolean> getCombineAdjacentPlain() {
+        return combineAdjacentPlain;
+    }
+
+    @Optional
+    @Input
+    public Provider<Boolean> getMarkAsGenerated() {
+        return markAsGenerated;
     }
 
     @Optional
@@ -105,6 +126,12 @@ public class RockerCompile extends DefaultTask {
     @Input
     public Provider<String> getExtendsModelClass() {
         return extendsModelClass;
+    }
+
+    @Optional
+    @Input
+    public Provider<List<String>> getPostProcessing() {
+        return postProcessing;
     }
 
     @Optional
@@ -241,10 +268,13 @@ public class RockerCompile extends DefaultTask {
                 setMainClass("com.fizzed.rocker.compiler.JavaGeneratorMain", spec);
                 spec.setClasspath(runtimeClasspath);
                 spec.setWorkingDir(projectLayout.getProjectDirectory());
-                spec.systemProperty("rocker.option.optimize", optimize.get().toString());
-                spec.systemProperty("rocker.option.discardLogicWhitespace", discardLogicWhitespace.get().toString());
+                systemPropertyIfNotNull("rocker.option.optimize", optimize.getOrNull(), spec);
+                systemPropertyIfNotNull("rocker.option.discardLogicWhitespace", discardLogicWhitespace.getOrNull(), spec);
+                systemPropertyIfNotNull("rocker.option.combineAdjacentPlain", combineAdjacentPlain.getOrNull(), spec);
+                systemPropertyIfNotNull("rocker.option.markAsGenerated", markAsGenerated.getOrNull(), spec);
                 systemPropertyIfNotNull("rocker.option.extendsClass", extendsClass.getOrNull(), spec);
                 systemPropertyIfNotNull("rocker.option.extendsModelClass", extendsModelClass.getOrNull(), spec);
+                systemPropertyIfNotEmpty("rocker.option.postProcessing", postProcessing.getOrNull(), spec);
                 systemPropertyIfNotNull("rocker.option.javaVersion", javaVersion.getOrNull(), spec);
                 systemPropertyIfNotNull("rocker.option.targetCharset", targetCharset.getOrNull(), spec);
                 spec.systemProperty("rocker.template.dir", templateDir.getAbsolutePath());
@@ -269,12 +299,23 @@ public class RockerCompile extends DefaultTask {
                 spec.setMain(mainClass);
             }
 
+            private void systemPropertyIfNotNull(String option, Boolean value, JavaExecSpec spec) {
+                if (value != null) {
+                    spec.systemProperty(option, value.toString());
+                }
+            }
+
             private void systemPropertyIfNotNull(String option, String value, JavaExecSpec spec) {
                 if (value != null) {
                     spec.systemProperty(option, value);
                 }
             }
 
+            private void systemPropertyIfNotEmpty(String option, List<String> values, JavaExecSpec spec) {
+                if (values != null && !values.isEmpty()) {
+                    spec.systemProperty(option, String.join(",", values));
+                }
+            }
         });
     }
 
