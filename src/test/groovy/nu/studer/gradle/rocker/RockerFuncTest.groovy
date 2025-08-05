@@ -408,6 +408,39 @@ rocker {
         result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
     }
 
+    void "can add @Generated annotation"() {
+        given:
+        exampleTemplate()
+
+        and:
+        buildFile << """
+plugins {
+    id 'nu.studer.rocker'
+}
+
+repositories {
+    mavenCentral()
+}
+
+rocker {
+  configurations {
+    foo {
+      markAsGenerated = true
+      templateDir = file('src/rocker')
+      outputDir = file('src/generated/rocker')
+    }
+  }
+}
+"""
+
+        when:
+        def result = runWithArguments('compileFooRocker')
+
+        then:
+        fileContent('src/generated/rocker/Example.java').contains('@com.fizzed.rocker.Generated')
+        result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
+    }
+
     void "supports task avoidance"() {
         given:
         exampleTemplate()
