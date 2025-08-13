@@ -317,7 +317,12 @@ rocker {
 rocker.configurations.main.outputDir = file('src/generated/rocker/other')
 
 afterEvaluate {
-  SourceSetContainer sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+  SourceSetContainer sourceSets
+  if (org.gradle.util.GradleVersion.current().compareTo(org.gradle.util.GradleVersion.version("7.1")) >= 0) {
+    sourceSets = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets();
+  } else {
+    sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+  }
   SourceSet sourceSet = sourceSets.findByName('main')
   Set<File> dirs = sourceSet.getJava().getSrcDirs()
   dirs.eachWithIndex { dir, index ->

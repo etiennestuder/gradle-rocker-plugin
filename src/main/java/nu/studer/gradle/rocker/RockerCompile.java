@@ -31,6 +31,8 @@ import org.gradle.work.InputChanges;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -296,7 +298,13 @@ public class RockerCompile extends DefaultTask {
 
             @SuppressWarnings("deprecation")
             private void setMainClassDeprecated(String mainClass, JavaExecSpec spec) {
-                spec.setMain(mainClass);
+                try {
+                    // Use reflection to access the setMain method as it was removed in Gradle 9.
+                    Method method = JavaExecSpec.class.getMethod("setMain", String.class);
+                    method.invoke(spec, mainClass);
+                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException("Failed to invoke setMain via reflection", e);
+                }
             }
 
             private void systemPropertyIfNotNull(String option, Boolean value, JavaExecSpec spec) {

@@ -12,6 +12,10 @@ import org.gradle.util.GradleVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Map;
+
 import static java.lang.String.format;
 import static nu.studer.gradle.rocker.GradleUtils.isAtLeastGradleVersion;
 import static nu.studer.gradle.rocker.StringUtils.capitalize;
@@ -70,9 +74,20 @@ public class RockerPlugin implements Plugin<Project> {
         }
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({"deprecation", "unchecked"})
     private SourceSetContainer getSourceSetsDeprecated(Project project) {
-        return project.getConvention().getPlugin(org.gradle.api.plugins.JavaPluginConvention.class).getSourceSets();
+        try {
+            // Use reflection to call project.getConvention().getPlugin(org.gradle.api.plugins.JavaPluginConvention.class).getSourceSets() as it was removed in Gradle 9.
+            Method getConventionMethod = Project.class.getMethod("getConvention");
+            Object convention = getConventionMethod.invoke(project);
+            Method getPluginsMethod = convention.getClass().getMethod("getPlugins");
+            Map<String,Object> plugins = (Map<String,Object>) getPluginsMethod.invoke(convention);
+            Object javaPluginConvention = plugins.get("java");
+            Method getSourceSetsMethod = javaPluginConvention.getClass().getMethod("getSourceSets");
+            return (SourceSetContainer) getSourceSetsMethod.invoke(javaPluginConvention);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException("Failed to invoke getSourceSets via reflection", e);
+        }
     }
 
     private static Configuration createRockerCompilerRuntimeConfiguration(Project project) {
