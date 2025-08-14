@@ -85,7 +85,7 @@ public class RockerPlugin implements Plugin<Project> {
             Object javaPluginConvention = plugins.get("java");
             Method getSourceSetsMethod = javaPluginConvention.getClass().getMethod("getSourceSets");
             return (SourceSetContainer) getSourceSetsMethod.invoke(javaPluginConvention);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | NullPointerException e) {
             throw new RuntimeException("Failed to invoke getSourceSets via reflection", e);
         }
     }
