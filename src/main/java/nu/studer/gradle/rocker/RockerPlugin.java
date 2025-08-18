@@ -5,19 +5,13 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ModuleVersionSelector;
 import org.gradle.api.plugins.JavaBasePlugin;
-import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.util.GradleVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Map;
-
 import static java.lang.String.format;
-import static nu.studer.gradle.rocker.GradleUtils.isAtLeastGradleVersion;
 import static nu.studer.gradle.rocker.StringUtils.capitalize;
 
 @SuppressWarnings("unused")
@@ -67,27 +61,7 @@ public class RockerPlugin implements Plugin<Project> {
     }
 
     private SourceSetContainer getSourceSets(Project project) {
-        if (isAtLeastGradleVersion("7.1")) {
-            return project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets();
-        } else {
-            return getSourceSetsDeprecated(project);
-        }
-    }
-
-    @SuppressWarnings({"deprecation", "unchecked"})
-    private SourceSetContainer getSourceSetsDeprecated(Project project) {
-        try {
-            // Use reflection to call project.getConvention().getPlugin(org.gradle.api.plugins.JavaPluginConvention.class).getSourceSets() as it was removed in Gradle 9.
-            Method getConventionMethod = Project.class.getMethod("getConvention");
-            Object convention = getConventionMethod.invoke(project);
-            Method getPluginsMethod = convention.getClass().getMethod("getPlugins");
-            Map<String,Object> plugins = (Map<String,Object>) getPluginsMethod.invoke(convention);
-            Object javaPluginConvention = plugins.get("java");
-            Method getSourceSetsMethod = javaPluginConvention.getClass().getMethod("getSourceSets");
-            return (SourceSetContainer) getSourceSetsMethod.invoke(javaPluginConvention);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | NullPointerException e) {
-            throw new RuntimeException("Failed to invoke getSourceSets via reflection", e);
-        }
+        return project.getExtensions().getByType(SourceSetContainer.class);
     }
 
     private static Configuration createRockerCompilerRuntimeConfiguration(Project project) {
