@@ -5,7 +5,6 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ModuleVersionSelector;
 import org.gradle.api.plugins.JavaBasePlugin;
-import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.util.GradleVersion;
@@ -13,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static java.lang.String.format;
-import static nu.studer.gradle.rocker.GradleUtils.isAtLeastGradleVersion;
 import static nu.studer.gradle.rocker.StringUtils.capitalize;
 
 @SuppressWarnings("unused")
@@ -63,16 +61,7 @@ public class RockerPlugin implements Plugin<Project> {
     }
 
     private SourceSetContainer getSourceSets(Project project) {
-        if (isAtLeastGradleVersion("7.1")) {
-            return project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets();
-        } else {
-            return getSourceSetsDeprecated(project);
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    private SourceSetContainer getSourceSetsDeprecated(Project project) {
-        return project.getConvention().getPlugin(org.gradle.api.plugins.JavaPluginConvention.class).getSourceSets();
+        return project.getExtensions().getByType(SourceSetContainer.class);
     }
 
     private static Configuration createRockerCompilerRuntimeConfiguration(Project project) {
