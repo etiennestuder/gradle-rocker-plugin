@@ -173,6 +173,7 @@ Both feedback and contributions are very welcome.
 
 # Acknowledgements
 
++ [jprinet](https://github.com/jprinet) (pr #212 to be Gradle 9 compatible)
 + [gregopet](https://github.com/gregopet) (detailed issue report #11)
 + [facewindu](https://github.com/facewindu) (pr #10 to remove empty output directories)
 + [wolfs](https://github.com/wolfs) (support to make lazy properties work)
