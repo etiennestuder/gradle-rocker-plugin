@@ -292,17 +292,17 @@ public class RockerCompile extends DefaultTask {
                 if (isAtLeastGradleVersion("6.4")) {
                     spec.getMainClass().set(mainClass);
                 } else {
-                    setMainClassDeprecated(mainClass, spec);
+                    setMainClassRemoved(mainClass, spec);
                 }
             }
 
-            private void setMainClassDeprecated(String mainClass, JavaExecSpec spec) {
+            private void setMainClassRemoved(String mainClass, JavaExecSpec spec) {
                 try {
-                    // Use reflection to access the setMain method as it was removed in Gradle 9.
+                    // use reflection to access the setMain method as it was removed in Gradle 9
                     Method method = JavaExecSpec.class.getMethod("setMain", String.class);
                     method.invoke(spec, mainClass);
                 } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException("Failed to invoke setMain via reflection", e);
+                    throw new RuntimeException("Unable to set the Rocker main class via reflection", e);
                 }
             }
 
