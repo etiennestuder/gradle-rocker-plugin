@@ -5,7 +5,6 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ModuleVersionSelector;
 import org.gradle.api.plugins.JavaBasePlugin;
-import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.util.GradleVersion;
@@ -13,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static java.lang.String.format;
-import static nu.studer.gradle.rocker.GradleUtils.isAtLeastGradleVersion;
 import static nu.studer.gradle.rocker.StringUtils.capitalize;
 
 @SuppressWarnings("unused")
@@ -49,7 +47,7 @@ public class RockerPlugin implements Plugin<Project> {
 
             // add the output of the rocker task as a source directory of the source set with the matching name (which adds an implicit task dependency)
             // add the rocker-runtime to the compile configuration to be able to compile the generated sources
-            SourceSetContainer sourceSets = getSourceSets(project);
+            SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
             sourceSets.configureEach(sourceSet -> {
                 if (sourceSet.getName().equals(config.name)) {
                     sourceSet.getJava().srcDir(rocker.flatMap(RockerCompile::getOutputDir));
@@ -60,19 +58,6 @@ public class RockerPlugin implements Plugin<Project> {
 
         // use the configured rocker version on all rocker dependencies
         enforceRockerVersion(project, rockerExtension);
-    }
-
-    private SourceSetContainer getSourceSets(Project project) {
-        if (isAtLeastGradleVersion("7.1")) {
-            return project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets();
-        } else {
-            return getSourceSetsDeprecated(project);
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    private SourceSetContainer getSourceSetsDeprecated(Project project) {
-        return project.getConvention().getPlugin(org.gradle.api.plugins.JavaPluginConvention.class).getSourceSets();
     }
 
     private static Configuration createRockerCompilerRuntimeConfiguration(Project project) {

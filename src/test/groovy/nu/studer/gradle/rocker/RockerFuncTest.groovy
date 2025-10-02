@@ -317,7 +317,7 @@ rocker {
 rocker.configurations.main.outputDir = file('src/generated/rocker/other')
 
 afterEvaluate {
-  SourceSetContainer sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+  SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class)
   SourceSet sourceSet = sourceSets.findByName('main')
   Set<File> dirs = sourceSet.getJava().getSrcDirs()
   dirs.eachWithIndex { dir, index ->
