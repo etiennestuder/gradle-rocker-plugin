@@ -296,7 +296,6 @@ public class RockerCompile extends DefaultTask {
                 }
             }
 
-            @SuppressWarnings("deprecation")
             private void setMainClassDeprecated(String mainClass, JavaExecSpec spec) {
                 try {
                     // Use reflection to access the setMain method as it was removed in Gradle 9.
