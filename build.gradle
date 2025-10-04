@@ -10,7 +10,7 @@ plugins {
 }
 
 group = 'nu.studer'
-version = '3.2'
+version = '3.2.1-DEV'
 
 repositories {
     mavenCentral()

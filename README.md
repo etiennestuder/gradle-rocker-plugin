@@ -146,6 +146,7 @@ See the self-contained example build scripts for the [Groovy DSL](example/groovy
 
 # Changelog
 
++ 3.2.1 - TBD 
 + 3.2 - Add Gradle 9 compatibility. 
 + 3.1 - Use Rocker 2.2.1 by default. Add missing configuration options available in Rocker 2.2.1.
 + 3.0.5 - Add discardLogicWhitespace configuration option.
