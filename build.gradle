@@ -4,8 +4,8 @@ import static java.lang.Integer.parseInt
 
 plugins {
     id 'java-gradle-plugin'
-    id 'com.gradle.plugin-publish' version '2.0.0'
-    id 'org.nosphere.gradle.github.actions' version '1.4.0'
+    alias(libs.plugins.publish)
+    alias(libs.plugins.github.actions)
     id 'groovy'
 }
 
@@ -17,8 +17,8 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.spockframework:spock-core:2.3-groovy-4.0'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation libs.spock
+    testRuntimeOnly libs.junit5.launcher
 }
 
 java {
