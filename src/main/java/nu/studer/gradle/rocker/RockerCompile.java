@@ -86,6 +86,7 @@ public class RockerCompile extends DefaultTask {
         this.execOperations = execOperations;
 
         // do not use lambda due to a bug in Gradle 6.5
+        //noinspection Convert2Lambda
         getOutputs().cacheIf(new Spec<Task>() {
             @Override
             public boolean isSatisfiedBy(Task task) {
@@ -161,6 +162,7 @@ public class RockerCompile extends DefaultTask {
         return outputDir;
     }
 
+    @SuppressWarnings("unused")
     @Internal
     public Provider<Directory> getClassDir() {
         return classDir;
@@ -288,6 +290,7 @@ public class RockerCompile extends DefaultTask {
                 }
             }
 
+            @SuppressWarnings("SameParameterValue")
             private void setMainClass(String mainClass, JavaExecSpec spec) {
                 if (isAtLeastGradleVersion("6.4")) {
                     spec.getMainClass().set(mainClass);
@@ -296,6 +299,7 @@ public class RockerCompile extends DefaultTask {
                 }
             }
 
+            @SuppressWarnings("JavaReflectionMemberAccess")
             private void setMainClassRemoved(String mainClass, JavaExecSpec spec) {
                 try {
                     // use reflection to access the setMain method as it was removed in Gradle 9
@@ -318,6 +322,7 @@ public class RockerCompile extends DefaultTask {
                 }
             }
 
+            @SuppressWarnings("SameParameterValue")
             private void systemPropertyIfNotEmpty(String option, List<String> values, JavaExecSpec spec) {
                 if (values != null && !values.isEmpty()) {
                     spec.systemProperty(option, String.join(",", values));
@@ -326,6 +331,7 @@ public class RockerCompile extends DefaultTask {
         });
     }
 
+    @SuppressWarnings("DataFlowIssue")
     private void deleteEmptyDirectories(File dir) {
         Arrays.stream(dir.listFiles(File::isDirectory)).forEach(this::deleteEmptyDirectories);
         if (dir.list().length == 0) {
