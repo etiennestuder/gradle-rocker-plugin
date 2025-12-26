@@ -38,13 +38,12 @@ testing {
                         t.useJUnitPlatform()
 
                         String testJavaRuntimeVersion = findProperty('testJavaRuntimeVersion') ?: '25'
-                        String testGradleVersion = findProperty('testGradleVersion') ?: GradleVersion.current().version
-
                         t.javaLauncher.set(javaToolchains.launcherFor { spec ->
                             spec.languageVersion.set(JavaLanguageVersion.of(testJavaRuntimeVersion))
                             dvBuildScan.value(t.identityPath.asString() + "#jvmVersion", testJavaRuntimeVersion)
                         } as Provider<? extends JavaLauncher>)
 
+                        String testGradleVersion = findProperty('testGradleVersion') ?: GradleVersion.current().version
                         t.systemProperty 'testContext.gradleVersion', testGradleVersion
                         dvBuildScan.value(t.identityPath.asString() + "#gradleVersion", testGradleVersion)
 
