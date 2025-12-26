@@ -32,6 +32,7 @@ testing {
                 runtimeOnly libs.junit5.launcher
             }
             targets {
+                //noinspection ConfigurationAvoidance
                 all {
                     testTask.configure { Test t ->
                         t.maxParallelForks = 1 // there is currently only a single test class
