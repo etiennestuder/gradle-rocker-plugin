@@ -8,7 +8,7 @@ import javax.inject.Inject;
 
 public class RockerExtension {
 
-    static final String DEFAULT_VERSION = "2.2.1";
+    static final String DEFAULT_VERSION = "2.4.0";
 
     private final Property<String> version;
     private final NamedDomainObjectContainer<RockerConfig> configurations;
