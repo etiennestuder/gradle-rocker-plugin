@@ -72,6 +72,11 @@ tasks.withType(Javadoc).configureEach {
     options.addStringOption('Xdoclint:none', '-quiet')
 }
 
+tasks.withType(ValidatePlugins.class).configureEach {
+    failOnWarning = true
+    enableStricterValidation = true
+}
+
 gradlePlugin {
     website = 'https://github.com/etiennestuder/gradle-rocker-plugin'
     vcsUrl = 'https://github.com/etiennestuder/gradle-rocker-plugin'
@@ -84,9 +89,4 @@ gradlePlugin {
             implementationClass = 'nu.studer.gradle.rocker.RockerPlugin'
         }
     }
-}
-
-tasks.withType(ValidatePlugins.class).configureEach {
-    failOnWarning = true
-    enableStricterValidation = true
 }
