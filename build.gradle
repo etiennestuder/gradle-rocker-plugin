@@ -1,4 +1,3 @@
-import org.gradle.api.plugins.jvm.JvmTestSuite
 import org.gradle.util.GradleVersion
 
 import static java.lang.Integer.parseInt
