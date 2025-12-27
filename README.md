@@ -68,7 +68,7 @@ Apply the `nu.studer.rocker` plugin to your Gradle project.
 
 ```groovy
 plugins {
-    id 'nu.studer.rocker' version '3.2'
+    id 'nu.studer.rocker' version '3.3'
 }
 ```
 
@@ -81,7 +81,7 @@ This is a sample configuration:
 
 ```groovy
 plugins {
-    id 'nu.studer.rocker' version '3.2'
+    id 'nu.studer.rocker' version '3.3'
     id 'java'
 }
 
@@ -146,7 +146,7 @@ See the self-contained example build scripts for the [Groovy DSL](example/groovy
 
 # Changelog
 
-+ 3.2.1 - TBD 
++ 3.3.1 - TBD 
 + 3.3 - Use Rocker 2.4.0 by default. 
 + 3.2 - Add Gradle 9 compatibility. 
 + 3.1 - Use Rocker 2.2.1 by default. Add missing configuration options available in Rocker 2.2.1.
