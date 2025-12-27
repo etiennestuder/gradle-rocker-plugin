@@ -90,7 +90,7 @@ repositories {
 }
 
 rocker {
-    version = '2.2.1'  // optional
+    version = '2.4.0'  // optional
     configurations{
         main {
             templateDir = file('src/rocker')
@@ -108,7 +108,7 @@ of the configuration is `main`, the generated sources are added to the `main` so
 Given the configuration above, you can invoke the Rocker template engine by issuing `./gradlew compileRocker`. You can also directly call `./gradlew compileJava` which first
 generates the Java sources from the Rocker templates, and then compiles these Java sources as part of compiling all sources in the _main_ source set.
 
-Since we declared to use version _2.2.1_ of the Rocker template engine, all Rocker dependencies of all Gradle configurations will be of that given version.
+Since we declared to use version _2.4.0_ of the Rocker template engine, all Rocker dependencies of all Gradle configurations will be of that given version.
 
 > I suggest using the [Continuous build](https://docs.gradle.org/current/userguide/continuous_build.html) feature of Gradle instead of using the Rocker hot reload feature.
 > Declare `optimize = true` in the Rocker configuration of your Gradle build, and then run your build with the `-t` command line option. In addition, deactivating the hot
@@ -147,6 +147,7 @@ See the self-contained example build scripts for the [Groovy DSL](example/groovy
 # Changelog
 
 + 3.2.1 - TBD 
++ 3.3 - Use Rocker 2.4.0 by default. 
 + 3.2 - Add Gradle 9 compatibility. 
 + 3.1 - Use Rocker 2.2.1 by default. Add missing configuration options available in Rocker 2.2.1.
 + 3.0.5 - Add discardLogicWhitespace configuration option.
