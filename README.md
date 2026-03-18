@@ -146,7 +146,8 @@ See the self-contained example build scripts for the [Groovy DSL](example/groovy
 
 # Changelog
 
-+ 3.3.1 - TBD 
++ 3.3.2 - TBD 
++ 3.3.1 - Mark plugin as Configuration Cache compatible. 
 + 3.3 - Use Rocker 2.4.0 by default. 
 + 3.2 - Add Gradle 9 compatibility. 
 + 3.1 - Use Rocker 2.2.1 by default. Add missing configuration options available in Rocker 2.2.1.
