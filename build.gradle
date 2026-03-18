@@ -88,6 +88,11 @@ gradlePlugin {
             description = 'Gradle plugin that integrates the Rocker template engine.'
             tags.set(['rocker'])
             implementationClass = 'nu.studer.gradle.rocker.RockerPlugin'
+            compatibility {
+                features {
+                    configurationCache = true
+                }
+            }
         }
     }
 }
