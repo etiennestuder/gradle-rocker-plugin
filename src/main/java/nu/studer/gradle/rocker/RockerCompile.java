@@ -2,7 +2,6 @@ package nu.studer.gradle.rocker;
 
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.Task;
 import org.gradle.api.file.Directory;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileSystemOperations;
@@ -10,7 +9,6 @@ import org.gradle.api.file.FileType;
 import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Provider;
-import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.IgnoreEmptyDirectories;
@@ -31,9 +29,18 @@ import org.gradle.work.InputChanges;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import static nu.studer.gradle.rocker.GradleUtils.isAtLeastGradleVersion;
 
@@ -41,6 +48,8 @@ import static nu.studer.gradle.rocker.GradleUtils.isAtLeastGradleVersion;
 public class RockerCompile extends DefaultTask {
 
     private static final String ROCKER_FILE_EXTENSION_PREFIX = ".rocker";
+    private static final Pattern MODIFIED_AT_PATTERN = Pattern.compile(
+            "(static public long getModifiedAt\\(\\) \\{ return )\\d+(L; \\})");
 
     private final Provider<Boolean> optimize;
     private final Provider<String> extendsClass;
@@ -73,14 +82,6 @@ public class RockerCompile extends DefaultTask {
         this.projectLayout = projectLayout;
         this.fileSystemOperations = fileSystemOperations;
         this.execOperations = execOperations;
-
-        // do not use lambda due to a bug in Gradle 6.5
-        getOutputs().cacheIf(new Spec<Task>() {
-            @Override
-            public boolean isSatisfiedBy(Task task) {
-                return optimize.get();
-            }
-        });
     }
 
     @Input
@@ -220,6 +221,14 @@ public class RockerCompile extends DefaultTask {
             }
         }
 
+        // When optimize=false, the Rocker compiler embeds file.lastModified() as getModifiedAt()
+        // in generated Java. This makes the output non-deterministic across different checkouts
+        // (different file mtimes), breaking build cache relocatability for downstream tasks like
+        // compileJava. Normalize the value to 0 so the output is deterministic.
+        if (!optimize.get()) {
+            normalizeModifiedAtInGeneratedSources(outputDir.get().getAsFile());
+        }
+
         // invoke custom result handler
         if (execResultHandler != null && execResult != null) {
             execResultHandler.execute(execResult);
@@ -268,6 +277,26 @@ public class RockerCompile extends DefaultTask {
             }
 
         });
+    }
+
+    private static void normalizeModifiedAtInGeneratedSources(File outputDir) {
+        try {
+            Files.walkFileTree(outputDir.toPath(), new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    if (file.toString().endsWith(".java")) {
+                        String content = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
+                        String normalized = MODIFIED_AT_PATTERN.matcher(content).replaceAll("$1" + "0" + "$2");
+                        if (!normalized.equals(content)) {
+                            Files.write(file, normalized.getBytes(StandardCharsets.UTF_8));
+                        }
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to normalize getModifiedAt in generated sources", e);
+        }
     }
 
     private void deleteEmptyDirectories(File dir) {
