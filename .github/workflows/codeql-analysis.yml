@@ -32,7 +32,7 @@ jobs:
         with:
           develocity-access-key: ${{ secrets.DV_ACCESS_KEY }}
       - name: Build with Gradle
-        run: ./gradlew clean build --no-configuration-cache
+        run: ./gradlew clean build --dry-run
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
         with:
