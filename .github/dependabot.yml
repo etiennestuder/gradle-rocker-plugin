@@ -12,21 +12,3 @@ updates:
       - gradle-plugin-portal
     schedule:
       interval: "monthly"
-  - package-ecosystem: "gradle"
-    directory: "/example/groovy"
-    registries:
-      - gradle-plugin-portal
-    schedule:
-      interval: "monthly"
-  - package-ecosystem: "gradle"
-    directory: "/example/kotlin"
-    registries:
-      - gradle-plugin-portal
-    schedule:
-      interval: "monthly"
-  - package-ecosystem: "gradle"
-    directory: "/example/remote_template"
-    registries:
-      - gradle-plugin-portal
-    schedule:
-      interval: "monthly"
