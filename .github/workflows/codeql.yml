@@ -23,19 +23,16 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v6
     - name: Set up JDK 8
-      if: matrix.language == 'java-kotlin'
       uses: actions/setup-java@v5
       with:
         distribution: 'liberica'
         java-version: 8
     - name: Set up JDK 25
-      if: matrix.language == 'java-kotlin'
       uses: actions/setup-java@v5
       with:
         distribution: 'liberica'
         java-version: 25
     - name: Setup Gradle
-      if: matrix.language == 'java-kotlin'
       uses: gradle/actions/setup-gradle@v6
       with:
         develocity-access-key: ${{ secrets.DV_ACCESS_KEY }}
@@ -46,7 +43,7 @@ jobs:
         build-mode: ${{ matrix.build-mode }}
     - name: Build with Gradle
       if: matrix.build-mode == 'manual'
-      run: ./gradlew classes testClasses
+      run: ./gradlew classes testClasses --no-build-cache
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4
       with:
