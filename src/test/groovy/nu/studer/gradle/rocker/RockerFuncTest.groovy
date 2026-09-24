@@ -104,6 +104,60 @@ rocker {
         result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
     }
 
+    @Requires({ (determineGradleVersion().baseVersion >= GradleVersion.version('9.7')) })
+    void "can invoke rocker tasks in multi-project build with Gradle isolated projects enabled"() {
+        given:
+        template('src/rocker/foo/Example.rocker.html')
+        template('sub/src/rocker/foo/Example.rocker.html')
+
+        and:
+        settingsFile << """
+include 'sub'
+"""
+
+        and:
+        def rockerBuildScript = """
+plugins {
+    id 'nu.studer.rocker'
+}
+
+repositories {
+    mavenCentral()
+}
+
+rocker {
+  configurations {
+    foo {
+    }
+  }
+}
+"""
+        buildFile << rockerBuildScript
+        file('sub/build.gradle') << rockerBuildScript
+
+        when:
+        def result = runWithArguments('compileFooRocker', '-Dorg.gradle.isolated-projects=true', '--warning-mode', 'all')
+
+        then:
+        fileExists('build/generated-src/rocker/foo/Example.java')
+        fileExists('sub/build/generated-src/rocker/foo/Example.java')
+        result.output.contains("Isolated Projects is an incubating feature.")
+        result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
+        result.task(':sub:compileFooRocker').outcome == TaskOutcome.SUCCESS
+
+        when:
+        new File(workspaceDir, 'build/generated-src/rocker/foo/Example.java').delete()
+        new File(workspaceDir, 'sub/build/generated-src/rocker/foo/Example.java').delete()
+        result = runWithArguments('compileFooRocker', '-Dorg.gradle.isolated-projects=true')
+
+        then:
+        fileExists('build/generated-src/rocker/foo/Example.java')
+        fileExists('sub/build/generated-src/rocker/foo/Example.java')
+        result.output.contains("Reusing configuration cache.")
+        result.task(':compileFooRocker').outcome == TaskOutcome.SUCCESS
+        result.task(':sub:compileFooRocker').outcome == TaskOutcome.SUCCESS
+    }
+
     void "can invoke rocker task derived from single-item configuration DSL"() {
         given:
         exampleTemplate()

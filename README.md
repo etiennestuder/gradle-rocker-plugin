@@ -52,6 +52,7 @@ The Rocker plugin supports the following Gradle features:
  * `RockerCompile` task instances participate in incremental builds
  * `RockerCompile` task instances are themselves incremental (if the Rocker hot reload feature is disabled)
  * `RockerCompile` task instances participate in task output caching (if the Rocker hot reload feature is disabled)
+ * The Rocker plugin is compatible with [Isolated Projects](https://docs.gradle.org/current/userguide/isolated_projects.html)
 
 # Compatibility
 
